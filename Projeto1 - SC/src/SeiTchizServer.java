@@ -18,7 +18,7 @@ public class SeiTchizServer {
         		System.out.println("Server is started by typing 'SeiTchizServer (PORT)'!");
         		System.exit(-1);
         	}
-        	server.startServer(Integer.parseInt(args[0]));
+        	server.startServer(Integer.parseInt(args[0])); //nice
         //
     }
 	
