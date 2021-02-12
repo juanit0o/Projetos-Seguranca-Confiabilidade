@@ -8,39 +8,29 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class SeiTchiz {
-	private static String user;
-	private static String pass;
 	private static Socket cSoc = null;
-	private static Boolean autenticated;
 	private static final int PORT_DEFAULT = 45678;
 
 	private static ObjectInputStream in = null;
 	private static ObjectOutputStream out = null;
 
 	public static void main(String[] args) {
-		System.out.println("cliente: main");
-		Scanner inSc = new Scanner(System.in);
-		String serverIp = null;
+		System.out.println("cliente: main");System.out.println("teste1");
+		Scanner inSc = new Scanner(System.in);System.out.println("teste2");
+		String serverIp = "";
 		int serverPort = 0;
+		String user = "";
+		String pass = "";
 
 		if (args.length == 2) { //caso: 127.0.0.1:45500 clientId  || 127.0.0.1 clientId 
 			user = args[1];
 			System.out.println("Nao inseriu password. Password?");
 			pass = inSc.nextLine();
-
-
-			//CLIENT ID
-			//ver se o user ja existe, caso n exista efetua o registo adicionar ao ficheiro dos clientes com user + pass
-			//caso id exista, ver se a passe corresponde ao q ta no ficheiro
-			user = args[1];
-			//TODO:
-			//pedir aqui a pass
-
-		} else if(args.length == 3) {
+		} else if(args.length == 3) { //caso: 127.0.0.1:45500 clientId pwd || 127.0.0.1 clientId pwd
 			user = args[1];
 			pass = args[2];
 		} else {
-			System.err.println("Wrong commands latah");
+			System.out.println("Wrong commands latah");
 			System.exit(-1);
 		}
 
@@ -52,18 +42,45 @@ public class SeiTchiz {
 			serverIp = getIp(args[0]);
 			serverPort = PORT_DEFAULT;
 		}
+		System.out.println("teste1");
 		System.out.println("serverIp = "+serverIp+"\nserverPort = "+serverPort);
-
-
+		System.out.println("teste2");
 		//conectar ao server
 		conectToServer(serverIp,serverPort);
 
+		//autenticacao 
+		autenticacao(user, pass);
 
-		//PAREI AQUI P AGORA
+		//loop do metodo das acoes
+		/*
+		 * while(true){
+		 * 		metodo_switch();
+		 * }
+		 */
+		
+		
+/*
+		// Falta enviar um ficheiro do cliente para o servidor
+		File myFile = new File("ficheirozinho.txt");
+		try {
+			out.writeObject(myFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+*/
+		try {
+			// fechar as streams
+			out.close();
+			in.close();
 
+			// fechar socket
+			cSoc.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-
-		// enviar nome e pass
+	private static void autenticacao(String user, String pass) {
 		try {
 			out.writeObject(user);
 			out.writeObject(pass);
@@ -76,38 +93,16 @@ public class SeiTchiz {
 
 		// verificar autenticacao
 		try {
-
-			autenticated = (Boolean) in.readObject();
-			if (autenticated) {
-				System.out.println("cliente autenticado");
-			} else {
-				System.out.println("cliente nao autenticado");
+			Boolean autenticated = (Boolean) in.readObject();
+			System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
+			if (!autenticated) {
+				System.exit(-1);
 			}
-
-		} catch (ClassNotFoundException e1) {
+		} catch (Exception e1) {
 			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// Falta enviar um ficheiro do cliente para o servidor
-		File myFile = new File("ficheirozinho.txt");
-		try {
-			out.writeObject(myFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			// fechar as streams
-			out.close();
-			in.close();
-
-			// fechar socket
-			cSoc.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			System.out.println("Falha na autenticacao.");
+			System.exit(-1);
+		} 
 	}
 
 	private static void conectToServer(String ip, int port) {
