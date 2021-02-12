@@ -115,7 +115,9 @@ public class SeiTchizServer {
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
-					switch (comando) {
+					String[] splittado = comando.split(" ");
+					
+					switch (splittado[0]) {
 					case "quit":
 					case "exit":
 						outStream.writeObject("Server ending for you...");
@@ -123,9 +125,88 @@ public class SeiTchizServer {
 						inStream.close();
 						socket.close();
 						break;
-
+						
+					case "f":
+					case "follow":
+						outStream.writeObject("You followed " + splittado[1]);
+						break;
+						
+					case "u":
+					case "unfollow":
+						outStream.writeObject("You unfollowed " + splittado[1]);
+						break;
+						
+					case "v":
+					case "viewfollowers":
+						outStream.writeObject("Your followers are "); //tem de ir ao cliente atual e devolver os seus followers
+						break;
+						
+					case "p":
+					case "post":
+						//cliente vai ter de ter um atributo com as fotos postadas (wall)
+						outStream.writeObject("You posted the photo " + splittado[1]); //tem de ir a diretoria da foto e copiar para o mural
+						break;
+					
+					case "w" :
+					case "wall":
+						outStream.writeObject("Your recent " + splittado[1] + " photos are " + "mostrarfotos"); //tem de ir a diretoria da foto e copiar para o mural
+						break;
+						
+					case "l":
+					case "like":
+						outStream.writeObject("You liked the photo with ID " + splittado[1]);
+						break;
+						
+					case "n":
+					case "newgroup":
+						outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
+						break;
+					
+					case "a":
+					case "addu":
+						outStream.writeObject("You added the user with ID " + splittado[1] + " to the group with ID "+ splittado[2]);
+						break;
+					
+					case "r":
+					case "removeu":
+						outStream.writeObject("You removed the user with ID " + splittado[1] + " from the group with ID "+ splittado[2]);
+						break;
+					
+					case "g":
+					case "ginfo":
+						//se nao for dado groupID, mostra os grupos que o user eh dono e os grupos a q pertence (caso n pertenca a nada nem seja dono, dar essa msg)
+						outStream.writeObject("You are the owner of the groups ..."); //grupos de que eh dono
+						outStream.writeObject("You belong to the groups ..."); //grupos a que pertence
+						//se estes dois forem vazios, dar uma msg a dizer que n ha nada
+						
+						//se for dado groupID, mostra o dono desse grupo e os membros do grupo, caso ele pertenca (dono ou nao)
+						outStream.writeObject("You belong to the groups ..."); //membros do grupo e dono
+						//se n pertencer ao grupo do id, diz que eh privado e n tem acesso
+						outStream.writeObject("This group is private and you aren't in it"); //membros do grupo e dono
+						
+						break;
+					
+					case "m":
+					case "msg":
+						//se nao for dado groupID, mostra os grupos que o user eh dono e os grupos a q pertence (caso n pertenca a nada nem seja dono, dar essa msg)
+						outStream.writeObject("You sent a message to the group with ID " + splittado[1] + " with the text: " + splittado[2]);	
+						break;	
+					
+					case "c":
+					case "collect":
+						//se nao for dado groupID, mostra os grupos que o user eh dono e os grupos a q pertence (caso n pertenca a nada nem seja dono, dar essa msg)
+						outStream.writeObject("You received all the messages that were pending on the group with ID " + splittado[1]); 	
+						//mostrar as msgs que recebeu da caixa
+						break;
+						
+					case "h":
+					case "history":
+						outStream.writeObject("The messages from thr group with ID " + splittado[1] + " you have already read and are in your history are " + "msgshistorico"); 	
+						//mostrar as msgs que ja leu
+						break;
+						
 					default:
-						outStream.writeObject("toma la um croquete...");
+						outStream.writeObject("Invalid command, please type help to check the available ones");
 						break;
 					}
 				}

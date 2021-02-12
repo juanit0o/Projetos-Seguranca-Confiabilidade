@@ -21,7 +21,6 @@ public class CatalogoClientes {
 				Scanner scReader = new Scanner(file);
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
-					System.out.println(linha);
 					String[] aux = linha.split(":");
 					mapClientes.put(aux[0], new Cliente(aux[0], aux[1]));
 				}
