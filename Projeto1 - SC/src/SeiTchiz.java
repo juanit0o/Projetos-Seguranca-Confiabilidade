@@ -9,43 +9,51 @@ import java.util.Scanner;
 
 public class SeiTchiz {
 
-	static String usr;
-	static String pass;
-	static Socket cSoc = null;
-	static Boolean autenticated;
+	private static String usr;
+	private static String pass;
+	private static Socket cSoc = null;
+	private static Boolean autenticated;
+	private static final int PORT_DEFAULT = 45678;
 
 	public static void main(String[] args) {
 		System.out.println("cliente: main");
 		int serverIp = 0;
 		int serverPort = 0;
-		
+
 		if (args.length == 2) {
-			 //ADDRESS IP E PORTA
-			 String serverIPPort = args[0];
-
-		     String[] ipPort = serverIPPort.split(":");
-		     serverIp= Integer.parseInt(ipPort[0]);
-		     serverPort = Integer.parseInt(ipPort[1]);
-
-		     System.out.println("Server IP " + serverIp);
-		     System.out.println("Server PORT: " + serverPort);
-		     
-		     //CLIENT ID
-		     //ver se o user ja existe, caso n exista efetua o registo adicionar ao ficheiro dos clientes com user + pass (como args foram 2 pedir a passe agora)
-		     //caso id exista, ver se a passe corresponde ao q ta no ficheiro
-		     usr = args[1];
-		     //pedir aqui a pass
+			//caso: clientId pwd
+			if (!args[0].contains(":")) {
+				serverIp = PORT_DEFAULT;
+			} else { //caso: serverAdress clientId
+				
+			}
 			
-		}else if(args.length == 3) {
+			//ADDRESS IP E PORTA
+			String serverIPPort = args[0];
+
+			String[] ipPort = serverIPPort.split(":");
+			serverIp= Integer.parseInt(ipPort[0]);
+			serverPort = Integer.parseInt(ipPort[1]);
+
+			System.out.println("Server IP " + serverIp);
+			System.out.println("Server PORT: " + serverPort);
+
+			//CLIENT ID
+			//ver se o user ja existe, caso n exista efetua o registo adicionar ao ficheiro dos clientes com user + pass (como args foram 2 pedir a passe agora)
+			//caso id exista, ver se a passe corresponde ao q ta no ficheiro
+			usr = args[1];
+			//pedir aqui a pass
+
+		} else if(args.length == 3) {
 			//mm shit mas tendo logo a passe para comparar a priori
 			usr = args[1];
 			pass = args[2];
-			
-		}else {
+
+		} else {
 			System.err.println("Wrong commands latah");
 			System.exit(-1);
 		}
-			
+
 
 		try {
 			cSoc = new Socket(Integer.toString(serverIp), serverPort);
@@ -53,9 +61,9 @@ public class SeiTchiz {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		
+
 		//PAREI AQUI P AGORA
-		
+
 		ObjectOutputStream out = null;
 		ObjectInputStream in = null;
 
