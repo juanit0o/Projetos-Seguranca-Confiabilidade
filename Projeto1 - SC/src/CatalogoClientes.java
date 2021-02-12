@@ -1,5 +1,7 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,13 +9,11 @@ import java.util.Scanner;
 
 public class CatalogoClientes {
 
-	private ArrayList<Cliente> listaClientes;
-	//private HashMap<String, String> catalogoClientes;
+	private HashMap<String, Cliente> mapClientes;
 	private File file = new File("users.txt");
 
 	public CatalogoClientes() {
-		//catalogoClientes = new HashMap<String, String>();
-		listaClientes = new ArrayList<Cliente>();
+		mapClientes = new HashMap<String, Cliente>();
 
 		try {/*
 			if (file.createNewFile()) {
@@ -43,8 +43,7 @@ public class CatalogoClientes {
 					String linha = scReader.nextLine();
 					System.out.println(linha);
 					String[] aux = linha.split(":");
-					this.listaClientes.add(new Cliente(aux[0], aux[1]));
-
+					mapClientes.put(aux[0], new Cliente(aux[0], aux[1]));
 				}
 				scReader.close();
 			}
@@ -60,31 +59,28 @@ public class CatalogoClientes {
 
 	}
 
-	public void addClient(Cliente c) {
-		this.listaClientes.add(c);
-		try {
-			Scanner sc = new Scanner(file);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+	public void addClient(String user, String pass) {
+		Cliente cliente = new Cliente(user,pass);
+		mapClientes.put(user, cliente);
+		try { //adicionamos ao users txt
+			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
+			bW.write(user+":"+pass);
+			bW.newLine();
+			bW.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public ArrayList<Cliente> getListaClientes() {
-		return listaClientes;
-	}
-
-
-
+	
+	
 	public boolean existeUser(String user) {
-		// TODO percorrer client ids e compara se ja existe
-		return false;
+		return mapClientes.get(user) != null;
 	}
 
-	public Boolean passCorreta(String user, String password) {
-		// TODO percorrer client ids e compara se ja existe
-		return null;
+	public boolean passCorreta(String user, String password) {
+		return mapClientes.get(user).isPass(password);
 	}
 
 

@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class SeiTchizServer {
 
 	private CatalogoClientes catClientes;
-	
+
 	public static void main(String[] args) {
 		System.out.println("Server");
 		SeiTchizServer server = new SeiTchizServer(); //o construtor disto vai estar nesta classe ou vai haver outra para isso?
@@ -47,10 +47,10 @@ public class SeiTchizServer {
 			}
 
 		}
-		
 
-		
-		
+
+
+
 		//deveremos fechar aqui? ter um metodo para fechar maybe?
 		//sSoc.close();
 	}
@@ -75,47 +75,39 @@ public class SeiTchizServer {
 
 				//Método loginUser e autenticar (criar um obj da classe Cliente com esses atributos,
 				//e probs mais alguns a ser preenchidos dps lá)
-				
-                String user = null;
-                String password = null;
-                Boolean autenticou = false;
 
-                try {
-                    user = (String) inStream.readObject();
-                    password = (String) inStream.readObject();
-                    System.out.println("Servidor: já recebi a password e o user");
-                    System.out.println("Info client: "+user+":"+password);
-                }catch (ClassNotFoundException e1) {
-                    e1.printStackTrace();
-                }
+				String user = null;
+				String password = null;
+				Boolean autenticou = false;
 
-                //aqui comparar se ja existe user
-                if (catClientes.existeUser(user)) {
+				try {
+					user = (String) inStream.readObject();
+					password = (String) inStream.readObject();
+					System.out.println("Servidor: já recebi a password e o user");
+					System.out.println("Info client: "+user+":"+password);
+				}catch (ClassNotFoundException e1) {
+					e1.printStackTrace();
+				}
+
+				//aqui comparar se ja existe user
+				if (catClientes.existeUser(user)) {
 					autenticou = catClientes.passCorreta(user, password);
 				} else {//adicionar à lista
 					autenticou = true;
-					catClientes.addClient(new Cliente(user, password));
+					catClientes.addClient(user, password);
 				}
-                
-                //"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro
-                //de users e passwords
-                if (user.length() != 0){
-                    outStream.writeObject(new Boolean(true));
-                    System.out.println("Username ligado: " + user);
-                    System.out.println("Com a password: " + password);
-                }
-                else {
-                    outStream.writeObject(new Boolean(false));
-                }
-                
-                
-                
-                //guardar user e password no ficheiro (criar metodo a parte para isto)
-                //ver se o ficheiro existe:  (caso ainda nao exista) criar ficheiro e adicionar o user:username:pass a uma linha
-                //caso o ficheiro ja exista, dar append a user:username:pass a uma linha
-                //
 
-                //loop para comandos sincronizado com client
+				//"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro
+				outStream.writeObject(autenticou);
+
+
+
+				//guardar user e password no ficheiro (criar metodo a parte para isto)
+				//ver se o ficheiro existe:  (caso ainda nao exista) criar ficheiro e adicionar o user:username:pass a uma linha
+				//caso o ficheiro ja exista, dar append a user:username:pass a uma linha
+				//
+
+				//loop para comandos sincronizado com client
 
 				//fechar as streams
 				outStream.close();
