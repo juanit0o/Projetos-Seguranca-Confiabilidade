@@ -12,7 +12,10 @@ public class CatalogoClientes {
 	private HashMap<String, Cliente> mapClientes;
 	private File file = new File("users.txt");
 
-	public CatalogoClientes() {
+	
+
+	public CatalogoClientes() {		
+		
 		mapClientes = new HashMap<String, Cliente>();
 
 		try {
@@ -43,7 +46,26 @@ public class CatalogoClientes {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		
+		//criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos $ mensagensPler +
+		  //File file = new File("/data");
+          //if (file.getParentFile() != null) {
+          //    file.getParentFile().mkdirs();
+          //}
 
+		
+		File fileCliente = new File (user +".txt");
+		
+		try {
+			fileCliente.createNewFile();
+			BufferedWriter bW = new BufferedWriter(new FileWriter(fileCliente, true));
+			bW.write("$\n$\n$\n$\n+\n");
+			//bW.newLine();
+			bW.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean existeUser(String user) {
