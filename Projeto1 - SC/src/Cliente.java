@@ -9,11 +9,9 @@ public class Cliente {
 	public Cliente(String u, String p) {
 		this.user = u;
 		this.pass = p;
-		System.out.println(user+" - "+pass);
 	}
 	
 	public boolean isPass(String password) {
-		System.out.println(password + "=? "+ this.pass);
 		return this.pass.equals(password);
 	}
 }

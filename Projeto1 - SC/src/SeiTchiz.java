@@ -14,9 +14,11 @@ public class SeiTchiz {
 	private static ObjectInputStream in = null;
 	private static ObjectOutputStream out = null;
 
+	private static final Scanner inSc = new Scanner(System.in);
+
 	public static void main(String[] args) {
 		System.out.println("cliente: main");
-		Scanner inSc = new Scanner(System.in);
+
 		String serverIp = "";
 		int serverPort = 0;
 		String user = "";
@@ -34,6 +36,7 @@ public class SeiTchiz {
 			System.exit(-1);
 		}
 
+
 		//verifica se tem porto ou nao, caso nao PORT_DEFAULT
 		if (args[0].contains(":")) {
 			serverIp = getIp(args[0]);
@@ -49,23 +52,61 @@ public class SeiTchiz {
 		//autenticacao 
 		autenticacao(user, pass);
 
-		//loop do metodo das acoes
-		/*
-		 * while(true){
-		 * 		metodo_switch();
-		 * }
-		 */
+		sendReceiveComando();
 
-		
+		// fechar tudo
 		try {
-			// fechar as streams
 			out.close();
 			in.close();
-
-			// fechar socket
+			inSc.close();
 			cSoc.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static void sendReceiveComando() {
+		//sc.useDelimiter(System.lineSeparator());
+		System.out.println("Available commands:\n"+"follow/f <userID>\n"+
+				"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
+				"wall/w <nPhotos>\n"+"like/l <photoId>\n"+"newGroup/n <groupID>\n"+
+				"addu/a <userID> <groupID>\n"+"removeu/r <userID> <groupID>\n"+
+				"ginfo/g [groupID]\n"+"msg/m <groupID> <msg>\n"+"collect/c <groupID>\n"+
+				"history/h <groupID>\n"+"help\n"+"exit\n");
+		System.out.println("Insert a command or type help to see commands: ");
+		while(true) {
+			String comando = inSc.nextLine();
+			switch (comando) {
+			case "help":
+				System.out.println("Available commands:\n"+"follow/f <userID>\n"+
+						"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
+						"wall/w <nPhotos>\n"+"like/l <photoId>\n"+"newGroup/n <groupID>\n"+
+						"addu/a <userID> <groupID>\n"+"removeu/r <userID> <groupID>\n"+
+						"ginfo/g [groupID]\n"+"msg/m <groupID> <msg>\n"+"collect/c <groupID>\n"+
+						"history/h <groupID>\n"+"help\n"+"exit\n");
+				System.out.println("Insert a command or type help to see commands: ");
+				break;
+			case "quit":
+			case "exit":
+				try {
+					out.writeObject(comando);
+					System.out.println((String) in.readObject());
+				} catch (IOException | ClassNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				return;
+
+			default:
+				try {
+					out.writeObject(comando);
+					//ver como guardar melhor
+					System.out.println(in.readObject());
+					System.out.println("\nInsert a command or type help to see commands: ");
+				} catch (IOException | ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				break;
+			}
 		}
 	}
 
@@ -103,7 +144,6 @@ public class SeiTchiz {
 			e.printStackTrace();
 		}		
 	}
-
 
 	private static int getPort(String serverAdress) {
 		String[] tudo = serverAdress.split(":");

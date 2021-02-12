@@ -63,12 +63,13 @@ public class SeiTchizServer {
 
 		ServerThread(Socket inSoc) {
 			socket = inSoc;
-			System.out.println("1 Thread por cada cliente");
+			//System.out.println("1 Thread por cada cliente");
 		}
 
 
 
 		public void run(){
+			String user = null;
 			try {
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
@@ -76,15 +77,15 @@ public class SeiTchizServer {
 				//Método loginUser e autenticar (criar um obj da classe Cliente com esses atributos,
 				//e probs mais alguns a ser preenchidos dps lá)
 
-				String user = null;
+				
 				String password = null;
 				Boolean autenticou = false;
 
 				try {
 					user = (String) inStream.readObject();
 					password = (String) inStream.readObject();
-					System.out.println("Servidor: já recebi a password e o user");
-					System.out.println("Info client: "+user+":"+password);
+					//System.out.println("Servidor: já recebi a password e o user");
+					//System.out.println("Info client: "+user+":"+password);
 				}catch (ClassNotFoundException e1) {
 					e1.printStackTrace();
 				}
@@ -99,34 +100,46 @@ public class SeiTchizServer {
 
 				//"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro
 				outStream.writeObject(autenticou);
-
+				System.out.println(autenticou ? "Client '"+user+"' authenticated.":
+					"Client '"+user+"' not authenticated.");
 
 
 				//guardar user e password no ficheiro (criar metodo a parte para isto)
 				//ver se o ficheiro existe:  (caso ainda nao exista) criar ficheiro e adicionar o user:username:pass a uma linha
 				//caso o ficheiro ja exista, dar append a user:username:pass a uma linha
 				//
+				while(true) {
+					String comando = "";
+					try {
+						comando = (String) inStream.readObject();
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+					switch (comando) {
+					case "quit":
+					case "exit":
+						outStream.writeObject("Server ending for you...");
+						outStream.close();
+						inStream.close();
+						socket.close();
+						break;
 
+					default:
+						outStream.writeObject("toma la um croquete...");
+						break;
+					}
+				}
 				//loop para comandos sincronizado com client
 
-				//fechar as streams
-				outStream.close();
-				inStream.close();
 
-				//fechar socket
-				socket.close();
+
+				//fechar as streams
+
 
 			} catch (IOException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("Client '"+user+"' disconnected.");
 			}
 		}
-
-		public boolean loginUser() {
-			return true;
-		}
-
-		//switch case aqui ou noutra classe com todos os comandos que o cliente suporta para poder mandar para o servidor? (verificar qual foi o comando recebido entrar no switch e fazer o esperado)
-
-
 	}
 }

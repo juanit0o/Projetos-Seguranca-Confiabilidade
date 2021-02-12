@@ -15,29 +15,9 @@ public class CatalogoClientes {
 	public CatalogoClientes() {
 		mapClientes = new HashMap<String, Cliente>();
 
-		try {/*
-			if (file.createNewFile()) {
-				System.out.println("File created: " + file.getName());
-				Scanner scReader = new Scanner(file);
-				while (scReader.hasNextLine()) {
-					String linha = scReader.nextLine();
-					System.out.println(linha);
-					String[] aux = linha.split(":");
-					this.listaClientes.add(new Cliente(aux[0], aux[1]));
-				}
-				//scReader.close();
-			} else {
-				System.out.println("File already exists.");
-				Scanner scReader = new Scanner(file);
-				while (scReader.hasNextLine()) {
-					String linha = scReader.nextLine();
-					System.out.println(linha);
-					String[] aux = linha.split(":");
-					this.listaClientes.add(new Cliente(aux[0], aux[1]));
-				}
-			}*/
+		try {
 			if (!file.createNewFile()) { //true- nao existe e cria   false: nada
-				System.out.println("File created: " + file.getName());
+				System.out.println("File created: " + file.getName()); //rever
 				Scanner scReader = new Scanner(file);
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
@@ -51,12 +31,6 @@ public class CatalogoClientes {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
-
-
-
-		//para ler ficheiro
-
-
 	}
 
 	public void addClient(String user, String pass) {
@@ -73,8 +47,6 @@ public class CatalogoClientes {
 
 	}
 
-	
-	
 	public boolean existeUser(String user) {
 		return mapClientes.get(user) != null;
 	}
