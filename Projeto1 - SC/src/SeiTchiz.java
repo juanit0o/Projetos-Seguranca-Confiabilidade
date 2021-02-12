@@ -9,44 +9,54 @@ import java.util.Scanner;
 
 public class SeiTchiz {
 
-	private static String usr;
+	private static String user;
 	private static String pass;
 	private static Socket cSoc = null;
 	private static Boolean autenticated;
 	private static final int PORT_DEFAULT = 45678;
+	private static final String IP_DEFAULT = "127.0.0.1";
 
 	public static void main(String[] args) {
 		System.out.println("cliente: main");
-		int serverIp = 0;
+		String serverIp = null;
 		int serverPort = 0;
+		String serverAdress = null;
+		Scanner inSc = new Scanner(System.in);
 
-		if (args.length == 2) {
-			//caso: clientId pwd
-			if (!args[0].contains(":")) {
-				serverIp = PORT_DEFAULT;
-			} else { //caso: serverAdress clientId
-				
+		if (args.length == 1) { //caso: clientId
+			serverPort = PORT_DEFAULT;
+			serverIp = IP_DEFAULT;
+			System.out.println("Nao inseriu password. Password?");
+			pass = inSc.nextLine();
+		} else if (args.length == 2) { //caso: serverAdress clientId || clientId password
+			//serverAdress clientId
+			if (args[0].contains(":")) {
+				serverAdress = args[0];
+				serverIp = getIp(serverAdress);
+				serverPort = getPort(serverAdress);
+				System.out.println("serverIp = "+serverIp+"\nserverPort = "+serverPort);
+				user = args[1];
+				System.out.println("Nao inseriu password. Password?");
+				pass = inSc.nextLine();
+			} else { //caso: clientId password
+				serverPort = PORT_DEFAULT;
+				serverIp = IP_DEFAULT;
+				user = args[0];
+				pass = args[1];
 			}
-			
-			//ADDRESS IP E PORTA
-			String serverIPPort = args[0];
 
-			String[] ipPort = serverIPPort.split(":");
-			serverIp= Integer.parseInt(ipPort[0]);
-			serverPort = Integer.parseInt(ipPort[1]);
 
-			System.out.println("Server IP " + serverIp);
-			System.out.println("Server PORT: " + serverPort);
 
 			//CLIENT ID
 			//ver se o user ja existe, caso n exista efetua o registo adicionar ao ficheiro dos clientes com user + pass (como args foram 2 pedir a passe agora)
 			//caso id exista, ver se a passe corresponde ao q ta no ficheiro
-			usr = args[1];
+			user = args[1];
 			//pedir aqui a pass
 
 		} else if(args.length == 3) {
+
 			//mm shit mas tendo logo a passe para comparar a priori
-			usr = args[1];
+			user = args[1];
 			pass = args[2];
 
 		} else {
@@ -56,7 +66,7 @@ public class SeiTchiz {
 
 
 		try {
-			cSoc = new Socket(Integer.toString(serverIp), serverPort);
+			cSoc = new Socket(serverIp, serverPort);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -78,7 +88,7 @@ public class SeiTchiz {
 
 		// enviar nome e pass
 		try {
-			out.writeObject(usr);
+			out.writeObject(user);
 			out.writeObject(pass);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -121,6 +131,17 @@ public class SeiTchiz {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static int getPort(String serverAdress) {
+		String[] tudo = serverAdress.split(":");
+		System.out.println(tudo);
+		return Integer.parseInt(tudo[1]);
+	}
+
+	private static String getIp(String serverAdress) {
+		String[] tudo = serverAdress.split(":");
+		return tudo[0];
 	}
 
 }
