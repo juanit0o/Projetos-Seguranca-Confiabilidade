@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 public class SeiTchizServer {
 
+	private CatalogoClientes catClientes;
+	
 	public static void main(String[] args) {
 		System.out.println("Server");
 		SeiTchizServer server = new SeiTchizServer(); //o construtor disto vai estar nesta classe ou vai haver outra para isso?
@@ -32,7 +34,7 @@ public class SeiTchizServer {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		CatalogoClientes catClientes = new CatalogoClientes();
+		catClientes = new CatalogoClientes();
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
@@ -76,11 +78,11 @@ public class SeiTchizServer {
 				
                 String user = null;
                 String password = null;
-
+                Boolean autenticou = false;
 
                 try {
-                    user = (String)inStream.readObject();
-                    password = (String)inStream.readObject();
+                    user = (String) inStream.readObject();
+                    password = (String) inStream.readObject();
                     System.out.println("Servidor: já recebi a password e o user");
                     System.out.println("Info client: "+user+":"+password);
                 }catch (ClassNotFoundException e1) {
@@ -88,6 +90,12 @@ public class SeiTchizServer {
                 }
 
                 //aqui comparar se ja existe user
+                if (catClientes.existeUser(user)) {
+					autenticou = catClientes.passCorreta(user, password);
+				} else {//adicionar à lista
+					autenticou = true;
+					catClientes.addClient(new Cliente(user, password));
+				}
                 
                 //"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro
                 //de users e passwords
@@ -99,7 +107,8 @@ public class SeiTchizServer {
                 else {
                     outStream.writeObject(new Boolean(false));
                 }
-
+                
+                
                 
                 //guardar user e password no ficheiro (criar metodo a parte para isto)
                 //ver se o ficheiro existe:  (caso ainda nao exista) criar ficheiro e adicionar o user:username:pass a uma linha

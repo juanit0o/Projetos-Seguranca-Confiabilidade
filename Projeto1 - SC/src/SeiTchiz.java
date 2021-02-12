@@ -15,8 +15,8 @@ public class SeiTchiz {
 	private static ObjectOutputStream out = null;
 
 	public static void main(String[] args) {
-		System.out.println("cliente: main");System.out.println("teste1");
-		Scanner inSc = new Scanner(System.in);System.out.println("teste2");
+		System.out.println("cliente: main");
+		Scanner inSc = new Scanner(System.in);
 		String serverIp = "";
 		int serverPort = 0;
 		String user = "";
@@ -42,9 +42,7 @@ public class SeiTchiz {
 			serverIp = getIp(args[0]);
 			serverPort = PORT_DEFAULT;
 		}
-		System.out.println("teste1");
 		System.out.println("serverIp = "+serverIp+"\nserverPort = "+serverPort);
-		System.out.println("teste2");
 		//conectar ao server
 		conectToServer(serverIp,serverPort);
 
@@ -57,17 +55,8 @@ public class SeiTchiz {
 		 * 		metodo_switch();
 		 * }
 		 */
+
 		
-		
-/*
-		// Falta enviar um ficheiro do cliente para o servidor
-		File myFile = new File("ficheirozinho.txt");
-		try {
-			out.writeObject(myFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-*/
 		try {
 			// fechar as streams
 			out.close();
@@ -118,7 +107,6 @@ public class SeiTchiz {
 
 	private static int getPort(String serverAdress) {
 		String[] tudo = serverAdress.split(":");
-		System.out.println(tudo);
 		return Integer.parseInt(tudo[1]);
 	}
 
