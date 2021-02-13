@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -81,18 +82,55 @@ public class Cliente {
 		}
 
 		follows.add(clientASeguir.getID()); // adicionar ao arraylist dos followers
-
 		userContentsToFile();
-
-		return clientASeguir.seguidoPor(this.ID);
+		clientASeguir.seguidoPor(this.ID);
+		return true;
 	}
 
-	public boolean seguidoPor(int follower) {
+	public void seguidoPor(int follower) {
 		// ADICIONAR ESTE CLIENTE A LISTA DE FOLLOWERS
 		followers.add(follower);
 		userContentsToFile();
 
+	}
+	
+	public boolean deixarDeSeguir(Cliente pessoa) {
+		//VERIFICAR SE JA DA FOLLOW A PESSOA 
+		if(!follows.contains(pessoa.getID())) {
+			return false;
+		}	
+		// REMOVER ESTE CLIENTE A LISTA DE quem da follow
+		//follows.remove(pessoa.getID());
+		
+		ArrayList<Integer> followsAux = new ArrayList<Integer>();
+		for(int i = 0; i < follows.size(); i++) {
+			if(follows.get(i) != pessoa.getID()) {
+				followsAux.add(follows.get(i));
+			}
+		}
+		follows = followsAux;
+
+		pessoa.removerFollower(this.ID);
+		userContentsToFile();
+
 		return true;
+	}
+	
+	public void removerFollower(int follower) {
+		// ADICIONAR ESTE CLIENTE A LISTA DE FOLLOWERS
+		ArrayList<Integer> followersAux = new ArrayList<Integer>();
+		for(int i = 0; i < followers.size(); i++) {
+			if(followers.get(i) != follower) {
+				followersAux.add(followers.get(i));
+			}
+		}
+		followers = followersAux;
+		userContentsToFile();
+
+	}
+	
+	public ArrayList<Integer> getFollowers (){
+		return this.followers;
 	}
 
 	// por agora ainda so preenche o ficheiro com os followers e a quem da follow

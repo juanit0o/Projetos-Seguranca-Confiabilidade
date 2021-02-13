@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SeiTchizServer {
@@ -160,14 +161,33 @@ public class SeiTchizServer {
 						//ver se o id existe, se n exisitir diz isso
 						//ver se tamos com follow nele, se n tivermos diz isso
 						//caso estivermos, tirar do manel.txt (ficheiro pessoal)
-						outStream.writeObject("You unfollowed " + splittado[1]);
+						if(currentClient.getID() == Integer.parseInt(splittado[1])) {
+							outStream.writeObject("You can't unfollow yourself");
+							System.out.println("Client " + currentClient.getID() + " tried to unfollow himself/herself");
+						}else if(catClientes.existeID(Integer.parseInt(splittado[1]))){
+							Cliente unfollowClient = catClientes.getCliente(Integer.parseInt(splittado[1]));
+							if(currentClient.deixarDeSeguir(unfollowClient)){
+								outStream.writeObject("You unfollowed " + splittado[1]);
+								System.out.println("The client "+currentClient.getID() + " unfollowed " + splittado[1]);
+							} else {
+								outStream.writeObject("You don't follow " + splittado[1]);
+								System.out.println("The client "+currentClient.getID() + " doesn't follow " + splittado[1]);
+							}
+						} else {
+							outStream.writeObject(splittado[1] + " does not exist!");
+							System.out.println("The client "+currentClient.getID() + " tried to unfollow " + splittado[1] + " but user doesn't exist");
+						}
 						break;
 						
 					case "v":
 					case "viewfollowers":
-						//ir ao ficheiro pessoal e dar print dos followers.
-						//caso esta seccao do txt pessoal tiver vazia, dizer isso
-						outStream.writeObject("Your followers are "); //tem de ir ao cliente atual e devolver os seus followers
+						ArrayList<Integer> followers = currentClient.getFollowers();
+						if(followers.isEmpty()) {
+							outStream.writeObject("You don't have followers");
+							System.out.println("The client "+currentClient.getID() + " doesn't have followers ");
+						}else {
+							outStream.writeObject("Your followers are " + followers.toString());
+						}
 						break;
 						
 					case "p":
