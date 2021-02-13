@@ -26,7 +26,7 @@ public class SeiTchiz {
 
 		if (args.length == 2) { //caso: 127.0.0.1:45500 clientId  || 127.0.0.1 clientId 
 			user = args[1];
-			System.out.println("Nao inseriu password. Password?");
+			System.out.println("You haven't inserted a password. Password?");
 			pass = inSc.nextLine();
 		} else if(args.length == 3) { //caso: 127.0.0.1:45500 clientId pwd || 127.0.0.1 clientId pwd
 			user = args[1];
