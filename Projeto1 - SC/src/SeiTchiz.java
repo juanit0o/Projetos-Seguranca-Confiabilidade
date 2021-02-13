@@ -125,7 +125,7 @@ public class SeiTchiz {
 		// verificar autenticacao
 		try {
 			Boolean autenticated = (Boolean) in.readObject();
-			System.out.println(autenticated ? "cliente autenticado XUPA" : "cliente nao autenticado");
+			System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
 			if (!autenticated) {
 				System.exit(-1);
 			}

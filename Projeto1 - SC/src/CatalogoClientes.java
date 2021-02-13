@@ -33,7 +33,7 @@ public class CatalogoClientes {
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
 					String[] aux = linha.split(":");
-					mapClientes.put(aux[0], new Cliente(aux[0], aux[1]));
+					mapClientes.put(aux[1], new Cliente(aux[1], aux[2], Integer.parseInt(aux[0])));
 				}
 				scReader.close();
 			}
@@ -44,11 +44,13 @@ public class CatalogoClientes {
 	}
 
 	public void addClient(String user, String pass) {
-		Cliente cliente = new Cliente(user,pass);
+		Cliente cliente = new Cliente(user,pass,mapClientes.size()+1);
 		mapClientes.put(user, cliente);
-		try { //adicionamos ao allUsers txt o id e pass
+
+		//Informaçao sobre o cliente no Server Files
+		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
-			bW.write(user+":"+pass);
+			bW.write(mapClientes.size()+":"+user+":"+pass);
 			bW.newLine();
 			bW.close();
 		} catch (Exception e) {
@@ -58,13 +60,13 @@ public class CatalogoClientes {
 		
 		//criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos $ mensagensPler +
 		//criar a diretoria para os personal files
-		File file = new File("..\\data\\Personal User Files");
+		File file = new File("..\\data\\Personal User Files\\" + mapClientes.size());
 
 		// tenta criar essa diretoria
 		boolean value = file.mkdirs();
 		
 		//para o ficheiro pesssoal por cliente
-		File fileCliente = new File (file.getAbsolutePath(),user +".txt");
+		File fileCliente = new File (file.getAbsolutePath(),"info.txt");
 		
 		try {
 			fileCliente.createNewFile(); //cria o ficheiro para o cliente
