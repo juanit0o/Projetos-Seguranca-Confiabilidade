@@ -128,37 +128,54 @@ public class SeiTchizServer {
 						
 					case "f":
 					case "follow":
+						//primeiro de tudo ver se o id dado existe, ver se aparece no ficheiro allUsers, se n exisitir da logo erro
+						//ver ficheiro do cliente, ver se ja tem follow do gajo, se ja la tiver diz
+						//se n tiver follow, adiciona ao arraylist (ver se é preciso ou apenas trabalhamos com os txts), adiciona ao txt na parte dos follows.
 						outStream.writeObject("You followed " + splittado[1]);
 						break;
 						
 					case "u":
 					case "unfollow":
+						//ver se o id existe, se n exisitir diz isso
+						//ver se tamos com follow nele, se n tivermos diz isso
+						//caso estivermos, tirar do manel.txt (ficheiro pessoal)
 						outStream.writeObject("You unfollowed " + splittado[1]);
 						break;
 						
 					case "v":
 					case "viewfollowers":
+						//ir ao ficheiro pessoal e dar print dos followers.
+						//caso esta seccao do txt pessoal tiver vazia, dizer isso
 						outStream.writeObject("Your followers are "); //tem de ir ao cliente atual e devolver os seus followers
 						break;
 						
 					case "p":
 					case "post":
+						//confirmar a parte de (envia foto para perfil do cliente armazenado no sv)
+						//sera apenas copiar uma foto de uma diretoria qq para o txt pessoal? como se poe uma foto num txt sequer? fica so na mm pasta (manel1.jpeg?)
+						
 						//cliente vai ter de ter um atributo com as fotos postadas (wall)
 						outStream.writeObject("You posted the photo " + splittado[1]); //tem de ir a diretoria da foto e copiar para o mural
 						break;
 					
 					case "w" :
 					case "wall":
+						//devolver os ids das n fotografias mais recentes (tem de tar ordenadas) e o nr de likes destas
+						//se houverem menos que o n dado apenas mostrar essas
+						//se n exisitirem nns dizer isso
 						outStream.writeObject("Your recent " + splittado[1] + " photos are " + "mostrarfotos"); //tem de ir a diretoria da foto e copiar para o mural
 						break;
 						
 					case "l":
 					case "like":
+						//primeiro fazemos wall x para ter os ids das fotos
+						//ir ao txt pessoal e adicionar likeFoto1 (p exemplo??), ter mais uma seccao para as fotos que gosta, entre os $$?
 						outStream.writeObject("You liked the photo with ID " + splittado[1]);
 						break;
 						
 					case "n":
 					case "newgroup":
+						//como crl vamos guardar os grupos+membros nos txts, este prob é o mm pas outras merdas p baixo glhf gg
 						outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
 						break;
 					
