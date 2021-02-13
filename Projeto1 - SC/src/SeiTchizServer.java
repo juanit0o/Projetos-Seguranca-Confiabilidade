@@ -15,7 +15,7 @@ public class SeiTchizServer {
 		System.out.println("Server");
 		SeiTchizServer server = new SeiTchizServer(); //o construtor disto vai estar nesta classe ou vai haver outra para isso?
 
-		//loop até acertarem com o tamanho ? ou fechar logo?
+		//loop atï¿½ acertarem com o tamanho ? ou fechar logo?
 		if (args.length != 1) {
 			System.out.println("Server is started by typing 'SeiTchizServer (PORT)'!");
 			System.exit(-1);
@@ -74,8 +74,8 @@ public class SeiTchizServer {
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 
-				//Método loginUser e autenticar (criar um obj da classe Cliente com esses atributos,
-				//e probs mais alguns a ser preenchidos dps lá)
+				//Mï¿½todo loginUser e autenticar (criar um obj da classe Cliente com esses atributos,
+				//e probs mais alguns a ser preenchidos dps lï¿½)
 
 				
 				String password = null;
@@ -84,7 +84,7 @@ public class SeiTchizServer {
 				try {
 					user = (String) inStream.readObject();
 					password = (String) inStream.readObject();
-					//System.out.println("Servidor: já recebi a password e o user");
+					//System.out.println("Servidor: jï¿½ recebi a password e o user");
 					//System.out.println("Info client: "+user+":"+password);
 				}catch (ClassNotFoundException e1) {
 					e1.printStackTrace();
@@ -93,15 +93,18 @@ public class SeiTchizServer {
 				//aqui comparar se ja existe user
 				if (catClientes.existeUser(user)) {
 					autenticou = catClientes.passCorreta(user, password);
-				} else {//adicionar à lista
+				} else {//adicionar ï¿½ lista
 					autenticou = true;
 					catClientes.addClient(user, password);
 				}
 
 				//"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro
 				outStream.writeObject(autenticou);
-				System.out.println(autenticou ? "Client '"+user+"' authenticated.":
-					"Client '"+user+"' not authenticated.");
+				System.out.println(autenticou ? "Client '" + user + "' authenticated." :
+					"Client '" + user + "' not authenticated.");
+
+				//GET CURRENT CLIENT
+				Cliente currentClient = catClientes.getCliente(user);
 
 
 				//guardar user e password no ficheiro (criar metodo a parte para isto)
@@ -116,7 +119,7 @@ public class SeiTchizServer {
 						e.printStackTrace();
 					}
 					
-					//TRATAR DISTO, PARA QUANDO SO MANDAMOS FOLLOW (SEM ARGS DEPOIS) DÁ OUT OF BOUNDS
+					//TRATAR DISTO, PARA QUANDO SO MANDAMOS FOLLOW (SEM ARGS DEPOIS) Dï¿½ OUT OF BOUNDS
 					String[] splittado = comando.split(" ");
 					
 					switch (splittado[0]) {
@@ -132,8 +135,20 @@ public class SeiTchizServer {
 					case "follow":
 						//primeiro de tudo ver se o id dado existe, ver se aparece no ficheiro allUsers, se n exisitir da logo erro
 						//ver ficheiro do cliente, ver se ja tem follow do gajo, se ja la tiver diz
-						//se n tiver follow, adiciona ao arraylist (ver se é preciso ou apenas trabalhamos com os txts), adiciona ao txt na parte dos follows.
-						outStream.writeObject("You followed " + splittado[1]);
+						//se n tiver follow, adiciona ao arraylist (ver se ï¿½ preciso ou apenas trabalhamos com os txts), adiciona ao txt na parte dos follows.
+
+						if(catClientes.existeID(Integer.parseInt(splittado[1]))){
+							Cliente seguirClient = catClientes.getCliente(Integer.parseInt(splittado[1]));
+							if(currentClient.seguir(seguirClient)){
+								outStream.writeObject("You followed " + splittado[1]);
+							} else {
+								outStream.writeObject("You already follow " + splittado[1]);
+							}
+						} else {
+							outStream.writeObject(splittado[1] + " does not exist!");
+						}
+
+
 						break;
 						
 					case "u":
@@ -177,7 +192,7 @@ public class SeiTchizServer {
 						
 					case "n":
 					case "newgroup":
-						//como crl vamos guardar os grupos+membros nos txts, este prob é o mm pas outras merdas p baixo glhf gg
+						//como crl vamos guardar os grupos+membros nos txts, este prob ï¿½ o mm pas outras merdas p baixo glhf gg
 						outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
 						break;
 					

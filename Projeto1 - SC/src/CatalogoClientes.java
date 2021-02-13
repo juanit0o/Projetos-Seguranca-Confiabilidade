@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class CatalogoClientes {
 
-	private HashMap<String, Cliente> mapClientes;
+	private HashMap<Integer, Cliente> mapClientes;
 	//private File file = new File("allUsers.txt"); lixo
 	
 	//Para criar a diretoria com os ficheiros do servidor
@@ -24,7 +24,7 @@ public class CatalogoClientes {
 
 	public CatalogoClientes() {		
 		
-		mapClientes = new HashMap<String, Cliente>();
+		mapClientes = new HashMap<Integer, Cliente>();
 
 		try {
 			if (!file.createNewFile()) { //true- nao existe e cria   false: nada ||| cria o ficheiro do allUsers
@@ -33,7 +33,7 @@ public class CatalogoClientes {
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
 					String[] aux = linha.split(":");
-					mapClientes.put(aux[1], new Cliente(aux[1], aux[2], Integer.parseInt(aux[0])));
+					mapClientes.put(Integer.parseInt(aux[0]), new Cliente(aux[1], aux[2], Integer.parseInt(aux[0])));
 				}
 				scReader.close();
 			}
@@ -45,7 +45,7 @@ public class CatalogoClientes {
 
 	public void addClient(String user, String pass) {
 		Cliente cliente = new Cliente(user,pass,mapClientes.size()+1);
-		mapClientes.put(user, cliente);
+		mapClientes.put(mapClientes.size()+1, cliente);
 
 		//Informaçao sobre o cliente no Server Files
 		try {
@@ -78,12 +78,45 @@ public class CatalogoClientes {
 		}
 	}
 
+	public Cliente getCliente(String user){
+		for(int i = 0; i < mapClientes.size(); ++i){
+			Cliente client = mapClientes.get(mapClientes.keySet().toArray()[i]);
+			if(client.getUser().equals(user)){
+				return client;
+			}
+		}
+		return null;	
+		//return mapClientes.get(user);
+	}
+
+	public Cliente getCliente(int id){
+		return mapClientes.get(id);
+	}
+
 	public boolean existeUser(String user) {
-		return mapClientes.get(user) != null;
+		for(int i = 0; i < mapClientes.size(); ++i){
+			Cliente client = mapClientes.get(mapClientes.keySet().toArray()[i]);
+			if(client.getUser().equals(user)){
+				return true;
+			}
+		}
+		return false;
+		//return mapClientes.get(user) != null;
+	}
+
+	public boolean existeID(int ID) {
+		return mapClientes.get(ID) != null;
 	}
 
 	public boolean passCorreta(String user, String password) {
-		return mapClientes.get(user).isPass(password);
+		for(int i = 0; i < mapClientes.size(); ++i){
+			Cliente client = mapClientes.get(mapClientes.keySet().toArray()[i]);
+			if(client.getUser().equals(user)){
+				return client.isPass(password);
+			}
+		}
+		return false;
+		//return mapClientes.get(user).isPass(password);
 	}
 
 
