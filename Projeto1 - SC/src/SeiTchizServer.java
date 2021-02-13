@@ -115,6 +115,8 @@ public class SeiTchizServer {
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
+					
+					//TRATAR DISTO, PARA QUANDO SO MANDAMOS FOLLOW (SEM ARGS DEPOIS) DÁ OUT OF BOUNDS
 					String[] splittado = comando.split(" ");
 					
 					switch (splittado[0]) {

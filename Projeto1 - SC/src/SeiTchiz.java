@@ -96,14 +96,15 @@ public class SeiTchiz {
 				}
 				return;
 
-			default:
+			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
 				try {
 					out.writeObject(comando);
 					//ver como guardar melhor
 					System.out.println(in.readObject());
 					System.out.println("\nInsert a command or type help to see commands: ");
 				} catch (IOException | ClassNotFoundException e) {
-					e.printStackTrace();
+					System.out.println("The server is now offline :(");
+					//e.printStackTrace();
 				}
 				break;
 			}
