@@ -36,7 +36,6 @@ public class Cliente {
 			while ((line = rW.readLine()) != null) {
 				if (line.equals("$")) {
 					counter++;
-					System.out.println("||" + counter + "||");
 				} else {
 					switch (counter) {
 					case 1: // para os follows

@@ -38,7 +38,6 @@ public class CatalogoClientes {
 					newClient.carregarConta();
 					mapClientes.put(Integer.parseInt(aux[0]), newClient);
 					
-					
 				}
 				scReader.close();
 			}else
@@ -77,7 +76,7 @@ public class CatalogoClientes {
 		try {
 			fileCliente.createNewFile(); //cria o ficheiro para o cliente
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileCliente, true));
-			bW.write("$\n$\n$\n$\n+\n");
+			cliente.userContentsToFile();
 			bW.close();
 		} catch (IOException e) {
 			e.printStackTrace();

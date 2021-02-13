@@ -136,19 +136,23 @@ public class SeiTchizServer {
 						//primeiro de tudo ver se o id dado existe, ver se aparece no ficheiro allUsers, se n exisitir da logo erro
 						//ver ficheiro do cliente, ver se ja tem follow do gajo, se ja la tiver diz
 						//se n tiver follow, adiciona ao arraylist (ver se � preciso ou apenas trabalhamos com os txts), adiciona ao txt na parte dos follows.
-
-						if(catClientes.existeID(Integer.parseInt(splittado[1]))){
+						
+						if(currentClient.getID() == Integer.parseInt(splittado[1])) {
+							outStream.writeObject("You can't follow yourself");
+							System.out.println("Client " + currentClient.getID() + " tried to follow himself/herself");
+						} else if(catClientes.existeID(Integer.parseInt(splittado[1]))){
 							Cliente seguirClient = catClientes.getCliente(Integer.parseInt(splittado[1]));
 							if(currentClient.seguir(seguirClient)){
 								outStream.writeObject("You followed " + splittado[1]);
+								System.out.println("The client "+currentClient.getID() + " followed " + splittado[1]);
 							} else {
 								outStream.writeObject("You already follow " + splittado[1]);
+								System.out.println("The client "+currentClient.getID() + " already follows " + splittado[1]);
 							}
 						} else {
 							outStream.writeObject(splittado[1] + " does not exist!");
+							System.out.println("The client "+currentClient.getID() + " tried to follow " + splittado[1] + " but user doesn't exist");
 						}
-
-
 						break;
 						
 					case "u":
