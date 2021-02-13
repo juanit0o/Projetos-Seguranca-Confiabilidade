@@ -28,15 +28,21 @@ public class CatalogoClientes {
 
 		try {
 			if (!file.createNewFile()) { //true- nao existe e cria   false: nada ||| cria o ficheiro do allUsers
-				System.out.println("File created: " + file.getName()); //rever
+				System.out.println("File loaded: " + file.getName());
 				Scanner scReader = new Scanner(file);
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
 					String[] aux = linha.split(":");
-					mapClientes.put(Integer.parseInt(aux[0]), new Cliente(aux[1], aux[2], Integer.parseInt(aux[0])));
+					
+					Cliente newClient = new Cliente(aux[1], aux[2], Integer.parseInt(aux[0]));
+					newClient.carregarConta();
+					mapClientes.put(Integer.parseInt(aux[0]), newClient);
+					
+					
 				}
 				scReader.close();
-			}
+			}else
+				System.out.println("File created: " + file.getName());
 		} catch (IOException e) {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
