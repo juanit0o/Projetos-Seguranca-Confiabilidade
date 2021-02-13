@@ -1,0 +1,3 @@
+joao:pass
+emanuel:pass
+joaquim:pila

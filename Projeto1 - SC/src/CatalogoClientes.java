@@ -10,16 +10,24 @@ import java.util.Scanner;
 public class CatalogoClientes {
 
 	private HashMap<String, Cliente> mapClientes;
-	private File file = new File("users.txt");
-
+	//private File file = new File("allUsers.txt"); lixo
 	
+	//Para criar a diretoria com os ficheiros do servidor
+	File fileDirectory = new File("..\\data\\Server Files");
+
+    //tenta criar esta nova diretoria caso nao exista
+	boolean value = fileDirectory.mkdirs();
+
+	//para o ficheiro allUsers dentro do Server Files com todos os users e passes
+	File file = new File (fileDirectory.getAbsolutePath(),"allUsers.txt");
+
 
 	public CatalogoClientes() {		
 		
 		mapClientes = new HashMap<String, Cliente>();
 
 		try {
-			if (!file.createNewFile()) { //true- nao existe e cria   false: nada
+			if (!file.createNewFile()) { //true- nao existe e cria   false: nada ||| cria o ficheiro do allUsers
 				System.out.println("File created: " + file.getName()); //rever
 				Scanner scReader = new Scanner(file);
 				while (scReader.hasNextLine()) {
@@ -38,7 +46,7 @@ public class CatalogoClientes {
 	public void addClient(String user, String pass) {
 		Cliente cliente = new Cliente(user,pass);
 		mapClientes.put(user, cliente);
-		try { //adicionamos ao users txt
+		try { //adicionamos ao allUsers txt o id e pass
 			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
 			bW.write(user+":"+pass);
 			bW.newLine();
@@ -49,19 +57,19 @@ public class CatalogoClientes {
 		
 		
 		//criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos $ mensagensPler +
-		  //File file = new File("/data");
-          //if (file.getParentFile() != null) {
-          //    file.getParentFile().mkdirs();
-          //}
+		//criar a diretoria para os personal files
+		File file = new File("..\\data\\Personal User Files");
 
+		// tenta criar essa diretoria
+		boolean value = file.mkdirs();
 		
-		File fileCliente = new File (user +".txt");
+		//para o ficheiro pesssoal por cliente
+		File fileCliente = new File (file.getAbsolutePath(),user +".txt");
 		
 		try {
-			fileCliente.createNewFile();
+			fileCliente.createNewFile(); //cria o ficheiro para o cliente
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileCliente, true));
 			bW.write("$\n$\n$\n$\n+\n");
-			//bW.newLine();
 			bW.close();
 		} catch (IOException e) {
 			e.printStackTrace();
