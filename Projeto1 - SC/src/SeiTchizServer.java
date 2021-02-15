@@ -46,12 +46,7 @@ public class SeiTchizServer {
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
-
-
-
-
 		//deveremos fechar aqui? ter um metodo para fechar maybe?
 		//sSoc.close();
 	}
@@ -68,7 +63,6 @@ public class SeiTchizServer {
 		}
 
 
-
 		public void run(){
 			String user = null;
 			try {
@@ -77,7 +71,6 @@ public class SeiTchizServer {
 
 				//M�todo loginUser e autenticar (criar um obj da classe Cliente com esses atributos,
 				//e probs mais alguns a ser preenchidos dps l�)
-
 				
 				String password = null;
 				Boolean autenticou = false;
@@ -96,7 +89,7 @@ public class SeiTchizServer {
 					autenticou = catClientes.passCorreta(user, password);
 				} else {//adicionar � lista
 					autenticou = true;
-					catClientes.addClient(user, password);
+					catClientes.addClient(user, password, socket);
 				}
 
 				//"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro
@@ -138,21 +131,21 @@ public class SeiTchizServer {
 						//ver ficheiro do cliente, ver se ja tem follow do gajo, se ja la tiver diz
 						//se n tiver follow, adiciona ao arraylist (ver se � preciso ou apenas trabalhamos com os txts), adiciona ao txt na parte dos follows.
 						
-						if(currentClient.getID() == Integer.parseInt(splittado[1])) {
+						if(currentClient.getUser().equals(splittado[1])) {
 							outStream.writeObject("You can't follow yourself");
-							System.out.println("Client " + currentClient.getID() + " tried to follow himself/herself");
-						} else if(catClientes.existeID(Integer.parseInt(splittado[1]))){
-							Cliente seguirClient = catClientes.getCliente(Integer.parseInt(splittado[1]));
+							System.out.println("Client " + currentClient.getUser() + " tried to follow himself/herself");
+						} else if(catClientes.existeUser(splittado[1])){ // VOLTAR A ESTA SHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIT
+							Cliente seguirClient = catClientes.getCliente(splittado[1]);
 							if(currentClient.seguir(seguirClient)){
 								outStream.writeObject("You followed " + splittado[1]);
-								System.out.println("The client "+currentClient.getID() + " followed " + splittado[1]);
+								System.out.println("The client "+currentClient.getUser() + " followed " + splittado[1]);
 							} else {
 								outStream.writeObject("You already follow " + splittado[1]);
-								System.out.println("The client "+currentClient.getID() + " already follows " + splittado[1]);
+								System.out.println("The client "+currentClient.getUser() + " already follows " + splittado[1]);
 							}
 						} else {
 							outStream.writeObject(splittado[1] + " does not exist!");
-							System.out.println("The client "+currentClient.getID() + " tried to follow " + splittado[1] + " but user doesn't exist");
+							System.out.println("The client "+currentClient.getUser() + " tried to follow " + splittado[1] + " but user doesn't exist");
 						}
 						break;
 						
@@ -161,30 +154,30 @@ public class SeiTchizServer {
 						//ver se o id existe, se n exisitir diz isso
 						//ver se tamos com follow nele, se n tivermos diz isso
 						//caso estivermos, tirar do manel.txt (ficheiro pessoal)
-						if(currentClient.getID() == Integer.parseInt(splittado[1])) {
+						if(currentClient.getUser().equals(splittado[1])) {
 							outStream.writeObject("You can't unfollow yourself");
-							System.out.println("Client " + currentClient.getID() + " tried to unfollow himself/herself");
-						}else if(catClientes.existeID(Integer.parseInt(splittado[1]))){
-							Cliente unfollowClient = catClientes.getCliente(Integer.parseInt(splittado[1]));
+							System.out.println("Client " + currentClient.getUser() + " tried to unfollow himself/herself");
+						}else if(catClientes.existeUser(splittado[1])){
+							Cliente unfollowClient = catClientes.getCliente(splittado[1]);
 							if(currentClient.deixarDeSeguir(unfollowClient)){
 								outStream.writeObject("You unfollowed " + splittado[1]);
-								System.out.println("The client "+currentClient.getID() + " unfollowed " + splittado[1]);
+								System.out.println("The client "+currentClient.getUser() + " unfollowed " + splittado[1]);
 							} else {
 								outStream.writeObject("You don't follow " + splittado[1]);
-								System.out.println("The client "+currentClient.getID() + " doesn't follow " + splittado[1]);
+								System.out.println("The client "+currentClient.getUser() + " doesn't follow " + splittado[1]);
 							}
 						} else {
 							outStream.writeObject(splittado[1] + " does not exist!");
-							System.out.println("The client "+currentClient.getID() + " tried to unfollow " + splittado[1] + " but user doesn't exist");
+							System.out.println("The client "+currentClient.getUser() + " tried to unfollow " + splittado[1] + " but user doesn't exist");
 						}
 						break;
 						
 					case "v":
 					case "viewfollowers":
-						ArrayList<Integer> followers = currentClient.getFollowers();
+						ArrayList<String> followers = currentClient.getFollowers();
 						if(followers.isEmpty()) {
 							outStream.writeObject("You don't have followers");
-							System.out.println("The client "+currentClient.getID() + " doesn't have followers ");
+							System.out.println("The client "+currentClient.getUser() + " doesn't have followers ");
 						}else {
 							outStream.writeObject("Your followers are " + followers.toString());
 						}

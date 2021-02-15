@@ -66,7 +66,7 @@ public class SeiTchiz {
 	}
 
 	private static void sendReceiveComando() {
-		//sc.useDelimiter(System.lineSeparator());
+
 		System.out.println("Available commands:\n"+"follow/f <userID>\n"+
 				"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
 				"wall/w <nPhotos>\n"+"like/l <photoId>\n"+"newGroup/n <groupID>\n"+
@@ -99,8 +99,9 @@ public class SeiTchiz {
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
 				try {
 					out.writeObject(comando);
-					//ver como guardar melhor
-					System.out.println(in.readObject());
+					String resposta = (String) in.readObject();
+					System.out.println(resposta);
+					
 					System.out.println("\nInsert a command or type help to see commands: ");
 				} catch (IOException | ClassNotFoundException e) {
 					System.out.println("The server is now offline :(");
@@ -124,10 +125,23 @@ public class SeiTchiz {
 
 		// verificar autenticacao
 		try {
-			Boolean autenticated = (Boolean) in.readObject();
-			System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
-			if (!autenticated) {
-				System.exit(-1);
+			String resposta = (String) in.readObject();
+			System.out.println(resposta);
+			if(resposta.equals("What is your name?")) {
+				out.writeObject(inSc.nextLine());
+				System.out.println((String) in.readObject());
+				Boolean autenticated = (Boolean) in.readObject();
+				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
+				if (!autenticated) {
+					System.exit(-1);
+				}
+				
+			}else {
+				Boolean autenticated = Boolean.parseBoolean(resposta);
+				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
+				if (!autenticated) {
+					System.exit(-1);
+				}
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();

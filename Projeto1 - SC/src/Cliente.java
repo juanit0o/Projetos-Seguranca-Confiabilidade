@@ -10,26 +10,24 @@ import java.io.IOException;
 
 public class Cliente {
 
-	private int ID;
+	private String nome;
 	private String user;
 	private String pass;
-	private ArrayList<Integer> followers; // TODO: uma hipotese
-	private ArrayList<Integer> follows; // TODO: uma hipotese
+	private ArrayList<String> followers; // TODO: uma hipotese
+	private ArrayList<String> follows; // TODO: uma hipotese
 
-	public Cliente(String u, String p, int id) {
-		this.ID = id;
+	public Cliente(String u, String p, String nome) {
+		this.nome = nome;
 		this.user = u;
 		this.pass = p;
-		this.followers = new ArrayList<Integer>();
-		this.follows = new ArrayList<Integer>();
-
-		// TODO CARREGAR CONTEUDO DO FICHEIRO para guar
+		this.followers = new ArrayList<String>();
+		this.follows = new ArrayList<String>();
 	}
 
 	// carregar os seus followers,quem segue....
 	public void carregarConta() {
 		// pegar no seu ficheiro e preencher os array lists
-		File fileUser = new File("..\\data\\Personal User Files\\" + this.ID + "\\info.txt");
+		File fileUser = new File("..\\data\\Personal User Files\\" + this.user + "\\info.txt");
 		try {
 			BufferedReader rW = new BufferedReader(new FileReader(fileUser));
 			String line;
@@ -40,10 +38,10 @@ public class Cliente {
 				} else {
 					switch (counter) {
 					case 1: // para os follows
-						follows.add(Integer.valueOf(line));
+						follows.add(line);
 						break;
 					case 2: // para os followers
-						followers.add(Integer.valueOf(line));
+						followers.add(line);
 						break;
 					default:
 						System.out.println("Error beep bop");
@@ -69,25 +67,25 @@ public class Cliente {
 		return this.user;
 	}
 
-	public int getID() {
-		return this.ID;
+	public String getName() {
+		return this.nome;
 	}
 
 	public boolean seguir(Cliente clientASeguir) {
 
 		// verificar se o cliente ja segue essa pessoa (parte da pessoa exisitr ou nao
 		// feito no sv - existeId)
-		if (follows.contains(clientASeguir.getID())) {
+		if (follows.contains(clientASeguir.getUser())) {
 			return false;
 		}
 
-		follows.add(clientASeguir.getID()); // adicionar ao arraylist dos followers
+		follows.add(clientASeguir.getUser()); // adicionar ao arraylist dos followers
 		userContentsToFile();
-		clientASeguir.seguidoPor(this.ID);
+		clientASeguir.seguidoPor(this.user);
 		return true;
 	}
 
-	public void seguidoPor(int follower) {
+	public void seguidoPor(String follower) {
 		// ADICIONAR ESTE CLIENTE A LISTA DE FOLLOWERS
 		followers.add(follower);
 		userContentsToFile();
@@ -96,29 +94,29 @@ public class Cliente {
 	
 	public boolean deixarDeSeguir(Cliente pessoa) {
 		//VERIFICAR SE JA DA FOLLOW A PESSOA 
-		if(!follows.contains(pessoa.getID())) {
+		if(!follows.contains(pessoa.getUser())) {
 			return false;
 		}	
 		// REMOVER ESTE CLIENTE A LISTA DE quem da follow
 		//follows.remove(pessoa.getID());
 		
-		ArrayList<Integer> followsAux = new ArrayList<Integer>();
+		ArrayList<String> followsAux = new ArrayList<String>();
 		for(int i = 0; i < follows.size(); i++) {
-			if(follows.get(i) != pessoa.getID()) {
+			if(follows.get(i) != pessoa.getUser()) {
 				followsAux.add(follows.get(i));
 			}
 		}
 		follows = followsAux;
 
-		pessoa.removerFollower(this.ID);
+		pessoa.removerFollower(this.user);
 		userContentsToFile();
 
 		return true;
 	}
 	
-	public void removerFollower(int follower) {
+	public void removerFollower(String follower) {
 		// ADICIONAR ESTE CLIENTE A LISTA DE FOLLOWERS
-		ArrayList<Integer> followersAux = new ArrayList<Integer>();
+		ArrayList<String> followersAux = new ArrayList<String>();
 		for(int i = 0; i < followers.size(); i++) {
 			if(followers.get(i) != follower) {
 				followersAux.add(followers.get(i));
@@ -129,27 +127,27 @@ public class Cliente {
 
 	}
 	
-	public ArrayList<Integer> getFollowers (){
+	public ArrayList<String> getFollowers (){
 		return this.followers;
 	}
 
 	// por agora ainda so preenche o ficheiro com os followers e a quem da follow
 	public void userContentsToFile() {
 
-		File fileUser = new File("..\\data\\Personal User Files\\" + this.ID + "\\info.txt"); // POR NO SITIO DOS
+		File fileUser = new File("..\\data\\Personal User Files\\" + this.user + "\\info.txt"); // POR NO SITIO DOS
 																								// FOLLOWERS
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow
 			bW.write("$\n");
 			for (int i = 0; i < follows.size(); i++) {
-				bW.write(String.valueOf(follows.get(i)));
+				bW.write(follows.get(i));
 				bW.newLine();
 			}
 			// seccao de followers
 			bW.write("$\n");
 			for (int i = 0; i < followers.size(); i++) {
-				bW.write(String.valueOf(followers.get(i)));
+				bW.write(followers.get(i));
 				bW.newLine();
 			}
 			bW.close();
