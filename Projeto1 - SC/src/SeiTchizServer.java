@@ -1,12 +1,23 @@
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
 
 public class SeiTchizServer {
 
@@ -93,7 +104,7 @@ public class SeiTchizServer {
 				}
 
 				//"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro
-				outStream.writeObject(autenticou);
+				outStream.writeObject(String.valueOf(autenticou));
 				System.out.println(autenticou ? "Client '" + user + "' authenticated." :
 					"Client '" + user + "' not authenticated.");
 
@@ -108,7 +119,8 @@ public class SeiTchizServer {
 				while(true) {
 					String comando = "";
 					try {
-						comando = (String) inStream.readObject();
+						 //comando = (String) inStream.readObject(); //TA A RECEBER MAL PARA O COMANDO DA PHOTO (PHOTO + PATH)
+						System.out.println((String) inStream.readObject());
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
@@ -134,7 +146,7 @@ public class SeiTchizServer {
 						if(currentClient.getUser().equals(splittado[1])) {
 							outStream.writeObject("You can't follow yourself");
 							System.out.println("Client " + currentClient.getUser() + " tried to follow himself/herself");
-						} else if(catClientes.existeUser(splittado[1])){ // VOLTAR A ESTA SHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIT
+						} else if(catClientes.existeUser(splittado[1])){ 
 							Cliente seguirClient = catClientes.getCliente(splittado[1]);
 							if(currentClient.seguir(seguirClient)){
 								outStream.writeObject("You followed " + splittado[1]);
@@ -188,8 +200,23 @@ public class SeiTchizServer {
 						//confirmar a parte de (envia foto para perfil do cliente armazenado no sv)
 						//sera apenas copiar uma foto de uma diretoria qq para o txt pessoal? como se poe uma foto num txt sequer? fica so na mm pasta (manel1.jpeg?)
 						
+						//post recebe o path?/¿ CONFIRMAR DAQUI PARA BAIXO ESTA MAL
+						byte[] photoBytes;
+						try {
+							photoBytes = (byte[]) inStream.readObject();
+							InputStream is = new ByteArrayInputStream(photoBytes);
+					        BufferedImage newBi = ImageIO.read(is);
+					        
+					        Path caminhoDestino =  Paths.get("..\\");
+					        ImageIO.write(newBi, "png", caminhoDestino.toFile());
+						} catch (ClassNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						
 						//cliente vai ter de ter um atributo com as fotos postadas (wall)
-						outStream.writeObject("You posted the photo " + splittado[1]); //tem de ir a diretoria da foto e copiar para o mural
+						outStream.writeObject("You posted the photo in" + splittado[1]); //tem de ir a diretoria da foto e copiar para o mural
 						break;
 					
 					case "w" :

@@ -76,22 +76,18 @@ public class CatalogoClientes {
 
 			fileCliente.createNewFile(); // cria o ficheiro para o cliente
 			cliente.userContentsToFile();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/*
-	public Cliente getCliente(String user) {
-		for (int i = 0; i < mapClientes.size(); ++i) {
-			Cliente client = mapClientes.get(mapClientes.keySet().toArray()[i]);
-			if (client.getUser().equals(user)) {
-				return client;
-			}
-		}
-		return null;
-	}*/
+	 * public Cliente getCliente(String user) { for (int i = 0; i <
+	 * mapClientes.size(); ++i) { Cliente client =
+	 * mapClientes.get(mapClientes.keySet().toArray()[i]); if
+	 * (client.getUser().equals(user)) { return client; } } return null; }
+	 */
 
 	public Cliente getCliente(String username) {
 		return mapClientes.get(username);
@@ -100,7 +96,6 @@ public class CatalogoClientes {
 	public boolean existeUser(String user) {
 		return mapClientes.get(user) != null;
 	}
-
 
 	public boolean passCorreta(String user, String password) {
 		return mapClientes.get(user).isPass(password);

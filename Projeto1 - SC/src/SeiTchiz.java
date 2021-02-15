@@ -2,10 +2,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
 
 public class SeiTchiz {
 	private static Socket cSoc = null;
@@ -75,8 +80,8 @@ public class SeiTchiz {
 				"history/h <groupID>\n"+"help\n"+"exit\n");
 		System.out.println("Insert a command or type help to see commands: ");
 		while(true) {
-			String comando = inSc.nextLine();
-			switch (comando) {
+			String[] comando = inSc.nextLine().split(" "); //p pegar o comando (cena da foto leva o path)
+			switch (comando[0]) {
 			case "help":
 				System.out.println("Available commands:\n"+"follow/f <userID>\n"+
 						"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
@@ -96,6 +101,25 @@ public class SeiTchiz {
 				}
 				return;
 
+			case "post":
+				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
+				Path caminho =  Paths.get(comando[1]);
+				BufferedImage bi;
+				try {
+					bi = ImageIO.read(caminho.toFile());
+					// convert BufferedImage to byte[]
+			        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			        ImageIO.write(bi, "png", baos);
+			        byte[] bytes = baos.toByteArray();
+			        out.writeObject("post " + bytes.toString()); //envia photo em bytes NAO FUNCIONAAAAAA <-------------------
+			        
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		        
+				break;
+				
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
 				try {
 					out.writeObject(comando);
@@ -119,22 +143,24 @@ public class SeiTchiz {
 			System.exit(-1);
 		}
 
-		System.out.println("cliente enviou nome e pass");
+		System.out.println("Cliente enviou nome e pass");
 
 		// verificar autenticacao
 		try {
 			String resposta = (String) in.readObject();
-			System.out.println(resposta);
+			
 			if(resposta.equals("What is your name?")) {
+				System.out.println(resposta);
 				out.writeObject(inSc.nextLine());
-				Boolean autenticated = (Boolean) in.readObject();
+				Boolean autenticated = in.readObject().equals("true"); //converter string p boolean
 				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
 				if (!autenticated) {
 					System.exit(-1);
 				}
 				
 			}else {
-				Boolean autenticated = Boolean.parseBoolean(resposta);
+				//Boolean autenticated = Boolean.parseBoolean(resposta);
+				Boolean autenticated = (resposta.equals("true"));
 				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
 				if (!autenticated) {
 					System.exit(-1);
