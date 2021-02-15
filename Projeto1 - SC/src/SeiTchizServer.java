@@ -89,7 +89,7 @@ public class SeiTchizServer {
 					autenticou = catClientes.passCorreta(user, password);
 				} else {//adicionar � lista
 					autenticou = true;
-					catClientes.addClient(user, password, socket);
+					catClientes.addClient(user, password, outStream, inStream);
 				}
 
 				//"autenticar" utilizador (vai ser diferente) = ver se existe no ficheiro

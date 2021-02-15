@@ -50,11 +50,9 @@ public class CatalogoClientes {
 		}
 	}
 
-	public void addClient(String user, String pass, Socket socket) {
+	public void addClient(String user, String pass, ObjectOutputStream outStream, ObjectInputStream inStream) {
 
 		try {
-			ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-			ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 			outStream.writeObject("What is your name?");
 			String name = (String) inStream.readObject();
 			Cliente cliente = new Cliente(user, pass, name);

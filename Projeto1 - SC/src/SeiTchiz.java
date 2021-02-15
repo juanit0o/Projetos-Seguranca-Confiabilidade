@@ -99,9 +99,7 @@ public class SeiTchiz {
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
 				try {
 					out.writeObject(comando);
-					String resposta = (String) in.readObject();
-					System.out.println(resposta);
-					
+					System.out.println((String) in.readObject());
 					System.out.println("\nInsert a command or type help to see commands: ");
 				} catch (IOException | ClassNotFoundException e) {
 					System.out.println("The server is now offline :(");
@@ -129,7 +127,6 @@ public class SeiTchiz {
 			System.out.println(resposta);
 			if(resposta.equals("What is your name?")) {
 				out.writeObject(inSc.nextLine());
-				System.out.println((String) in.readObject());
 				Boolean autenticated = (Boolean) in.readObject();
 				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
 				if (!autenticated) {
