@@ -13,7 +13,6 @@ import java.util.Scanner;
 public class CatalogoClientes {
 
 	private HashMap<String, Cliente> mapClientes;
-	// private File file = new File("allUsers.txt"); lixo
 
 	// Para criar a diretoria com os ficheiros do servidor
 	File fileDirectory = new File("..\\data\\Server Files");
@@ -30,7 +29,7 @@ public class CatalogoClientes {
 
 		try {
 			if (!file.createNewFile()) { // true- nao existe e cria false: nada ||| cria o ficheiro do allUsers
-				System.out.println("File loaded: " + file.getName());
+				System.out.println("User file loaded: " + file.getName());
 				Scanner scReader = new Scanner(file);
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
@@ -42,8 +41,11 @@ public class CatalogoClientes {
 
 				}
 				scReader.close();
-			} else
+			} else {
 				System.out.println("File created: " + file.getName());
+			}
+				
+				
 		} catch (IOException e) {
 			System.out.println("An error occurred.");
 			e.printStackTrace();

@@ -13,8 +13,9 @@ public class Cliente {
 	private String nome;
 	private String user;
 	private String pass;
-	private ArrayList<String> followers; // TODO: uma hipotese
-	private ArrayList<String> follows; // TODO: uma hipotese
+	private ArrayList<String> followers;
+	private ArrayList<String> follows;
+	private ArrayList<String> grupos; 
 
 	public Cliente(String u, String p, String nome) {
 		this.nome = nome;
@@ -22,6 +23,7 @@ public class Cliente {
 		this.pass = p;
 		this.followers = new ArrayList<String>();
 		this.follows = new ArrayList<String>();
+		this.grupos = new ArrayList<String>();
 	}
 
 	// carregar os seus followers,quem segue....
@@ -42,6 +44,9 @@ public class Cliente {
 						break;
 					case 2: // para os followers
 						followers.add(line);
+						break;
+					case 3:
+						grupos.add(line);
 						break;
 					default:
 						System.out.println("Error beep bop");
@@ -127,6 +132,11 @@ public class Cliente {
 
 	}
 	
+	public void entrarEmGrupo(String grupoID) {
+		grupos.add(grupoID);
+		userContentsToFile();
+	}
+	
 	public ArrayList<String> getFollowers (){
 		return this.followers;
 	}
@@ -148,6 +158,12 @@ public class Cliente {
 			bW.write("$\n");
 			for (int i = 0; i < followers.size(); i++) {
 				bW.write(followers.get(i));
+				bW.newLine();
+			}
+			//seccao de grupos a que pertence
+			bW.write("$\n");
+			for (int i = 0; i < grupos.size(); i++) {
+				bW.write(grupos.get(i));
 				bW.newLine();
 			}
 			bW.close();

@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 public class SeiTchizServer {
 
 	private CatalogoClientes catClientes;
+	private CatalogoGrupos catGrupos;
 
 	public static void main(String[] args) {
 		System.out.println("Server");
@@ -50,6 +51,7 @@ public class SeiTchizServer {
 			System.exit(-1);
 		}
 		catClientes = new CatalogoClientes();
+		catGrupos = new CatalogoGrupos(catClientes);
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
@@ -208,7 +210,7 @@ public class SeiTchizServer {
 						//photomanel0.png
 
 						File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
-						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser() + "_"+currentClient.nrOfPhotos() +".txt");
+						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser() + "_"+currentClient.nrOfPhotos() +".jpg");
 						//fileName.createNewFile();
 
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
@@ -219,22 +221,14 @@ public class SeiTchizServer {
 							Long dimensao = (Long) inStream.readObject();
 							int x = 0;
 							int temp = dimensao.intValue();
-
-							//String y = (String) inStream.readObject();
-
-							inStream.read(buffer);
-							System.out.println(buffer);
-							photoRecebida.write(buffer, 0, 1024);
-
-							/*
+							
 							while(temp > 0) {
 								x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
-								//x = inStream.read((byte[]) inStream.readObject(), 0, temp >= 1024 ? 1024 : temp);
 								photoRecebida.write(buffer, 0, x);
 								temp -=x;
 							}
-							*/
-
+							
+							
 							outStream.writeObject("File was submitted with success!");
 
 							photoRecebida.close();
@@ -246,7 +240,7 @@ public class SeiTchizServer {
 						}
 						
 						//cliente vai ter de ter um atributo com as fotos postadas (wall)
-						outStream.writeObject("You posted the photo in" + splittado[1]); //tem de ir a diretoria da foto e copiar para o mural
+						outStream.writeObject("You posted the photo in" + photoFolder.getAbsolutePath()); //tem de ir a diretoria da foto e copiar para o mural
 						break;
 					
 					case "w" :
@@ -267,6 +261,11 @@ public class SeiTchizServer {
 					case "n":
 					case "newgroup":
 						//como crl vamos guardar os grupos+membros nos txts, este prob � o mm pas outras merdas p baixo glhf gg
+						if(splittado.length > 2) {
+							outStream.writeObject("Invalid GroupID, it cannot have spaces. Please try again");
+						}
+						catGrupos.addGrupo(splittado[1], currentClient);
+						
 						outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
 						break;
 					

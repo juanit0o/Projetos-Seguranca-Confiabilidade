@@ -104,7 +104,7 @@ public class SeiTchiz {
 					//enviar comando
 					 outObj.writeObject("post");
 
-					 String photoPath = comando[1];
+					 String photoPath = comando[1]; //path para onde se encontra a fotografia
 					 for(int i = 2; i < comando.length; ++i){
 						photoPath += " " + comando[i];
 					 }
@@ -116,11 +116,10 @@ public class SeiTchiz {
 					 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 					 
 					 int x = 0;
-					 int bitslidos = part.read(buffer);
-					outObj.write(buffer);
-					 //while((x = part.read(buffer, 0, 1024)) > 0) {
-						 //outObj.write(buffer, 0, x);
-					 //}
+					 
+					 while((x = part.read(buffer)) > 0) {
+						 outObj.write(buffer, 0, x);
+					 }
 					 System.out.println((String) inObj.readObject());
 					 part.close();
 			        
