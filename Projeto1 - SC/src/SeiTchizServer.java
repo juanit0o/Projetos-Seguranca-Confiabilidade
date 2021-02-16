@@ -209,8 +209,8 @@ public class SeiTchizServer {
 
 						File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
 						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser() + "_"+currentClient.nrOfPhotos() +".txt");
-						fileName.createNewFile();
-						
+						//fileName.createNewFile();
+
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 						
 						byte[] buffer = new byte[1024];
@@ -219,12 +219,24 @@ public class SeiTchizServer {
 							Long dimensao = (Long) inStream.readObject();
 							int x = 0;
 							int temp = dimensao.intValue();
-							
+
+							//String y = (String) inStream.readObject();
+
+							inStream.read(buffer);
+							System.out.println(buffer);
+							photoRecebida.write(buffer, 0, 1024);
+
+							/*
 							while(temp > 0) {
-								x = inStream.read(buffer, 0, temp >= 1024 ? 1024:temp);
+								x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
+								//x = inStream.read((byte[]) inStream.readObject(), 0, temp >= 1024 ? 1024 : temp);
 								photoRecebida.write(buffer, 0, x);
 								temp -=x;
 							}
+							*/
+
+							outStream.writeObject("File was submitted with success!");
+
 							photoRecebida.close();
 							
 							System.out.println("Fim da foto");

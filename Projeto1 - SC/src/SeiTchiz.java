@@ -2,25 +2,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.io.*;
-
-import javax.imageio.ImageIO;
 
 public class SeiTchiz {
 	private static Socket cSoc = null;
 	private static final int PORT_DEFAULT = 45678;
 
-	private static ObjectInputStream in = null;
-	private static ObjectOutputStream out = null;
+	private static ObjectInputStream inObj = null;
+	private static ObjectOutputStream outObj = null;
 
 	private static final Scanner inSc = new Scanner(System.in);
 
@@ -64,8 +57,8 @@ public class SeiTchiz {
 
 		// fechar tudo
 		try {
-			out.close();
-			in.close();
+			outObj.close();
+			inObj.close();
 			inSc.close();
 			cSoc.close();
 		} catch (IOException e) {
@@ -98,8 +91,8 @@ public class SeiTchiz {
 			case "quit":
 			case "exit":
 				try {
-					out.writeObject(output);
-					System.out.println((String) in.readObject());
+					outObj.writeObject(output);
+					System.out.println((String) inObj.readObject());
 				} catch (IOException | ClassNotFoundException e1) {
 					e1.printStackTrace();
 				}
@@ -109,23 +102,27 @@ public class SeiTchiz {
 				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
 				try {
 					//enviar comando
-					 out.writeObject("post");
-					 
+					 outObj.writeObject("post");
+
 					 String photoPath = comando[1];
+					 for(int i = 2; i < comando.length; ++i){
+						photoPath += " " + comando[i];
+					 }
 					 File myPhoto = new File(photoPath);
 					 Long tamanho = (Long) myPhoto.length();
 					 
 					 byte[] buffer = new byte[1024];
-					 out.writeObject(tamanho);
+					 outObj.writeObject(tamanho);
 					 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 					 
 					 int x = 0;
-					 
-					 while((x = part.read(buffer)) > 0) {
-						 out.write(buffer, 0, x);
-					 }
+					 int bitslidos = part.read(buffer);
+					outObj.write(buffer);
+					 //while((x = part.read(buffer, 0, 1024)) > 0) {
+						 //outObj.write(buffer, 0, x);
+					 //}
+					 System.out.println((String) inObj.readObject());
 					 part.close();
-					 System.out.println((String) in.readObject());
 			        
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -136,8 +133,8 @@ public class SeiTchiz {
 				
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
 				try {
-					out.writeObject(output);
-					System.out.println((String) in.readObject());
+					outObj.writeObject(output);
+					System.out.println((String) inObj.readObject());
 					System.out.println("\nInsert a command or type help to see commands: ");
 				} catch (IOException | ClassNotFoundException e) {
 					System.out.println("The server is now offline :(");
@@ -150,8 +147,8 @@ public class SeiTchiz {
 
 	private static void autenticacao(String user, String pass) {
 		try {
-			out.writeObject(user);
-			out.writeObject(pass);
+			outObj.writeObject(user);
+			outObj.writeObject(pass);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -161,12 +158,12 @@ public class SeiTchiz {
 
 		// verificar autenticacao
 		try {
-			String resposta = (String) in.readObject();
+			String resposta = (String) inObj.readObject();
 			
 			if(resposta.equals("What is your name?")) {
 				System.out.println(resposta);
-				out.writeObject(inSc.nextLine());
-				Boolean autenticated = in.readObject().equals("true"); //converter string p boolean
+				outObj.writeObject(inSc.nextLine());
+				Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
 				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
 				if (!autenticated) {
 					System.exit(-1);
@@ -190,8 +187,8 @@ public class SeiTchiz {
 	private static void conectToServer(String ip, int port) {
 		try {
 			cSoc = new Socket(ip,port);
-			in = new ObjectInputStream(cSoc.getInputStream());
-			out = new ObjectOutputStream(cSoc.getOutputStream());
+			outObj = new ObjectOutputStream(cSoc.getOutputStream());
+			inObj = new ObjectInputStream(cSoc.getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
