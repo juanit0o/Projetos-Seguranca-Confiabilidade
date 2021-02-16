@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 
@@ -206,7 +207,7 @@ public class SeiTchizServer {
 						//FALTA POR A FOTOGRAFIA NA PASTA CERTA, limitar o tipo de ficheiros a jpg, png, 
 						//photomanel0.png
 						String fileName = "photo"+currentClient.getUser()+currentClient.nrOfPhotos() +".txt";
-						BufferedOutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
+						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 						
 						byte[] buffer = new byte[1024];
 						
@@ -216,7 +217,7 @@ public class SeiTchizServer {
 							int temp = dimensao.intValue();
 							
 							while(temp > 0) {
-								x = inStream.read(buffer, 0, temp > 1024 ? 1024:temp);
+								x = inStream.read(buffer, 0, temp >= 1024 ? 1024:temp);
 								photoRecebida.write(buffer, 0, x);
 								temp -=x;
 							}

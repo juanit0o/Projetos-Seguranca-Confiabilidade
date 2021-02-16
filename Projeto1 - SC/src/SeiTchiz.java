@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 
@@ -113,11 +114,11 @@ public class SeiTchiz {
 					 
 					 byte[] buffer = new byte[1024];
 					 out.writeObject(tamanho);
-					 BufferedInputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+					 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 					 
 					 int x = 0;
 					 
-					 while((x = part.read(buffer, 0, 1024)) > 0) {
+					 while((x = part.read(buffer)) > 0) {
 						 out.write(buffer, 0, x);
 					 }
 					 part.close();
