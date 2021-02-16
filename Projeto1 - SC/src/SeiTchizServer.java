@@ -206,7 +206,11 @@ public class SeiTchizServer {
 						
 						//FALTA POR A FOTOGRAFIA NA PASTA CERTA, limitar o tipo de ficheiros a jpg, png, 
 						//photomanel0.png
-						String fileName = "photo"+currentClient.getUser()+currentClient.nrOfPhotos() +".txt";
+
+						File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
+						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser() + "_"+currentClient.nrOfPhotos() +".txt");
+						fileName.createNewFile();
+						
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 						
 						byte[] buffer = new byte[1024];

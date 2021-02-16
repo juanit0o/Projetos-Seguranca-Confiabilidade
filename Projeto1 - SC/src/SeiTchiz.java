@@ -104,10 +104,13 @@ public class SeiTchiz {
 					e1.printStackTrace();
 				}
 				return;
-
+			case "p":
 			case "post":
 				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
 				try {
+					//enviar comando
+					 out.writeObject("post");
+					 
 					 String photoPath = comando[1];
 					 File myPhoto = new File(photoPath);
 					 Long tamanho = (Long) myPhoto.length();
@@ -122,9 +125,9 @@ public class SeiTchiz {
 						 out.write(buffer, 0, x);
 					 }
 					 part.close();
-					 
+					 System.out.println((String) in.readObject());
 			        
-				} catch (IOException e1) {
+				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}

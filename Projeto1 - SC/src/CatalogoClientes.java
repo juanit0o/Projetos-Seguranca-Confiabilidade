@@ -66,13 +66,15 @@ public class CatalogoClientes {
 			// criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos
 			// $ mensagensPler +
 			// criar a diretoria para os personal files
-			File file = new File("..\\data\\Personal User Files\\" + user);
+			File clientFolder = new File("..\\data\\Personal User Files\\" + user);
+			File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
 
 			// tenta criar essa diretoria
-			boolean value = file.mkdirs();
+			clientFolder.mkdirs();
+			photoFolder.mkdirs();
 
 			// para o ficheiro pesssoal por cliente
-			File fileCliente = new File(file.getAbsolutePath(), "info.txt");
+			File fileCliente = new File(clientFolder.getAbsolutePath(), "info.txt");
 
 			fileCliente.createNewFile(); // cria o ficheiro para o cliente
 			cliente.userContentsToFile();
