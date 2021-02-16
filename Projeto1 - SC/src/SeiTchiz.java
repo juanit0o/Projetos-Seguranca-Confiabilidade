@@ -82,7 +82,8 @@ public class SeiTchiz {
 				"history/h <groupID>\n"+"help\n"+"exit\n");
 		System.out.println("Insert a command or type help to see commands: ");
 		while(true) {
-			String[] comando = inSc.nextLine().split(" "); //p pegar o comando (cena da foto leva o path)
+			String output = inSc.nextLine();
+			String[] comando = output.split(" "); //p pegar o comando (cena da foto leva o path)
 			switch (comando[0]) {
 			case "help":
 				System.out.println("Available commands:\n"+"follow/f <userID>\n"+
@@ -96,7 +97,7 @@ public class SeiTchiz {
 			case "quit":
 			case "exit":
 				try {
-					out.writeObject(comando);
+					out.writeObject(output);
 					System.out.println((String) in.readObject());
 				} catch (IOException | ClassNotFoundException e1) {
 					e1.printStackTrace();
@@ -131,7 +132,7 @@ public class SeiTchiz {
 				
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
 				try {
-					out.writeObject(comando);
+					out.writeObject(output);
 					System.out.println((String) in.readObject());
 					System.out.println("\nInsert a command or type help to see commands: ");
 				} catch (IOException | ClassNotFoundException e) {

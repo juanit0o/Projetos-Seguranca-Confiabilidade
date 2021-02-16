@@ -119,10 +119,11 @@ public class SeiTchizServer {
 				//caso o ficheiro ja exista, dar append a user:username:pass a uma linha
 				//
 				while(true) {
-					String comando = "";
+					String comando = null;
 					try {
-						 //comando = (String) inStream.readObject(); //TA A RECEBER MAL PARA O COMANDO DA PHOTO (PHOTO + PATH)
-						System.out.println((String) inStream.readObject());
+						//System.out.println(inStream.readObject());
+						comando = (String) inStream.readObject(); //TA A RECEBER MAL PARA O COMANDO DA PHOTO (PHOTO + PATH)
+						System.out.println(comando);
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
