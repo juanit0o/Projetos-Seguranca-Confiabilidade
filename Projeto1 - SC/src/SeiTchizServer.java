@@ -1,10 +1,12 @@
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -200,20 +202,30 @@ public class SeiTchizServer {
 						//confirmar a parte de (envia foto para perfil do cliente armazenado no sv)
 						//sera apenas copiar uma foto de uma diretoria qq para o txt pessoal? como se poe uma foto num txt sequer? fica so na mm pasta (manel1.jpeg?)
 						
-						//post recebe o path?/¿ CONFIRMAR DAQUI PARA BAIXO ESTA MAL
-						byte[] photoBytes;
+						//FALTA POR A FOTOGRAFIA NA PASTA CERTA, limitar o tipo de ficheiros a jpg, png, 
+						//photomanel0.png
+						String fileName = "photo"+currentClient.getUser()+currentClient.nrOfPhotos() +".txt";
+						BufferedOutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
+						
+						byte[] buffer = new byte[1024];
+						
 						try {
-							photoBytes = (byte[]) inStream.readObject();
-							InputStream is = new ByteArrayInputStream(photoBytes);
-					        BufferedImage newBi = ImageIO.read(is);
-					        
-					        Path caminhoDestino =  Paths.get("..\\");
-					        ImageIO.write(newBi, "png", caminhoDestino.toFile());
+							Long dimensao = (Long) inStream.readObject();
+							int x = 0;
+							int temp = dimensao.intValue();
+							
+							while(temp > 0) {
+								x = inStream.read(buffer, 0, temp > 1024 ? 1024:temp);
+								photoRecebida.write(buffer, 0, x);
+								temp -=x;
+							}
+							photoRecebida.close();
+							
+							System.out.println("Fim da foto");
 						} catch (ClassNotFoundException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
 						
 						//cliente vai ter de ter um atributo com as fotos postadas (wall)
 						outStream.writeObject("You posted the photo in" + splittado[1]); //tem de ir a diretoria da foto e copiar para o mural

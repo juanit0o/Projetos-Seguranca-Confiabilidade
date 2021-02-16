@@ -5,8 +5,10 @@ import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -103,15 +105,22 @@ public class SeiTchiz {
 
 			case "post":
 				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
-				Path caminho =  Paths.get(comando[1]);
-				BufferedImage bi;
 				try {
-					bi = ImageIO.read(caminho.toFile());
-					// convert BufferedImage to byte[]
-			        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			        ImageIO.write(bi, "png", baos);
-			        byte[] bytes = baos.toByteArray();
-			        out.writeObject("post " + bytes.toString()); //envia photo em bytes NAO FUNCIONAAAAAA <-------------------
+					 String photoPath = comando[1];
+					 File myPhoto = new File(photoPath);
+					 Long tamanho = (Long) myPhoto.length();
+					 
+					 byte[] buffer = new byte[1024];
+					 out.writeObject(tamanho);
+					 BufferedInputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+					 
+					 int x = 0;
+					 
+					 while((x = part.read(buffer, 0, 1024)) > 0) {
+						 out.write(buffer, 0, x);
+					 }
+					 part.close();
+					 
 			        
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block

@@ -156,4 +156,14 @@ public class Cliente {
 		}
 	}
 
+	public int nrOfPhotos() {
+		//percorrer a pasta 
+		int nrPhotos = 0;
+		File photoFolder = new File("..\\data\\Personal User Files\\"+ this.user + "\\Photos");
+		nrPhotos = photoFolder.list().length;
+		System.out.println("nr photos na pasta: " + nrPhotos);
+		
+		return nrPhotos/2;
+	}
+
 }
