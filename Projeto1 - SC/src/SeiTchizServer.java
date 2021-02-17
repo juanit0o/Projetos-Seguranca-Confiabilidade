@@ -419,9 +419,6 @@ public class SeiTchizServer {
 							//LER AS MENSAGEM DE GRUPOID - splittado[1]
 							//QUE NAO TENHA LIDO AINDA (AINDA APARECE O NOME POR LER NO FICHEIRO)
 
-
-							//SE NAO TIVER MENSAGEM; MANDAR INFO
-
 							//ARRAYLIST - SE VAZIO
 							//USER: mensagens
 							ArrayList<String> mensagens = catGrupos.getMensagensPorLer(splittado[1], currentClient);
@@ -436,18 +433,43 @@ public class SeiTchizServer {
 									output += mensagens.get(i);
 								}
 								outStream.writeObject(output);
-
 							}
 
-
-							//mostrar as msgs que recebeu da caixa
 						}
 						break;
 						
 					case "h":
 					case "history":
-						outStream.writeObject("The messages from thr group with ID " + splittado[1] + " you have already read and are in your history are " + "msgshistorico"); 	
-						//mostrar as msgs que ja leu
+						if(!catGrupos.existeGrupo(splittado[1])){
+							outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+						}
+						//VERIFICA SE PERTENCE AO GRUPO
+						else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
+							outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+						}
+						//SE PERTENCE AO GRUPO
+						else {
+
+							//TODO
+							//RETORNAR O HISTORICO
+
+							ArrayList<String> mensagens = catGrupos.getMensagensJaLidas(splittado[1], currentClient);
+
+							if(mensagens.size() <= 0){
+								outStream.writeObject("You dont have any old messages on the group with ID " + splittado[1]);
+
+							} else {
+								//COMPILAÇÃO DE TODAS AS MENSAGEM POR LER (collected
+								String output = "";
+								for(int i = 0; i < mensagens.size(); ++i){
+									output += mensagens.get(i);
+								}
+								outStream.writeObject(output);
+							}
+
+
+						}
+
 						break;
 						
 					default:

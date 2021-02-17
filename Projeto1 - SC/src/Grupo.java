@@ -26,6 +26,8 @@ public class Grupo {
 		this.membros = new ArrayList<Cliente>();
 		membros.add(dono);
 		this.msgs = new ArrayList<Mensagem>();
+		this.historicoMsgs = new ArrayList<Mensagem>();
+
 		this.groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
@@ -33,11 +35,13 @@ public class Grupo {
 
 	}
 	
-	public Grupo(String grupoID, Cliente dono, ArrayList<Cliente> membros, ArrayList<Mensagem> msgs) {
+	public Grupo(String grupoID, Cliente dono, ArrayList<Cliente> membros, ArrayList<Mensagem> msgs, ArrayList<Mensagem> historico) {
 		this.grupoID = grupoID;
 		this.dono = dono;
 		this.membros = membros;
 		this.msgs = msgs;
+		this.historicoMsgs = historico;
+
 		this.groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
@@ -109,12 +113,33 @@ public class Grupo {
 		ArrayList<String> output = new ArrayList<String>();
 
 		for(int i = 0; i < msgs.size(); ++i){
-			if(!msgs.get(i).jaLeuMensagem(cliente)){
+			if(msgs.get(i).porLerMensagem(cliente)){
 				output.add(msgs.get(i).toString());
 			}
 		}
 		return output;
 
+	}
+
+	public ArrayList<String> getMensagensJaLidas(String cliente){
+
+		ArrayList<String> output = new ArrayList<String>();
+
+		//FICHEIRO HISTORICO
+		for(int i = 0; i < historicoMsgs.size(); ++i){
+			if(historicoMsgs.get(i).jaLeuMensagem(cliente)){
+				output.add(historicoMsgs.get(i).toString());
+			}
+		}
+
+		//FICHEIRO CAIXA
+		for(int i = 0; i < msgs.size(); ++i){
+			if(msgs.get(i).jaLeuMensagem(cliente)){
+				output.add(msgs.get(i).toString());
+			}
+		}
+
+		return output;
 	}
 
 	public void groupContentsToFile() {
@@ -144,10 +169,6 @@ public class Grupo {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		//TODO
-		//HISTORICO
-
 
 	}
 }

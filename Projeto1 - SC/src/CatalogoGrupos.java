@@ -53,7 +53,10 @@ public class CatalogoGrupos {
 
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
 
-					grupos.add(new Grupo(linha, dono, clientes, msgs));
+					ArrayList<Mensagem> historico = new ArrayList<Mensagem>();
+
+
+					grupos.add(new Grupo(linha, dono, clientes, msgs, historico));
 				}
 			}
 		} catch (IOException e) {
@@ -128,6 +131,11 @@ public class CatalogoGrupos {
 
 	public ArrayList<String> getMensagensPorLer(String grupoID, Cliente cliente){
 		return getGrupo(grupoID).getMensagensPorLer(cliente.getUser());
+
+	}
+
+	public ArrayList<String> getMensagensJaLidas(String grupoID, Cliente cliente){
+		return getGrupo(grupoID).getMensagensJaLidas(cliente.getUser());
 
 	}
 }

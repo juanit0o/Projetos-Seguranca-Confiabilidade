@@ -40,7 +40,8 @@ public class Mensagem {
 	}
 
 
-	public void lerMensagem(int id){
+	public void lerMensagem(int id, String cliente){
+
 		leuMsg.add(porLerMsg.get(id));
 
 		ArrayList <Cliente> porLerMsgAux = new ArrayList<Cliente>();
@@ -56,6 +57,17 @@ public class Mensagem {
 		}
 	}
 
+	public boolean porLerMensagem(String cliente){
+		int i;
+		for(i = 0; i < porLerMsg.size(); ++i){
+			if(porLerMsg.get(i).getUser().equals(cliente)){
+				lerMensagem(i, cliente);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean jaLeuMensagem(String cliente){
 		int i;
 		for(i = 0; i < leuMsg.size(); ++i){
@@ -63,7 +75,6 @@ public class Mensagem {
 				return true;
 			}
 		}
-		lerMensagem(i);		///VERERERERERER
 		return false;
 	}
 
@@ -77,9 +88,12 @@ public class Mensagem {
 		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(logGrupo, true));
-			String output = data + "§§" + remetente + "§§" + msg + "§§";
+			String output = data + "§§" + remetente.getUser() + "§§" + msg + "§§";
 			for(int i = 0; i < leuMsg.size(); ++i){
-				output += leuMsg.get(i).getUser() + "§";
+				output += leuMsg.get(i).getUser();
+				if(i < porLerMsg.size() - 1){
+					output += "§";
+				}
 			}
 			bW.write(output);
 			bW.newLine();
