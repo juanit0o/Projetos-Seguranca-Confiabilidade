@@ -117,7 +117,7 @@ public class SeiTchiz {
 					 
 					 int x = 0;
 					 
-					 while((x = part.read(buffer)) > 0) {
+					 while((x = part.read(buffer)) != -1) {
 						 outObj.write(buffer, 0, x);
 					 }
 					 System.out.println((String) inObj.readObject());

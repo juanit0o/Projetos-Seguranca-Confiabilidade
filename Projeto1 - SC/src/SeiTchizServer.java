@@ -223,14 +223,13 @@ public class SeiTchizServer {
 							int temp = dimensao.intValue();
 							
 							while(temp > 0) {
-								x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
+								x = inStream.read(buffer, 0, temp > 1024 ? 1024 : temp);
 								photoRecebida.write(buffer, 0, x);
 								temp -=x;
 							}
 							
 							
 							outStream.writeObject("File was submitted with success!");
-
 							photoRecebida.close();
 							
 							System.out.println("Fim da foto");
