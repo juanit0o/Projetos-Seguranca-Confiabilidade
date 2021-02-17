@@ -118,7 +118,11 @@ public class Cliente {
 
 		return true;
 	}
-	
+
+	public ArrayList<String> getGrupos(){
+		return this.grupos;
+	}
+
 	public void removerFollower(String follower) {
 		// ADICIONAR ESTE CLIENTE A LISTA DE FOLLOWERS
 		ArrayList<String> followersAux = new ArrayList<String>();
@@ -134,6 +138,11 @@ public class Cliente {
 	
 	public void entrarEmGrupo(String grupoID) {
 		grupos.add(grupoID);
+		userContentsToFile();
+	}
+
+	public void sairDeGrupo(String grupoID) {
+		grupos.remove(grupoID);
 		userContentsToFile();
 	}
 	

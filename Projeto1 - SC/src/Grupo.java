@@ -54,9 +54,9 @@ public class Grupo {
 		return cliente.getUser().equals(dono.getUser());
 	}
 
-	public boolean pertenceGrupo(Cliente cliente){
+	public boolean pertenceGrupo(String cliente){
 		for(int i = 0; i < membros.size(); ++i){
-			if(membros.get(i).getUser().equals(cliente.getUser())){
+			if(membros.get(i).getUser().equals(cliente)){
 				return true;
 			}
 		}
@@ -69,8 +69,26 @@ public class Grupo {
 		cliente.entrarEmGrupo(grupoID);
 	}
 
+	public void removeMembro(Cliente cliente){
+		membros.remove(cliente);
+
+		groupContentsToFile();
+
+		cliente.sairDeGrupo(grupoID);
+
+
+	}
+
 	public String getGrupoID(){
 		return this.grupoID;
+	}
+
+	public ArrayList<String> getMembros(){
+		ArrayList<String> output = new ArrayList<String>();
+		for(int i = 0; i < membros.size(); ++i){
+			output.add(membros.get(i).getUser());
+		}
+		return output;
 	}
 
 	public void groupContentsToFile() {

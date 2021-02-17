@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 public class CatalogoGrupos {
 
+	private CatalogoClientes catClientes;
+
 	private ArrayList<Grupo> grupos;
 	private File groupFolder = new File("..\\data\\Group Folder");
 	private File serverFolder = new File("..\\data\\Server Files");
@@ -17,6 +19,7 @@ public class CatalogoGrupos {
 	
 	public CatalogoGrupos(CatalogoClientes catClientes) {
 		grupos = new ArrayList<Grupo>();
+		this.catClientes = catClientes;
 
 		groupFolder.mkdirs();
 		//carregar conteudo do ficheiro de grupos
@@ -73,9 +76,15 @@ public class CatalogoGrupos {
 		
 	}
 
-	public void addMembro(Cliente cliente, String groupID){
+	public void addMembro(String cliente, String groupID){
 
-		getGrupo(groupID).addMembro(cliente);
+		getGrupo(groupID).addMembro(catClientes.getCliente(cliente));
+
+	}
+
+	public void removeMembro(String cliente, String groupID){
+
+		getGrupo(groupID).removeMembro(catClientes.getCliente(cliente));
 
 	}
 
@@ -89,14 +98,23 @@ public class CatalogoGrupos {
 	}
 
 	public boolean existeGrupo(String groupID){
-		return getGrupo(groupID) != null;
+		for(int i = 0; i < grupos.size(); ++i){
+			if(grupos.get(i).getGrupoID().equals(groupID)){
+				return true;
+			}
+		}
+		return false;
 	}
 
-	public boolean pertenceAoGrupo(Cliente cliente, String groupID) {
+	public boolean pertenceAoGrupo(String cliente, String groupID) {
 		return getGrupo(groupID).pertenceGrupo(cliente);
 	}
 
 	public boolean isDono(Cliente cliente, String groupID) {
 		return getGrupo(groupID).isDono(cliente);
+	}
+
+	public ArrayList<String> getMembros(String groupID){
+		return getGrupo(groupID).getMembros();
 	}
 }

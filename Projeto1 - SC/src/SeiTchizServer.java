@@ -263,9 +263,13 @@ public class SeiTchizServer {
 						if(splittado.length > 2) {
 							outStream.writeObject("Invalid GroupID, it cannot have spaces. Please try again");
 						}
-						catGrupos.addGrupo(splittado[1], currentClient);
-						
-						outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
+						if(!catGrupos.existeGrupo(splittado[1])){
+							catGrupos.addGrupo(splittado[1], currentClient);
+							outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
+						}else {
+							outStream.writeObject("The group with ID " + splittado[1] + " already exists");
+						}
+
 						break;
 					
 					case "a":
@@ -273,39 +277,99 @@ public class SeiTchizServer {
 
 						//userID - splittado[1]
 						//groupID - splittado[2]
+						if(catClientes.existeUser(splittado[1])){
+							if(!catGrupos.existeGrupo(splittado[2])){
+								outStream.writeObject("The group with ID " + splittado[2] + " does not exist!");
+							} else if(!catGrupos.isDono(currentClient, splittado[2])){
+								outStream.writeObject("You dont have permissions to add users to the group with ID " + splittado[2]);
+							} else if(catGrupos.pertenceAoGrupo(splittado[1], splittado[2])){
+								outStream.writeObject(splittado[1] + " already belong to the group with ID " + splittado[2]);
+							} else {
 
-						if(!catGrupos.existeGrupo(splittado[2])){
-							outStream.writeObject("The group with ID " + splittado[2] + " does not exist!");
-						} else if(!catGrupos.pertenceAoGrupo(currentClient, splittado[2])){
-							outStream.writeObject("You already belong to the group with ID " + splittado[2]);
-						} else if(!catGrupos.isDono(currentClient, splittado[2])){
-							outStream.writeObject("You dont have permissions to add users to the group with ID " + splittado[2]);
+								catGrupos.addMembro(splittado[1], splittado[2]);
+								outStream.writeObject("You added the user with ID " + splittado[1] + " to the group with ID "+ splittado[2]);
+							}
 						} else {
-
-							catGrupos.addMembro(currentClient, splittado[2]);
-
+							outStream.writeObject("The user with ID " + splittado[1] + " does not exist");
 						}
 
-						outStream.writeObject("You added the user with ID " + splittado[1] + " to the group with ID "+ splittado[2]);
+
+
 						break;
 					
 					case "r":
 					case "removeu":
-						outStream.writeObject("You removed the user with ID " + splittado[1] + " from the group with ID "+ splittado[2]);
+						if(catClientes.existeUser(splittado[1])){
+							if(!catGrupos.existeGrupo(splittado[2])){
+								outStream.writeObject("The group with ID " + splittado[2] + " does not exist!");
+							} else if(!catGrupos.isDono(currentClient, splittado[2])){
+								outStream.writeObject("You dont have permissions to remove users to the group with ID " + splittado[2]);
+							} else if(!catGrupos.pertenceAoGrupo(splittado[1], splittado[2])){
+								outStream.writeObject(splittado[1] + " does not belong to the group with ID " + splittado[2]);
+							} else {
+								if(splittado[1].equals(currentClient.getUser())){
+									outStream.writeObject("You cant remove yourself from the group with ID "+ splittado[2]);
+
+								} else {
+									catGrupos.removeMembro(splittado[1], splittado[2]);
+									outStream.writeObject("You removed the user with ID " + splittado[1] + " from the group with ID "+ splittado[2]);
+								}
+							}
+						} else {
+							outStream.writeObject("The user with ID " + splittado[1] + " does not exist");
+						}
 						break;
 					
 					case "g":
 					case "ginfo":
-						//se nao for dado groupID, mostra os grupos que o user eh dono e os grupos a q pertence (caso n pertenca a nada nem seja dono, dar essa msg)
-						outStream.writeObject("You are the owner of the groups ..."); //grupos de que eh dono
-						outStream.writeObject("You belong to the groups ..."); //grupos a que pertence
-						//se estes dois forem vazios, dar uma msg a dizer que n ha nada
-						
-						//se for dado groupID, mostra o dono desse grupo e os membros do grupo, caso ele pertenca (dono ou nao)
-						outStream.writeObject("You belong to the groups ..."); //membros do grupo e dono
-						//se n pertencer ao grupo do id, diz que eh privado e n tem acesso
-						outStream.writeObject("This group is private and you aren't in it"); //membros do grupo e dono
-						
+
+						//groupID - splittado[1]
+						ArrayList<String> currentGrupos = currentClient.getGrupos();
+
+						if(splittado.length <= 1){
+							//ASSINALAR SE NAO TEM GRUPOS
+
+
+							if(currentGrupos.size() > 0){
+								String outDonos = "You are the owner of the groups:\n";
+								String outMembro = "You belong to the groups:\n";
+
+								for(int i = 0; i < currentGrupos.size(); ++i){
+									//SE FOR DONO ADICIONA AO OUTDONO
+									if(catGrupos.isDono(currentClient, currentGrupos.get(i))){
+										outDonos += currentGrupos.get(i) + "\n";
+									}
+									//ADICIONA AOS MEMBROS
+									outMembro += currentGrupos.get(i) + "\n";
+								}
+								outStream.writeObject(outDonos + outMembro);
+
+
+							} else {
+								outStream.writeObject("You dont belong to any group");
+							}
+
+						} else {
+							//VERIFICAR SE GRUPO EXISTE
+							if(!catGrupos.existeGrupo(splittado[1])){
+								outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+							}
+							//VERIFICA SE PERTENCE AO GRUPO
+							else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
+								outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+							}
+							//SE PERTENCE AO GRUPO
+							else {
+								ArrayList<String> membros =  catGrupos.getMembros(splittado[1]);
+								String output = "The owner of the group with ID " + splittado[1] + " is: " + membros.get(0)
+										+ "\nThe members of that group are:\n";
+								for(int i = 0; i < membros.size(); ++i){
+									output += membros.get(i) + "\n";
+								}
+								outStream.writeObject(output);
+							}
+						}
+
 						break;
 					
 					case "m":
