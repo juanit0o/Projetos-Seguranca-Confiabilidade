@@ -1,3 +1,5 @@
+import sun.misc.Cleaner;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -13,14 +15,21 @@ public class Grupo {
 	private Cliente dono; // quem cria o grupo
 	
 	private File groupFolder;
+	private File msgLog;
+	private File membrosGrupo;
+	private File msgHistorico;
+
 
 	public Grupo(String grupoID, Cliente dono) {
 		this.grupoID = grupoID;
 		this.dono = dono;
-		membros = new ArrayList<Cliente>();
+		this.membros = new ArrayList<Cliente>();
 		membros.add(dono);
-		msgs = new ArrayList<Mensagem>();
-		groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
+		this.msgs = new ArrayList<Mensagem>();
+		this.groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
+		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
+		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
+		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 
 	}
 	
@@ -29,15 +38,15 @@ public class Grupo {
 		this.dono = dono;
 		this.membros = membros;
 		this.msgs = msgs;
-		groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
+		this.groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
+		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
+		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
+		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 
 	}
 
 	public void registaGrupo() {
-		
-		File msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
-		File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
-		File msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
+
 		try {
 			groupFolder.mkdirs();
 			msgLog.createNewFile();
@@ -76,7 +85,11 @@ public class Grupo {
 
 		cliente.sairDeGrupo(grupoID);
 
+	}
 
+	public void guardarMensagem(String msg, Cliente cliente){
+		msgs.add(new Mensagem(this.grupoID, cliente, msg, membros));
+		groupContentsToFile();
 	}
 
 	public String getGrupoID(){
@@ -89,6 +102,19 @@ public class Grupo {
 			output.add(membros.get(i).getUser());
 		}
 		return output;
+	}
+
+	public ArrayList<String> getMensagensPorLer(String cliente){
+
+		ArrayList<String> output = new ArrayList<String>();
+
+		for(int i = 0; i < msgs.size(); ++i){
+			if(!msgs.get(i).jaLeuMensagem(cliente)){
+				output.add(msgs.get(i).toString());
+			}
+		}
+		return output;
+
 	}
 
 	public void groupContentsToFile() {
@@ -106,10 +132,10 @@ public class Grupo {
 			e.printStackTrace();
 		}
 
-		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
+		File caixaMsgGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		try {
-			BufferedWriter bW = new BufferedWriter(new FileWriter(logGrupo));
-			// membros
+			BufferedWriter bW = new BufferedWriter(new FileWriter(caixaMsgGrupo));
+			//MENSAGEM COM ELEMENTOS
 			for (int i = 0; i < msgs.size(); i++) {
 				bW.write(msgs.get(i).msgContentToFile());
 				bW.newLine();
@@ -118,5 +144,10 @@ public class Grupo {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		//TODO
+		//HISTORICO
+
+
 	}
 }

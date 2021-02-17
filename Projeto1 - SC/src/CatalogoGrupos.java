@@ -48,8 +48,12 @@ public class CatalogoGrupos {
 						clientes.add(catClientes.getCliente(line));
 					}
 					
-					
+					//TODO
 					//FALTA DAR LOAD A MSGS (E FAZE-LAS)
+
+					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
+
+					grupos.add(new Grupo(linha, dono, clientes, msgs));
 				}
 			}
 		} catch (IOException e) {
@@ -116,5 +120,14 @@ public class CatalogoGrupos {
 
 	public ArrayList<String> getMembros(String groupID){
 		return getGrupo(groupID).getMembros();
+	}
+
+	public void guardarMensagem(String groupID, String msg, Cliente cliente){
+		getGrupo(groupID).guardarMensagem(msg, cliente);
+	}
+
+	public ArrayList<String> getMensagensPorLer(String grupoID, Cliente cliente){
+		return getGrupo(grupoID).getMensagensPorLer(cliente.getUser());
+
 	}
 }

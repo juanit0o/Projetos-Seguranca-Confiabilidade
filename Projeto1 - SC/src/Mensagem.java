@@ -40,16 +40,35 @@ public class Mensagem {
 	}
 
 
-	public void lerMensagem(Cliente leitor){
-		if(porLerMsg.contains(leitor)){
-			porLerMsg.remove(leitor);
-			leuMsg.add(leitor);
+	public void lerMensagem(int id){
+		leuMsg.add(porLerMsg.get(id));
 
-			//VERIFICA SE JÁ FOI LIDA POR TODOS E MANDA PARA HISTORICO
-			if(porLerMsg.isEmpty()){
-				moverMensagemParaHistorico();
+		ArrayList <Cliente> porLerMsgAux = new ArrayList<Cliente>();
+		for(int i = 0; i < porLerMsg.size(); ++i){
+			if(i != id)
+				porLerMsgAux.add(porLerMsg.get(i));
+		}
+		porLerMsg = porLerMsgAux;
+
+		//VERIFICA SE JÁ FOI LIDA POR TODOS E MANDA PARA HISTORICO
+		if(porLerMsg.isEmpty()){
+			moverMensagemParaHistorico();
+		}
+	}
+
+	public boolean jaLeuMensagem(String cliente){
+		int i;
+		for(i = 0; i < leuMsg.size(); ++i){
+			if(leuMsg.get(i).getUser().equals(cliente)){
+				return true;
 			}
 		}
+		lerMensagem(i);		///VERERERERERER
+		return false;
+	}
+
+	public String toString(){
+		return remetente.getUser() + " : " + msg;
 	}
 
 	private void moverMensagemParaHistorico(){
@@ -81,7 +100,7 @@ public class Mensagem {
 		output += "§§";
 
 		//remetente
-		output += remetente.getName();
+		output += remetente.getUser();
 		output += "§§";
 
 		//Mensagem
@@ -90,13 +109,19 @@ public class Mensagem {
 
 		//Membros por ler
 		for(int i = 0; i < porLerMsg.size(); ++i){
-			output += porLerMsg.get(i).getUser() + "§";
+			output += porLerMsg.get(i).getUser();
+			if(i < porLerMsg.size() - 1){
+				output += "§";
+			}
 		}
 		output += "§§";
 
-		//Membros por ler
+		//Membros que ja leram
 		for(int i = 0; i < leuMsg.size(); ++i){
-			output += leuMsg.get(i).getUser() + "§";
+			output += leuMsg.get(i).getUser();
+			if(i < leuMsg.size() - 1){
+				output += "§";
+			}
 		}
 
 		return output;

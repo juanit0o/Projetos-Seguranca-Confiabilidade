@@ -374,15 +374,74 @@ public class SeiTchizServer {
 					
 					case "m":
 					case "msg":
-						//se nao for dado groupID, mostra os grupos que o user eh dono e os grupos a q pertence (caso n pertenca a nada nem seja dono, dar essa msg)
-						outStream.writeObject("You sent a message to the group with ID " + splittado[1] + " with the text: " + splittado[2]);	
-						break;	
+						if(!catGrupos.existeGrupo(splittado[1])){
+							outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+						}
+						//VERIFICA SE PERTENCE AO GRUPO
+						else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
+							outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+						}
+						//SE PERTENCE AO GRUPO
+						else {
+
+							//MENSAGEM RECEBIDA
+							String msg = "";
+							for(int i = 2; i < splittado.length; ++i){
+								msg += splittado[i];
+								if(i < splittado.length - 1){
+									msg += " ";
+								}
+							}
+
+							//GUARDAR MENSAGEM NO FICHEIRO XXX_caixa.txt
+							catGrupos.guardarMensagem(splittado[1], msg, currentClient);
+
+
+							outStream.writeObject("You sent a message to the group with ID " + splittado[1] + " with the text: " + msg);
+
+
+						}
+						break;
 					
 					case "c":
 					case "collect":
-						//se nao for dado groupID, mostra os grupos que o user eh dono e os grupos a q pertence (caso n pertenca a nada nem seja dono, dar essa msg)
-						outStream.writeObject("You received all the messages that were pending on the group with ID " + splittado[1]); 	
-						//mostrar as msgs que recebeu da caixa
+
+						if(!catGrupos.existeGrupo(splittado[1])){
+							outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+						}
+						//VERIFICA SE PERTENCE AO GRUPO
+						else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
+							outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+						}
+						//SE PERTENCE AO GRUPO
+						else {
+
+							//LER AS MENSAGEM DE GRUPOID - splittado[1]
+							//QUE NAO TENHA LIDO AINDA (AINDA APARECE O NOME POR LER NO FICHEIRO)
+
+
+							//SE NAO TIVER MENSAGEM; MANDAR INFO
+
+							//ARRAYLIST - SE VAZIO
+							//USER: mensagens
+							ArrayList<String> mensagens = catGrupos.getMensagensPorLer(splittado[1], currentClient);
+
+							if(mensagens.size() <= 0){
+								outStream.writeObject("You dont have any new messages on the group with ID " + splittado[1]);
+
+							} else {
+								//COMPILAÇÃO DE TODAS AS MENSAGEM POR LER (collected
+								String output = "";
+								for(int i = 0; i < mensagens.size(); ++i){
+									output += mensagens.get(i);
+								}
+								outStream.writeObject(output);
+
+							}
+
+
+							//mostrar as msgs que recebeu da caixa
+						}
 						break;
 						
 					case "h":
