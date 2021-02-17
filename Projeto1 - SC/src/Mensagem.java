@@ -31,11 +31,12 @@ public class Mensagem {
 	}
 
 	//USAR ESTE CONSTRUTOR QUANDO DA LOAD DOS FICHEIROS
-	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaGrupo, String data) {
+	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaLeuGrupo, ArrayList<Cliente> listaPorLerGrupo, String data) {
 		this.grupoID = grupoID;
 		this.remetente = remetente;
 		this.msg = msg;
-		this.leuMsg = listaGrupo;
+		this.leuMsg = listaLeuGrupo;
+		this.porLerMsg = listaPorLerGrupo;
 		this.data = data;
 	}
 
@@ -88,11 +89,11 @@ public class Mensagem {
 		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(logGrupo, true));
-			String output = data + "§§" + remetente.getUser() + "§§" + msg + "§§";
+			String output = data + "%%" + remetente.getUser() + "%%" + msg + "%%";
 			for(int i = 0; i < leuMsg.size(); ++i){
 				output += leuMsg.get(i).getUser();
 				if(i < porLerMsg.size() - 1){
-					output += "§";
+					output += "%";
 				}
 			}
 			bW.write(output);
@@ -111,30 +112,30 @@ public class Mensagem {
 		//DATA ATUAL
 		output += data;
 
-		output += "§§";
+		output += "%%";
 
 		//remetente
 		output += remetente.getUser();
-		output += "§§";
+		output += "%%";
 
 		//Mensagem
 		output += msg;
-		output += "§§";
+		output += "%%";
 
 		//Membros por ler
 		for(int i = 0; i < porLerMsg.size(); ++i){
 			output += porLerMsg.get(i).getUser();
 			if(i < porLerMsg.size() - 1){
-				output += "§";
+				output += "%";
 			}
 		}
-		output += "§§";
+		output += "%%";
 
 		//Membros que ja leram
 		for(int i = 0; i < leuMsg.size(); ++i){
 			output += leuMsg.get(i).getUser();
 			if(i < leuMsg.size() - 1){
-				output += "§";
+				output += "%";
 			}
 		}
 

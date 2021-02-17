@@ -50,8 +50,33 @@ public class CatalogoGrupos {
 					
 					//TODO
 					//FALTA DAR LOAD A MSGS (E FAZE-LAS)
-
+					File fileMsg= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
+					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
+					String line2 = rW2.readLine();
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
+
+					while ((line = rW.readLine()) != null) {
+						String[] mensagem = line.split("%%");
+
+						//ATENÇAO AO TAMANHO DO SPLIT
+
+						ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
+						String[] listaPorLerDeClientes = mensagem[3].split("%");
+						for(int i = 0; i < listaPorLerDeClientes.length; ++i){
+							listaPorLer.add(catClientes.getCliente(listaPorLerDeClientes[i]));
+						}
+
+						ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
+						String[] listaLeuClientes = mensagem[4].split("%");
+						for(int i = 0; i < listaLeuClientes.length; ++i){
+							listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
+						}
+
+						//grupoID, remetente, msg, listagrupo, data
+						msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0]));
+					}
+
+
 
 					ArrayList<Mensagem> historico = new ArrayList<Mensagem>();
 
