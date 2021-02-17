@@ -270,6 +270,22 @@ public class SeiTchizServer {
 					
 					case "a":
 					case "addu":
+
+						//userID - splittado[1]
+						//groupID - splittado[2]
+
+						if(!catGrupos.existeGrupo(splittado[2])){
+							outStream.writeObject("The group with ID " + splittado[2] + " does not exist!");
+						} else if(!catGrupos.pertenceAoGrupo(currentClient, splittado[2])){
+							outStream.writeObject("You already belong to the group with ID " + splittado[2]);
+						} else if(!catGrupos.isDono(currentClient, splittado[2])){
+							outStream.writeObject("You dont have permissions to add users to the group with ID " + splittado[2]);
+						} else {
+
+							catGrupos.addMembro(currentClient, splittado[2]);
+
+						}
+
 						outStream.writeObject("You added the user with ID " + splittado[1] + " to the group with ID "+ splittado[2]);
 						break;
 					

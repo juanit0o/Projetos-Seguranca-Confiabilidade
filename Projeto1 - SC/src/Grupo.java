@@ -9,6 +9,7 @@ public class Grupo {
 	private String grupoID;
 	private ArrayList<Cliente> membros;
 	private ArrayList<Mensagem> msgs;
+	private ArrayList<Mensagem> historicoMsgs;
 	private Cliente dono; // quem cria o grupo
 	
 	private File groupFolder;
@@ -34,17 +35,42 @@ public class Grupo {
 
 	public void registaGrupo() {
 		
-		File msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "log" + ".txt");
+		File msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
+		File msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 		try {
 			groupFolder.mkdirs();
 			msgLog.createNewFile();
 			membrosGrupo.createNewFile();
+			msgHistorico.createNewFile();
 			groupContentsToFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	public boolean isDono(Cliente cliente){
+		return cliente.getUser().equals(dono.getUser());
+	}
+
+	public boolean pertenceGrupo(Cliente cliente){
+		for(int i = 0; i < membros.size(); ++i){
+			if(membros.get(i).getUser().equals(cliente.getUser())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void addMembro(Cliente cliente){
+		membros.add(cliente);
+		groupContentsToFile();
+		cliente.entrarEmGrupo(grupoID);
+	}
+
+	public String getGrupoID(){
+		return this.grupoID;
 	}
 
 	public void groupContentsToFile() {
@@ -55,6 +81,19 @@ public class Grupo {
 			// membros
 			for (int i = 0; i < membros.size(); i++) {
 				bW.write(membros.get(i).getUser());
+				bW.newLine();
+			}
+			bW.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
+		try {
+			BufferedWriter bW = new BufferedWriter(new FileWriter(logGrupo));
+			// membros
+			for (int i = 0; i < msgs.size(); i++) {
+				bW.write(msgs.get(i).msgContentToFile());
 				bW.newLine();
 			}
 			bW.close();

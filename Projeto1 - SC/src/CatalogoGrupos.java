@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CatalogoGrupos {
+
 	private ArrayList<Grupo> grupos;
 	private File groupFolder = new File("..\\data\\Group Folder");
 	private File serverFolder = new File("..\\data\\Server Files");
@@ -25,7 +26,7 @@ public class CatalogoGrupos {
 				System.out.println("Group file loaded: " + groupFile.getName());
 				Scanner scReader = new Scanner(groupFile);
 				while (scReader.hasNextLine()) {
-					//ver o nome de um grupo, ir à pasta desse grupo, ler o ficheiro de membros e 
+					//ver o nome de um grupo, ir ï¿½ pasta desse grupo, ler o ficheiro de membros e 
 					//mensagens para chamar o construtor do grupo
 					
 					//group id = cada linha tem o nome de um grupo
@@ -70,5 +71,32 @@ public class CatalogoGrupos {
 			e.printStackTrace();
 		}
 		
+	}
+
+	public void addMembro(Cliente cliente, String groupID){
+
+		getGrupo(groupID).addMembro(cliente);
+
+	}
+
+	private Grupo getGrupo(String groupID){
+		for(int i = 0; i < grupos.size(); ++i){
+			if(grupos.get(i).getGrupoID().equals(groupID)){
+				return grupos.get(i);
+			}
+		}
+		return null;
+	}
+
+	public boolean existeGrupo(String groupID){
+		return getGrupo(groupID) != null;
+	}
+
+	public boolean pertenceAoGrupo(Cliente cliente, String groupID) {
+		return getGrupo(groupID).pertenceGrupo(cliente);
+	}
+
+	public boolean isDono(Cliente cliente, String groupID) {
+		return getGrupo(groupID).isDono(cliente);
 	}
 }
