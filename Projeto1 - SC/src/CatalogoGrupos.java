@@ -47,37 +47,73 @@ public class CatalogoGrupos {
 					while ((line = rW.readLine()) != null) {
 						clientes.add(catClientes.getCliente(line));
 					}
-					
+
+					rW.close();
+
 					//TODO
-					//FALTA DAR LOAD A MSGS (E FAZE-LAS)
+					//DA NULLPOINTER
+					//FALHA NA LEITURA DOS DADOS APOS RENICIAR O SV
+
+
+					//LOAD DA CAIXA
 					File fileMsg= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
 					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
 					String line2 = rW2.readLine();
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
 
-					while ((line = rW.readLine()) != null) {
+					while ((line = rW2.readLine()) != null) {
 						String[] mensagem = line.split("%%");
 
-						//ATENÇAO AO TAMANHO DO SPLIT
+						String[] ler = mensagem[3].split("\\*\\*");
 
-						ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
-						String[] listaPorLerDeClientes = mensagem[3].split("%");
-						for(int i = 0; i < listaPorLerDeClientes.length; ++i){
-							listaPorLer.add(catClientes.getCliente(listaPorLerDeClientes[i]));
+						if(ler.length == 2){
+							ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
+							String[] listaPorLerDeClientes = mensagem[3].split("%");
+							for(int i = 0; i < listaPorLerDeClientes.length; ++i){
+								listaPorLer.add(catClientes.getCliente(listaPorLerDeClientes[i]));
+							}
+
+							ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
+							String[] listaLeuClientes = mensagem[3].split("%");
+							for(int i = 0; i < listaLeuClientes.length; ++i){
+								listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
+							}
+
+							//grupoID, remetente, msg, listagrupo, data
+							msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0]));
+
+						} else {
+							if(mensagem[3].substring(0,2).equals("\\*\\*")){
+								ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
+								String[] listaLeuClientes = mensagem[3].split("%");
+								for(int i = 0; i < listaLeuClientes.length; ++i){
+									listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
+								}
+
+								//grupoID, remetente, msg, listagrupo, data
+								msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, new ArrayList<Cliente>(), mensagem[0]));
+
+							} else {
+								ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
+								String[] listaPorLerDeClientes = mensagem[3].split("%");
+								for(int i = 0; i < listaPorLerDeClientes.length; ++i){
+									listaPorLer.add(catClientes.getCliente(listaPorLerDeClientes[i]));
+								}
+								msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], new ArrayList<Cliente>(), listaPorLer, mensagem[0]));
+
+
+							}
+
 						}
 
-						ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
-						String[] listaLeuClientes = mensagem[4].split("%");
-						for(int i = 0; i < listaLeuClientes.length; ++i){
-							listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
+
 						}
 
-						//grupoID, remetente, msg, listagrupo, data
-						msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0]));
-					}
-
-
-
+					rW2.close();
+/*
+					File fileMsg= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
+					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
+					String line2 = rW2.readLine();*/
 					ArrayList<Mensagem> historico = new ArrayList<Mensagem>();
 
 

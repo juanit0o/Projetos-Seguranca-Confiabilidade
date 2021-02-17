@@ -430,7 +430,7 @@ public class SeiTchizServer {
 								//COMPILAÇÃO DE TODAS AS MENSAGEM POR LER (collected
 								String output = "";
 								for(int i = 0; i < mensagens.size(); ++i){
-									output += mensagens.get(i);
+									output += mensagens.get(i) + "\n";
 								}
 								outStream.writeObject(output);
 							}

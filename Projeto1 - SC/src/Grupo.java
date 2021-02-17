@@ -92,7 +92,11 @@ public class Grupo {
 	}
 
 	public void guardarMensagem(String msg, Cliente cliente){
-		msgs.add(new Mensagem(this.grupoID, cliente, msg, membros));
+		ArrayList<Cliente> membAux = new ArrayList<Cliente>();
+		for(int i = 0; i < membros.size(); ++i){
+			membAux.add(membros.get(i));
+		}
+		msgs.add(new Mensagem(this.grupoID, cliente, msg, membAux));
 		groupContentsToFile();
 	}
 
@@ -117,6 +121,7 @@ public class Grupo {
 				output.add(msgs.get(i).toString());
 			}
 		}
+		groupContentsToFile();
 		return output;
 
 	}

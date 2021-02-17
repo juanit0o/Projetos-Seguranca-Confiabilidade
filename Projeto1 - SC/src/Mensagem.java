@@ -41,7 +41,7 @@ public class Mensagem {
 	}
 
 
-	public void lerMensagem(int id, String cliente){
+	private void lerMensagem(int id){
 
 		leuMsg.add(porLerMsg.get(id));
 
@@ -62,7 +62,7 @@ public class Mensagem {
 		int i;
 		for(i = 0; i < porLerMsg.size(); ++i){
 			if(porLerMsg.get(i).getUser().equals(cliente)){
-				lerMensagem(i, cliente);
+				lerMensagem(i);
 				return true;
 			}
 		}
@@ -92,7 +92,7 @@ public class Mensagem {
 			String output = data + "%%" + remetente.getUser() + "%%" + msg + "%%";
 			for(int i = 0; i < leuMsg.size(); ++i){
 				output += leuMsg.get(i).getUser();
-				if(i < porLerMsg.size() - 1){
+				if(i < leuMsg.size() - 1){
 					output += "%";
 				}
 			}
@@ -129,7 +129,7 @@ public class Mensagem {
 				output += "%";
 			}
 		}
-		output += "%%";
+		output += "**";
 
 		//Membros que ja leram
 		for(int i = 0; i < leuMsg.size(); ++i){
