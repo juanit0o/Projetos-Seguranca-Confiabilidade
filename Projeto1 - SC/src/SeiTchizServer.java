@@ -206,17 +206,15 @@ public class SeiTchizServer {
 						//confirmar a parte de (envia foto para perfil do cliente armazenado no sv)
 						//sera apenas copiar uma foto de uma diretoria qq para o txt pessoal? como se poe uma foto num txt sequer? fica so na mm pasta (manel1.jpeg?)
 						
-						//FALTA POR A FOTOGRAFIA NA PASTA CERTA, limitar o tipo de ficheiros a jpg, png, 
-						//photomanel0.png
+						//limitar o tipo de ficheiros a jpg, png, photomanel0.png
 
 						File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
-						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser() + "_"+currentClient.nrOfPhotos() +".jpg");
-						//fileName.createNewFile();
+						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser()
+								+ "_"+currentClient.nrOfPhotos() + ".jpg");
 
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
-						
+
 						byte[] buffer = new byte[1024];
-						
 						try {
 							Long dimensao = (Long) inStream.readObject();
 							int x = 0;
@@ -227,8 +225,7 @@ public class SeiTchizServer {
 								photoRecebida.write(buffer, 0, x);
 								temp -=x;
 							}
-							
-							
+
 							outStream.writeObject("File was submitted with success!");
 							photoRecebida.close();
 							
@@ -237,7 +234,7 @@ public class SeiTchizServer {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
+
 						//cliente vai ter de ter um atributo com as fotos postadas (wall)
 						outStream.writeObject("You posted the photo in" + photoFolder.getAbsolutePath()); //tem de ir a diretoria da foto e copiar para o mural
 						break;
@@ -263,6 +260,7 @@ public class SeiTchizServer {
 						if(splittado.length > 2) {
 							outStream.writeObject("Invalid GroupID, it cannot have spaces. Please try again");
 						}
+
 						if(!catGrupos.existeGrupo(splittado[1])){
 							catGrupos.addGrupo(splittado[1], currentClient);
 							outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
@@ -450,7 +448,6 @@ public class SeiTchizServer {
 						//SE PERTENCE AO GRUPO
 						else {
 
-							//TODO
 							//RETORNAR O HISTORICO
 
 							ArrayList<String> mensagens = catGrupos.getMensagensJaLidas(splittado[1], currentClient);

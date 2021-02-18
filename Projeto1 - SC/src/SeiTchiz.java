@@ -109,19 +109,21 @@ public class SeiTchiz {
 						photoPath += " " + comando[i];
 					 }
 					 File myPhoto = new File(photoPath);
+
 					 Long tamanho = (Long) myPhoto.length();
-					 
+
 					 byte[] buffer = new byte[1024];
 					 outObj.writeObject(tamanho);
 					 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
-					 
+
 					 int x = 0;
 					 
 					 while((x = part.read(buffer)) != -1) {
 						 outObj.write(buffer, 0, x);
 					 }
+					  part.close();
+
 					 System.out.println((String) inObj.readObject());
-					 part.close();
 			        
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

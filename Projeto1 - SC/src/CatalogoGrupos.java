@@ -58,64 +58,62 @@ public class CatalogoGrupos {
 					//LOAD DA CAIXA
 					File fileMsg= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
 					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
-					String line2 = rW2.readLine();
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
 
 					while ((line = rW2.readLine()) != null) {
+
 						String[] mensagem = line.split("%%");
 
 						String[] ler = mensagem[3].split("\\*\\*");
 
-						if(ler.length == 2){
-							ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
-							String[] listaPorLerDeClientes = mensagem[3].split("%");
+						ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
+						String[] listaPorLerDeClientes = ler[0].split("%");
+						if(!listaPorLerDeClientes[0].equals("")){
 							for(int i = 0; i < listaPorLerDeClientes.length; ++i){
 								listaPorLer.add(catClientes.getCliente(listaPorLerDeClientes[i]));
 							}
+						}
 
-							ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
-							String[] listaLeuClientes = mensagem[3].split("%");
-							for(int i = 0; i < listaLeuClientes.length; ++i){
-								listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
-							}
-
-							//grupoID, remetente, msg, listagrupo, data
-							msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0]));
-
-						} else {
-							if(mensagem[3].substring(0,2).equals("\\*\\*")){
-								ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
-								String[] listaLeuClientes = mensagem[3].split("%");
-								for(int i = 0; i < listaLeuClientes.length; ++i){
+						ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
+						if(ler.length >= 2){
+							String[] listaLeuClientes = ler[1].split("%");
+							if(!listaLeuClientes[0].equals("")) {
+								for (int i = 0; i < listaLeuClientes.length; ++i) {
 									listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
 								}
-
-								//grupoID, remetente, msg, listagrupo, data
-								msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, new ArrayList<Cliente>(), mensagem[0]));
-
-							} else {
-								ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
-								String[] listaPorLerDeClientes = mensagem[3].split("%");
-								for(int i = 0; i < listaPorLerDeClientes.length; ++i){
-									listaPorLer.add(catClientes.getCliente(listaPorLerDeClientes[i]));
-								}
-								msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], new ArrayList<Cliente>(), listaPorLer, mensagem[0]));
-
-
 							}
-
 						}
 
+						//grupoID, remetente, msg, listagrupo, data
+						msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0]));
 
-						}
-
+					}
 					rW2.close();
-/*
-					File fileMsg= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
-					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
-					String line2 = rW2.readLine();*/
+
+					System.out.println();
+
+					//LOAD DA HISTORICO (SO ESTAO AS MENSAGENS LIDAS POR TODOS, SEM POR LER)
+					File fileHist= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_historico.txt");
+					BufferedReader rW3 = new BufferedReader(new FileReader(fileHist));
 					ArrayList<Mensagem> historico = new ArrayList<Mensagem>();
 
+					while ((line = rW3.readLine()) != null) {
+
+						String[] mensagem = line.split("%%");
+
+						ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
+						String[] listaLeuClientes = mensagem[3].split("%");
+						if(!listaLeuClientes[0].equals("")) {
+							for (int i = 0; i < listaLeuClientes.length; ++i) {
+								listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
+							}
+						}
+
+						historico.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, new ArrayList<Cliente>(), mensagem[0]));
+
+
+					}
+					rW3.close();
 
 					grupos.add(new Grupo(linha, dono, clientes, msgs, historico));
 				}
