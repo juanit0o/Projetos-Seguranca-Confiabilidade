@@ -208,25 +208,35 @@ public class SeiTchizServer {
 						
 						//limitar o tipo de ficheiros a jpg, png, photomanel0.png
 
+
 						File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
 						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser()
 								+ "_"+currentClient.nrOfPhotos() + ".jpg");
 
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 
-						byte[] buffer = new byte[1024];
+						//byte[] buffer = new byte[2048];
+						Long dimensao = new Long(0); //ADICIONADO
 						try {
-							Long dimensao = (Long) inStream.readObject();
-							int x = 0;
+							dimensao = (Long) inStream.readObject();
+
 							int temp = dimensao.intValue();
-							
+
 							while(temp > 0) {
-								x = inStream.read(buffer, 0, temp > 1024 ? 1024 : temp);
+								byte[] buffer = new byte[temp >= 1024 ? 1024 : temp];
+
+								//DEBUG
+								if(temp <= 1024){
+									System.out.println();
+								}
+
+
+								int x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
 								photoRecebida.write(buffer, 0, x);
-								temp -=x;
+								temp -= x;
 							}
 
-							outStream.writeObject("File was submitted with success!");
+							outStream.writeObject("File was submitted with success in " + photoFolder.getAbsolutePath());
 							photoRecebida.close();
 							
 							System.out.println("Fim da foto");
@@ -236,7 +246,6 @@ public class SeiTchizServer {
 						}
 
 						//cliente vai ter de ter um atributo com as fotos postadas (wall)
-						outStream.writeObject("You posted the photo in" + photoFolder.getAbsolutePath()); //tem de ir a diretoria da foto e copiar para o mural
 						break;
 					
 					case "w" :

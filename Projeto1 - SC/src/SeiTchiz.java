@@ -29,9 +29,12 @@ public class SeiTchiz {
 			user = args[1];
 			System.out.println("You haven't inserted a password. Password?");
 			pass = inSc.nextLine();
-		} else if(args.length == 3) { //caso: 127.0.0.1:45500 clientId pwd || 127.0.0.1 clientId pwd
+		} else if(args.length == 3 && args[1].length() > 1) { //caso: 127.0.0.1:45500 clientId pwd || 127.0.0.1 clientId pwd
 			user = args[1];
 			pass = args[2];
+		} else if (args.length == 3 && args[1].length() <= 1) {
+			System.out.println("Invalid username (least 2 characters)!");
+			System.exit(-1);
 		} else {
 			System.out.println("Wrong commands latah");
 			System.exit(-1);
@@ -114,16 +117,17 @@ public class SeiTchiz {
 
 					 byte[] buffer = new byte[1024];
 					 outObj.writeObject(tamanho);
+
 					 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 
 					 int x = 0;
-					 
 					 while((x = part.read(buffer)) != -1) {
 						 outObj.write(buffer, 0, x);
 					 }
-					  part.close();
 
 					 System.out.println((String) inObj.readObject());
+
+					  part.close();
 			        
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
