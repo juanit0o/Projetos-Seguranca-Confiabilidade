@@ -106,7 +106,7 @@ public class SeiTchiz {
 				try {
 					//enviar comando
 					 
-
+					outObj.writeObject("post");
 					 String photoPath = comando[1]; //path para onde se encontra a fotografia
 					 for(int i = 2; i < comando.length; ++i){
 						photoPath += " " + comando[i];
@@ -114,7 +114,7 @@ public class SeiTchiz {
 					 
 					 File myPhoto = new File(photoPath);
 					 if(myPhoto.exists()) {
-						 outObj.writeObject("post");
+						 
 						 Long tamanho = (Long) myPhoto.length();
 	
 						 byte[] buffer = new byte[1024];

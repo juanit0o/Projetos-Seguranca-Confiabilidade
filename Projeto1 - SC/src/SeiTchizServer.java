@@ -208,10 +208,8 @@ public class SeiTchizServer {
 							dimensao = (Long) inStream.readObject();
 
 							int temp = dimensao.intValue();
-
+							byte[] buffer = new byte[1024];
 							while(inStream.available() > 0) {
-								byte[] buffer = new byte[temp >= 1024 ? 1024 : temp];
-
 								int x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
 								photoRecebida.write(buffer, 0, x);
 								temp -= x;
@@ -219,7 +217,7 @@ public class SeiTchizServer {
 
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
 							
-							currentClient.publishPhoto(fileName);
+							//currentClient.publishPhoto(fileName);
 							
 							File fileDirectory = new File("..\\data\\Server Files");
 							File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
@@ -478,7 +476,7 @@ public class SeiTchizServer {
 
 
 			} catch (IOException e) {
-				//e.printStackTrace();
+				e.printStackTrace();
 				System.out.println("Client '"+user+"' disconnected.");
 			}
 		}
