@@ -105,30 +105,37 @@ public class SeiTchiz {
 				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
 				try {
 					//enviar comando
-					 outObj.writeObject("post");
+					 
 
 					 String photoPath = comando[1]; //path para onde se encontra a fotografia
 					 for(int i = 2; i < comando.length; ++i){
 						photoPath += " " + comando[i];
 					 }
+					 
 					 File myPhoto = new File(photoPath);
-
-					 Long tamanho = (Long) myPhoto.length();
-
-					 byte[] buffer = new byte[1024];
-					 outObj.writeObject(tamanho);
-
-					 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
-
-					 int x = 0;
-					 while((x = part.read(buffer)) != -1) {
-						 outObj.write(buffer, 0, x);
+					 if(myPhoto.exists()) {
+						 outObj.writeObject("post");
+						 Long tamanho = (Long) myPhoto.length();
+	
+						 byte[] buffer = new byte[1024];
+						 outObj.writeObject(tamanho);
+	
+						 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+	
+						 int x = 0;
+						 while((x = part.read(buffer)) != -1) {
+							 outObj.write(buffer, 0, x);
+						 }
+	
+						 System.out.println((String) inObj.readObject());
+						 System.out.println("\nInsert a command or type help to see commands: ");
+						 part.close();
+					 }else {
+						 System.out.println("The file with the path " + photoPath +  " doesn't exist");
+						 System.out.println("\nInsert a command or type help to see commands: ");
 					 }
-
-					 System.out.println((String) inObj.readObject());
-
-					  part.close();
-			        
+					  
+			  
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

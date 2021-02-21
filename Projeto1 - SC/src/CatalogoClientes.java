@@ -23,6 +23,8 @@ public class CatalogoClientes {
 	// para o ficheiro allUsers dentro do Server Files com todos os users e passes
 	File file = new File(fileDirectory.getAbsolutePath(), "allUsers.txt");
 
+	File photoFile = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
+
 	public CatalogoClientes() {
 
 		mapClientes = new HashMap<String, Cliente>();
@@ -43,6 +45,12 @@ public class CatalogoClientes {
 				scReader.close();
 			} else {
 				System.out.println("File created: " + file.getName());
+			}
+			
+			if(!photoFile.createNewFile()) {
+				System.out.println("File loaded: " + photoFile.getName());
+			}else {
+				System.out.println("File created: " + photoFile.getName());
 			}
 				
 				

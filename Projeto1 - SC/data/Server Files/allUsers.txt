@@ -1,3 +1,1 @@
-test:asdasdasd:123
-asd:asdasdsad:123
-tes:asdasda:123
+user:asdf:pass

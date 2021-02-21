@@ -16,6 +16,7 @@ public class Cliente {
 	private ArrayList<String> followers;
 	private ArrayList<String> follows;
 	private ArrayList<String> grupos; 
+	private ArrayList<Photo> photos; 
 
 	public Cliente(String u, String p, String nome) {
 		this.nome = nome;
@@ -24,6 +25,7 @@ public class Cliente {
 		this.followers = new ArrayList<String>();
 		this.follows = new ArrayList<String>();
 		this.grupos = new ArrayList<String>();
+		this.photos = new ArrayList<Photo>();
 	}
 
 	// carregar os seus followers,quem segue....
@@ -48,6 +50,24 @@ public class Cliente {
 					case 3:
 						grupos.add(line);
 						break;
+					case 4: //TODO para a fotografia
+						
+						//path::like1;like
+						String[] splittada = line.split("::");
+						if(splittada.length == 2) {
+							
+							ArrayList<String> likes = new ArrayList<String>();
+							String[] likesFicheiros = splittada[1].split(";"); //cada posicao com o userID de quem deu like
+							for(int i = 0; i< likesFicheiros.length; i++) {
+								likes.add(likesFicheiros[i]);
+							}
+							
+  							photos.add(new Photo(splittada[0],likes,this.user));
+						}else {
+							photos.add(new Photo(splittada[0],new ArrayList<String>(),this.user));
+						}
+						
+						break;
 					default:
 						System.out.println("Error beep bop");
 						break;
@@ -60,7 +80,6 @@ public class Cliente {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// rW.read(mapClientes.size()+":"+user+":"+pass);
 
 	}
 
@@ -150,6 +169,23 @@ public class Cliente {
 		return this.followers;
 	}
 
+	public int nrOfPhotos() {
+		//percorrer a pasta 
+		int nrPhotos = 0;
+		File photoFolder = new File("..\\data\\Personal User Files\\"+ this.user + "\\Photos");
+		nrPhotos = photoFolder.list().length;
+		//System.out.println("nr photos na pasta: " + nrPhotos);
+		
+		return nrPhotos;
+	}
+
+	public void publishPhoto(File fileName) {
+		photos.add(new Photo(fileName.getAbsolutePath(), new ArrayList<String>(), this.user));
+		userContentsToFile();
+	}
+	
+	
+	
 	// por agora ainda so preenche o ficheiro com os followers e a quem da follow
 	public void userContentsToFile() {
 
@@ -175,20 +211,18 @@ public class Cliente {
 				bW.write(grupos.get(i));
 				bW.newLine();
 			}
+			//seccao de photos que tem
+			bW.write("$\n");
+			for (int i = 0; i < photos.size(); i++) {
+				bW.write(photos.get(i).toString());
+				bW.newLine();
+			}
 			bW.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public int nrOfPhotos() {
-		//percorrer a pasta 
-		int nrPhotos = 0;
-		File photoFolder = new File("..\\data\\Personal User Files\\"+ this.user + "\\Photos");
-		nrPhotos = photoFolder.list().length;
-		//System.out.println("nr photos na pasta: " + nrPhotos);
-		
-		return nrPhotos;
-	}
+	
 
 }

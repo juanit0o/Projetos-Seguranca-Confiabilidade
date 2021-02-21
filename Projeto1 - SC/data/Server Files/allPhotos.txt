@@ -1,0 +1,1 @@
+user::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt

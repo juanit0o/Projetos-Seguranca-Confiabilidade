@@ -1,4 +1,3 @@
-import com.sun.xml.internal.ws.client.ClientTransportException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,7 +16,7 @@ public class Mensagem {
 	private ArrayList <Cliente> porLerMsg;
 	private ArrayList <Cliente> leuMsg;
 
-	//USAR ESTE CONSTRUTOR QUANDO É CRIADA UMA MENSAGEM NOVA
+	//USAR ESTE CONSTRUTOR QUANDO Ã‰ CRIADA UMA MENSAGEM NOVA
 	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaGrupo) {
 		this.grupoID = grupoID;
 		this.remetente = remetente;
@@ -52,7 +51,7 @@ public class Mensagem {
 		}
 		porLerMsg = porLerMsgAux;
 
-		//VERIFICA SE JÁ FOI LIDA POR TODOS E MANDA PARA HISTORICO
+		//VERIFICA SE JA FOI LIDA POR TODOS E MANDA PARA HISTORICO
 		if(porLerMsg.isEmpty()){
 			moverMensagemParaHistorico();
 		}

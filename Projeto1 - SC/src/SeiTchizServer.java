@@ -1,17 +1,4 @@
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
@@ -222,21 +209,29 @@ public class SeiTchizServer {
 
 							int temp = dimensao.intValue();
 
-							while(temp > 0) {
+							while(inStream.available() > 0) {
 								byte[] buffer = new byte[temp >= 1024 ? 1024 : temp];
-
-								//DEBUG
-								if(temp <= 1024){
-									System.out.println();
-								}
-
 
 								int x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
 								photoRecebida.write(buffer, 0, x);
 								temp -= x;
 							}
 
-							outStream.writeObject("File was submitted with success in " + photoFolder.getAbsolutePath());
+							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
+							
+							currentClient.publishPhoto(fileName);
+							
+							File fileDirectory = new File("..\\data\\Server Files");
+							File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
+							//allPhotos
+							BufferedWriter bW = new BufferedWriter(new FileWriter(filePhotos,true)); 
+						
+							bW.write(currentClient.getUser() + "::" + filePhotos.getAbsolutePath()); //userID, 2*dois pontos, photoPath
+							bW.newLine();
+							bW.close();
+							
+							//por isto antes do publish foto caso n funcione 
+							outStream.writeObject("File was submitted with success in " + photoFolder.getAbsolutePath());							
 							photoRecebida.close();
 							
 							System.out.println("Fim da foto");
@@ -244,8 +239,6 @@ public class SeiTchizServer {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-
-						//cliente vai ter de ter um atributo com as fotos postadas (wall)
 						break;
 					
 					case "w" :
@@ -274,7 +267,7 @@ public class SeiTchizServer {
 							catGrupos.addGrupo(splittado[1], currentClient);
 							outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
 						}else {
-							outStream.writeObject("The group with ID " + splittado[1] + " already exists");
+							outStream.writeObject("The group with ID " + splittado[1] + " is invalid");
 						}
 
 						break;
@@ -286,45 +279,51 @@ public class SeiTchizServer {
 						//groupID - splittado[2]
 						if(catClientes.existeUser(splittado[1])){
 							if(!catGrupos.existeGrupo(splittado[2])){
-								outStream.writeObject("The group with ID " + splittado[2] + " does not exist!");
-							} else if(!catGrupos.isDono(currentClient, splittado[2])){
-								outStream.writeObject("You dont have permissions to add users to the group with ID " + splittado[2]);
-							} else if(catGrupos.pertenceAoGrupo(splittado[1], splittado[2])){
-								outStream.writeObject(splittado[1] + " already belong to the group with ID " + splittado[2]);
+								outStream.writeObject("The group with ID " + splittado[2] + " is invalid!");
 							} else {
-
-								catGrupos.addMembro(splittado[1], splittado[2]);
-								outStream.writeObject("You added the user with ID " + splittado[1] + " to the group with ID "+ splittado[2]);
+								if(catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[2])) {
+									if(catGrupos.pertenceAoGrupo(splittado[1], splittado[2])){
+										outStream.writeObject(splittado[1] + " already belongs to the group with ID " + splittado[2]);
+									}else if (catGrupos.isDono(currentClient, splittado[2])) {
+										catGrupos.addMembro(splittado[1], splittado[2]);
+										outStream.writeObject("You added the user with ID " + splittado[1] + " to the group with ID "+ splittado[2]);
+									}else {
+										outStream.writeObject("You don't have permissions to add the user with ID " + splittado[1] + " to the group with ID "+ splittado[2]);
+									}
+								}else {
+									outStream.writeObject("The group with ID " + splittado[2] + "or the user with id "+ splittado[1] + " is invalid!");
+								}
 							}
 						} else {
-							outStream.writeObject("The user with ID " + splittado[1] + " does not exist");
+							outStream.writeObject("The user with ID " + splittado[1] + " is invalid!");
 						}
-
-
 
 						break;
 					
 					case "r":
 					case "removeu":
+						
 						if(catClientes.existeUser(splittado[1])){
 							if(!catGrupos.existeGrupo(splittado[2])){
-								outStream.writeObject("The group with ID " + splittado[2] + " does not exist!");
-							} else if(!catGrupos.isDono(currentClient, splittado[2])){
-								outStream.writeObject("You dont have permissions to remove users to the group with ID " + splittado[2]);
-							} else if(!catGrupos.pertenceAoGrupo(splittado[1], splittado[2])){
-								outStream.writeObject(splittado[1] + " does not belong to the group with ID " + splittado[2]);
+								outStream.writeObject("The group with ID " + splittado[2] + " is invalid!");
 							} else {
-								if(splittado[1].equals(currentClient.getUser())){
-									outStream.writeObject("You cant remove yourself from the group with ID "+ splittado[2]);
-
-								} else {
-									catGrupos.removeMembro(splittado[1], splittado[2]);
-									outStream.writeObject("You removed the user with ID " + splittado[1] + " from the group with ID "+ splittado[2]);
+								if(catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[2])) {
+									if(!catGrupos.pertenceAoGrupo(splittado[1], splittado[2])){
+										outStream.writeObject(splittado[1] + " doesn't belong to the group with ID " + splittado[2]);
+									}else if (catGrupos.isDono(currentClient, splittado[2])) {
+										catGrupos.removeMembro(splittado[1], splittado[2]);
+										outStream.writeObject("You removed the user with ID " + splittado[1] + " from the group with ID "+ splittado[2]);
+									}else {
+										outStream.writeObject("You don't have permissions to remove the user with ID " + splittado[1] + " from the group with ID "+ splittado[2]);
+									}
+								}else {
+									outStream.writeObject("The group with ID " + splittado[2] + "or the user with id "+ splittado[1] + " is invalid!");
 								}
 							}
 						} else {
-							outStream.writeObject("The user with ID " + splittado[1] + " does not exist");
-						}
+							outStream.writeObject("The user with ID " + splittado[1] + " is invalid!");
+						}	
+						
 						break;
 					
 					case "g":
@@ -359,11 +358,11 @@ public class SeiTchizServer {
 						} else {
 							//VERIFICAR SE GRUPO EXISTE
 							if(!catGrupos.existeGrupo(splittado[1])){
-								outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+								outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 							}
 							//VERIFICA SE PERTENCE AO GRUPO
 							else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
-								outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+								outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 							}
 							//SE PERTENCE AO GRUPO
 							else {
@@ -382,11 +381,11 @@ public class SeiTchizServer {
 					case "m":
 					case "msg":
 						if(!catGrupos.existeGrupo(splittado[1])){
-							outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+							outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 						}
 						//VERIFICA SE PERTENCE AO GRUPO
 						else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
-							outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+							outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 						}
 						//SE PERTENCE AO GRUPO
 						else {
@@ -399,14 +398,9 @@ public class SeiTchizServer {
 									msg += " ";
 								}
 							}
-
 							//GUARDAR MENSAGEM NO FICHEIRO XXX_caixa.txt
 							catGrupos.guardarMensagem(splittado[1], msg, currentClient);
-
-
 							outStream.writeObject("You sent a message to the group with ID " + splittado[1] + " with the text: " + msg);
-
-
 						}
 						break;
 					
@@ -414,11 +408,11 @@ public class SeiTchizServer {
 					case "collect":
 
 						if(!catGrupos.existeGrupo(splittado[1])){
-							outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+							outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 						}
 						//VERIFICA SE PERTENCE AO GRUPO
 						else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
-							outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+							outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 						}
 						//SE PERTENCE AO GRUPO
 						else {
@@ -434,7 +428,7 @@ public class SeiTchizServer {
 								outStream.writeObject("You dont have any new messages on the group with ID " + splittado[1]);
 
 							} else {
-								//COMPILAÇÃO DE TODAS AS MENSAGEM POR LER (collected
+								//COMPILAcao DE TODAS AS MENSAGEM POR LER (collected
 								String output = "";
 								for(int i = 0; i < mensagens.size(); ++i){
 									output += mensagens.get(i) + "\n";
@@ -448,15 +442,14 @@ public class SeiTchizServer {
 					case "h":
 					case "history":
 						if(!catGrupos.existeGrupo(splittado[1])){
-							outStream.writeObject("The group with ID " + splittado[1] + " does not exist!");
+							outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 						}
 						//VERIFICA SE PERTENCE AO GRUPO
 						else if(!catGrupos.pertenceAoGrupo(currentClient.getUser(), splittado[1])){
-							outStream.writeObject("You dont belong to the group with ID " + splittado[1]);
+							outStream.writeObject("The group with ID " + splittado[1] + " is invalid!");
 						}
 						//SE PERTENCE AO GRUPO
 						else {
-
 							//RETORNAR O HISTORICO
 
 							ArrayList<String> mensagens = catGrupos.getMensagensJaLidas(splittado[1], currentClient);
@@ -472,10 +465,7 @@ public class SeiTchizServer {
 								}
 								outStream.writeObject(output);
 							}
-
-
 						}
-
 						break;
 						
 					default:
@@ -483,11 +473,8 @@ public class SeiTchizServer {
 						break;
 					}
 				}
-				//loop para comandos sincronizado com client
-
-
-
 				//fechar as streams
+				//TODO
 
 
 			} catch (IOException e) {
