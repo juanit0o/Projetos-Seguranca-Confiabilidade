@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
 
-import javax.imageio.ImageIO;
 
 public class SeiTchizServer {
 
@@ -111,7 +110,7 @@ public class SeiTchizServer {
 				while(true) {
 					String comando = null;
 					try {
-						//System.out.println(inStream.readObject());
+						//System.out.println((String) inStream.readObject());
 						comando = (String) inStream.readObject(); //TA A RECEBER MAL PARA O COMANDO DA PHOTO (PHOTO + PATH)
 						System.out.println(comando);
 					} catch (ClassNotFoundException e) {
@@ -202,34 +201,41 @@ public class SeiTchizServer {
 
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 
-						//byte[] buffer = new byte[2048];
-						Long dimensao = new Long(0); //ADICIONADO
+						//byte[] buffer = new byte[1024];
+						
+						Long dimensao; //ADICIONADO
 						try {
 							dimensao = (Long) inStream.readObject();
-
+							byte[] buffer = new byte[dimensao.intValue()];
 							int temp = dimensao.intValue();
-							byte[] buffer = new byte[1024];
+							int x = 0;
+							byte[] recebidos = (byte[]) inStream.readObject();
+							photoRecebida.write(recebidos);
+							/*
 							while(inStream.available() > 0) {
-								int x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
+								x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
 								photoRecebida.write(buffer, 0, x);
 								temp -= x;
-							}
+							}*/
 
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
 							
 							//currentClient.publishPhoto(fileName);
 							
+							/*
 							File fileDirectory = new File("..\\data\\Server Files");
 							File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
 							//allPhotos
 							BufferedWriter bW = new BufferedWriter(new FileWriter(filePhotos,true)); 
-						
+							
+							//mudar o path para a foto
 							bW.write(currentClient.getUser() + "::" + filePhotos.getAbsolutePath()); //userID, 2*dois pontos, photoPath
 							bW.newLine();
-							bW.close();
+							bW.close();*/
 							
 							//por isto antes do publish foto caso n funcione 
-							outStream.writeObject("File was submitted with success in " + photoFolder.getAbsolutePath());							
+							outStream.reset();
+							outStream.writeObject("File was submitted with success in"); //	
 							photoRecebida.close();
 							
 							System.out.println("Fim da foto");
