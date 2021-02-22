@@ -42,6 +42,18 @@ public class Photo {
 
 	public void addLike(String userLiking) {
 		this.likesClientes.add(userLiking);
-		
+	}
+	
+	public String getPhotoPath() {
+		return this.photoPath;
+	}
+
+	public boolean alreadyLiked(String liker) {
+		for(int i = 0; i < likesClientes.size(); i++) {
+			if(likesClientes.get(i).equals(liker)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

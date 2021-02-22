@@ -236,8 +236,10 @@ public class Cliente {
 
 	public void putLike(String phId, String userLiking) {
 		for (int i = 0; i < photos.size(); i++) {
-			if (photos.get(i).samePhotoId(phId)) {
+			if (photos.get(i).getPhotoPath().equals(phId)) {
 				photos.get(i).addLike(userLiking);
+				userContentsToFile();
+				return;
 			}
 		}
 		
@@ -261,7 +263,13 @@ public class Cliente {
 		return false;
 	}
 
-
-	
+	public boolean alreadyLiked(String liker, String pathFoto) {
+		for(int i = 0; i < photos.size(); i++) {
+			if(photos.get(i).getPhotoPath().equals(pathFoto)) {
+				return photos.get(i).alreadyLiked(liker);
+			}
+		}
+		return false;
+	}	
 
 }

@@ -229,7 +229,7 @@ public class SeiTchizServer {
 
 							//por isto antes do publish foto caso n funcione 
 							outStream.reset();
-							outStream.writeObject("File was submitted with success in " + fileName.getAbsolutePath()); //	
+							outStream.writeObject("File was submitted with success"); //	
 							photoRecebida.close();
 
 							System.out.println("Fim da foto");
@@ -244,45 +244,62 @@ public class SeiTchizServer {
 						//devolver os ids das n fotografias mais recentes (tem de tar ordenadas) e o nr de likes destas
 						//se houverem menos que o n dado apenas mostrar essas
 						//se n exisitirem nns dizer isso
-						//outStream.writeObject("Your recent " + splittado[1] + " photos are " + "mostrarfotos"); //tem de ir a diretoria da foto e copiar para o mural
+						
+						File fileDirectory = new File("..\\data\\Server Files");
+						File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
+						
+						BufferedReader bR = new BufferedReader(new FileReader(filePhotos));
 
-						//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-						try {
-							//enviar comando
-							outStream.reset(); //ver se convem apagar os resets dos dois lados (eles podem nao gostar, ver se funciona sem isto pq ja n tenho paciencia hj)
-	
-							 String photoPath = splittado[1]; //path para onde se encontra a fotografia
-							 for(int i = 2; i < comando.length; ++i){
-								photoPath += " " + comando[i];
-							 }
-							 
-							 File myPhoto = new File(photoPath);
-							 if(myPhoto.exists()) {
-								 Long tamanho = (Long) myPhoto.length();
-								 byte[] buffer = new byte[tamanho.intValue()];
-								 outObj.reset(); //same aqui
-								 outObj.writeObject(tamanho);
-								 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
-
-								part.read(buffer);
-								outStream.writeObject(buffer);
-								
-								part.close();
-								 
-								System.out.println((String) inObj.readObject());
-								//System.out.println((String) inObj.readObject()); /*crash aqui*/
-								System.out.println("\nInsert a command or type help to see commands: ");
-								 
-							 }else {
-								 System.out.println("The file with the path " + photoPath +  " doesn't exist");
-								 System.out.println("\nInsert a command or type help to see commands: ");
-							 }
-							  
-					  
-						} catch (Exception e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						String line1;
+						ArrayList<String> allPhotoPaths = new ArrayList<String>();
+						
+						while ((line1 = bR.readLine()) != null) {
+							//split da line pelo user
+							String[] splittada = line1.split("::");
+							
+							if(allPhotoPaths.size() >= Integer.valueOf(splittado[1])) {
+								break;
+							}else {
+								if(currentClient.follows(splittada[0])) {
+									allPhotoPaths.add(splittado[1]);
+								}
+							}
 						}
+						
+						
+						outStream.writeObject(allPhotoPaths.size());
+						for(int i = 0; i < allPhotoPaths.size(); i++) {
+						
+							try {
+							
+								 File myPhoto = new File(allPhotoPaths.get(i));
+								 
+								 if(myPhoto.exists()) {
+									 Long tamanho = (Long) myPhoto.length();
+									 byte[] buffer = new byte[tamanho.intValue()];
+									 outStream.writeObject(tamanho);
+									 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+	
+									part.read(buffer);
+									outStream.writeObject(buffer);
+									
+									part.close();
+									 
+									 
+								 }else {
+									 System.out.println("The file with the path " + allPhotoPaths.get(i) +  " doesn't exist");
+									 System.out.println("\nInsert a command or type help to see commands: ");
+								 }
+							} 
+						
+							catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+						outStream.writeObject("All the photos from who you follow were sent :)"); //mudar as msgs
+							  
+
 						//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 						//ir a allPhotos buscar as n photos mais recentes
 						int nLinhas = Integer.parseInt(splittado[1]);
@@ -329,27 +346,41 @@ public class SeiTchizServer {
 					case "l":
 					case "like":
 						String phId = splittado[1];
-						//primeiro fazemos wall x para ter os ids das fotos
-						//ir ao txt pessoal e adicionar likeFoto1 (p exemplo??), ter mais uma seccao para as fotos que gosta, entre os $$?
-
-						ArrayList<String> clientList = catClientes.getUsersList();
-						for (String usr : clientList) {
-							if (catClientes.getCliente(usr).hasPhoto(phId)) {
-								catClientes.getCliente(usr).putLike(phId, currentClient.getUser());
-							} else {
-								outStream.writeObject("You liked the photo with ID " + splittado[1]);
+						
+						File fileDirectory1 = new File("..\\data\\Server Files");
+						File filePhotos1 = new File(fileDirectory1.getAbsolutePath(), "allPhotos.txt");
+						
+						BufferedReader bR1 = new BufferedReader(new FileReader(filePhotos1));
+						//ver o ficheiro allPhotos a procura do user que publicou a foto que vai levar o like
+						
+						String line;
+						String pathFoto = null;
+						Cliente publisher = new Cliente (null, null, null);
+						while ((line = bR1.readLine()) != null) {
+							//split da line pelo user
+							String[] splittada = line.split("::");
+							String[] subDirs = splittada[1].split(Pattern.quote(File.separator));
+							String nomephoto = subDirs[subDirs.length-1];
+							
+							if(nomephoto.equals(phId)) {
+								publisher = catClientes.getCliente(splittada[0]);
+								pathFoto = splittada[1];
+								
+								break;
 							}
 						}
+						if(pathFoto == null || publisher.getUser() == null) {
+							outStream.writeObject("There was an error liking the photo");
+						}else {
+							if(publisher.alreadyLiked(currentClient.getUser(), pathFoto)) {
+								outStream.writeObject("You already liked that photo! :)");
+							}else {
+								publisher.putLike(pathFoto, currentClient.getUser());
+								outStream.writeObject("You liked the photo with ID " + splittado[1]);
+							}
+							
+						}
 
-						//por fim enviar msg ao cliente
-						outStream.writeObject("You liked the photo with ID " + splittado[1]);	
-
-
-
-
-
-
-						outStream.writeObject("Not able to like the photo with ID '" + splittado[1]+"'");
 						break;
 
 					case "n":

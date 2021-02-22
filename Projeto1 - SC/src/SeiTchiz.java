@@ -1,10 +1,4 @@
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.Scanner;
 import java.io.*;
 
@@ -56,7 +50,7 @@ public class SeiTchiz {
 		//autenticacao 
 		autenticacao(user, pass);
 
-		sendReceiveComando();
+		sendReceiveComando(user);
 
 		// fechar tudo
 		try {
@@ -69,7 +63,7 @@ public class SeiTchiz {
 		}
 	}
 
-	private static void sendReceiveComando() {
+	private static void sendReceiveComando(String user) {
 
 		System.out.println("Available commands:\n"+"follow/f <userID>\n"+
 				"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
@@ -102,11 +96,11 @@ public class SeiTchiz {
 				return;
 			case "p":
 			case "post":
+			
 				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
 				try {
 					//enviar comando
-					outObj.reset(); //ver se convem apagar os resets dos dois lados (eles podem nao gostar, ver se funciona sem isto pq ja n tenho paciencia hj)
-					outObj.writeObject("post");
+                	 outObj.writeObject("post");
 					 String photoPath = comando[1]; //path para onde se encontra a fotografia
 					 for(int i = 2; i < comando.length; ++i){
 						photoPath += " " + comando[i];
@@ -116,7 +110,7 @@ public class SeiTchiz {
 					 if(myPhoto.exists()) {
 						 Long tamanho = (Long) myPhoto.length();
 						 byte[] buffer = new byte[tamanho.intValue()];
-						 outObj.reset(); //same aqui
+						 //outObj.reset(); //same aqui
 						 outObj.writeObject(tamanho);
 						 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 
@@ -140,6 +134,47 @@ public class SeiTchiz {
 					e1.printStackTrace();
 				}
 		        
+				break;
+			
+			case "w":
+			case "wall":
+				
+				File wallFolder = new File("..\\Wall\\"+ user);
+				if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
+					String[] entries = wallFolder.list();
+					for(String s: entries){
+					    File currentFile = new File(wallFolder.getPath(),s);
+					    currentFile.delete();
+					}
+				}
+				
+				
+				try {
+					int nrFotos = (int) inObj.readObject();
+					
+					for(int i = 0; i < nrFotos; i++) {
+						File fileName = new File(wallFolder.getAbsolutePath(),"wall_"+user
+						+ "_"+ i + ".jpg");
+						
+						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
+						Long dimensao; //ADICIONADO
+						try {
+							dimensao = (Long) inObj.readObject();
+							byte[] buffer = new byte[dimensao.intValue()];
+							byte[] recebidos = (byte[]) inObj.readObject();
+							photoRecebida.write(recebidos);
+							photoRecebida.close();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						} 
+					}
+					
+					System.out.println((String) inObj.readObject());
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				} 
+
 				break;
 				
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
