@@ -207,22 +207,13 @@ public class SeiTchizServer {
 						try {
 							dimensao = (Long) inStream.readObject();
 							byte[] buffer = new byte[dimensao.intValue()];
-							int temp = dimensao.intValue();
-							int x = 0;
 							byte[] recebidos = (byte[]) inStream.readObject();
 							photoRecebida.write(recebidos);
-							/*
-							while(inStream.available() > 0) {
-								x = inStream.read(buffer, 0, temp >= 1024 ? 1024 : temp);
-								photoRecebida.write(buffer, 0, x);
-								temp -= x;
-							}*/
-
+							
+							
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
+							currentClient.publishPhoto(fileName);
 							
-							//currentClient.publishPhoto(fileName);
-							
-							/*
 							File fileDirectory = new File("..\\data\\Server Files");
 							File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
 							//allPhotos
@@ -231,16 +222,15 @@ public class SeiTchizServer {
 							//mudar o path para a foto
 							bW.write(currentClient.getUser() + "::" + filePhotos.getAbsolutePath()); //userID, 2*dois pontos, photoPath
 							bW.newLine();
-							bW.close();*/
+							bW.close();
 							
 							//por isto antes do publish foto caso n funcione 
 							outStream.reset();
-							outStream.writeObject("File was submitted with success in"); //	
+							outStream.writeObject("File was submitted with success in " + fileName.getAbsolutePath()); //	
 							photoRecebida.close();
 							
 							System.out.println("Fim da foto");
 						} catch (ClassNotFoundException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						break;

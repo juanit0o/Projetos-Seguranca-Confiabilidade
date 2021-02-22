@@ -105,7 +105,7 @@ public class SeiTchiz {
 				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
 				try {
 					//enviar comando
-					outObj.reset();
+					outObj.reset(); //ver se convem apagar os resets dos dois lados (eles podem nao gostar, ver se funciona sem isto pq ja n tenho paciencia hj)
 					outObj.writeObject("post");
 					 String photoPath = comando[1]; //path para onde se encontra a fotografia
 					 for(int i = 2; i < comando.length; ++i){
@@ -114,34 +114,20 @@ public class SeiTchiz {
 					 
 					 File myPhoto = new File(photoPath);
 					 if(myPhoto.exists()) {
-						 
 						 Long tamanho = (Long) myPhoto.length();
-						
-						 
 						 byte[] buffer = new byte[tamanho.intValue()];
-						 outObj.reset();
+						 outObj.reset(); //same aqui
 						 outObj.writeObject(tamanho);
-	
 						 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
-	
-						 int x = 0;
-						 
 
 						part.read(buffer);
 						outObj.writeObject(buffer);
-
-						/*
-						 outObj.reset();
-						 while((x = part.read(buffer)) != -1) {
-							 outObj.write(buffer, 0, x);
-						 }*/
+						
+						part.close();
 						 
-						 
-						 part.close();
-						 
-						 Object fdd = inObj.readObject();
-						 //System.out.println((String) inObj.readObject()); /*crash aqui*/
-						 System.out.println("\nInsert a command or type help to see commands: ");
+						System.out.println((String) inObj.readObject());
+						//System.out.println((String) inObj.readObject()); /*crash aqui*/
+						System.out.println("\nInsert a command or type help to see commands: ");
 						 
 					 }else {
 						 System.out.println("The file with the path " + photoPath +  " doesn't exist");
