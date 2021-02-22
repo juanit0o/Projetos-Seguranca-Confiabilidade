@@ -1,23 +1,4 @@
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
-joao::S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
+diogid::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
+diogid::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
+diogid::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
+diogid::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt

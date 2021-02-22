@@ -1,1 +1,3 @@
 joao:joao:pass
+diogoiD:diogo:diogopass
+diogoid:DiogoPinto:passdiogo

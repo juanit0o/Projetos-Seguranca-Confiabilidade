@@ -4,7 +4,12 @@ import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.regex.Pattern;
+
+import com.sun.corba.se.spi.orbutil.fsm.Input;
+
 import java.io.*;
 
 
@@ -73,7 +78,7 @@ public class SeiTchizServer {
 
 				//M�todo loginUser e autenticar (criar um obj da classe Cliente com esses atributos,
 				//e probs mais alguns a ser preenchidos dps l�)
-				
+
 				String password = null;
 				Boolean autenticou = false;
 
@@ -116,10 +121,10 @@ public class SeiTchizServer {
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
-					
+
 					//TRATAR DISTO, PARA QUANDO SO MANDAMOS FOLLOW (SEM ARGS DEPOIS) D� OUT OF BOUNDS
 					String[] splittado = comando.split(" ");
-					
+
 					switch (splittado[0]) {
 					case "quit":
 					case "exit":
@@ -128,13 +133,13 @@ public class SeiTchizServer {
 						inStream.close();
 						socket.close();
 						break;
-						
+
 					case "f":
 					case "follow":
 						//primeiro de tudo ver se o id dado existe, ver se aparece no ficheiro allUsers, se n exisitir da logo erro
 						//ver ficheiro do cliente, ver se ja tem follow do gajo, se ja la tiver diz
 						//se n tiver follow, adiciona ao arraylist (ver se � preciso ou apenas trabalhamos com os txts), adiciona ao txt na parte dos follows.
-						
+
 						if(currentClient.getUser().equals(splittado[1])) {
 							outStream.writeObject("You can't follow yourself");
 							System.out.println("Client " + currentClient.getUser() + " tried to follow himself/herself");
@@ -152,7 +157,7 @@ public class SeiTchizServer {
 							System.out.println("The client "+currentClient.getUser() + " tried to follow " + splittado[1] + " but user doesn't exist");
 						}
 						break;
-						
+
 					case "u":
 					case "unfollow":
 						//ver se o id existe, se n exisitir diz isso
@@ -175,7 +180,7 @@ public class SeiTchizServer {
 							System.out.println("The client "+currentClient.getUser() + " tried to unfollow " + splittado[1] + " but user doesn't exist");
 						}
 						break;
-						
+
 					case "v":
 					case "viewfollowers":
 						ArrayList<String> followers = currentClient.getFollowers();
@@ -186,70 +191,111 @@ public class SeiTchizServer {
 							outStream.writeObject("Your followers are " + followers.toString());
 						}
 						break;
-						
+
 					case "p":
 					case "post":
 						//confirmar a parte de (envia foto para perfil do cliente armazenado no sv)
 						//sera apenas copiar uma foto de uma diretoria qq para o txt pessoal? como se poe uma foto num txt sequer? fica so na mm pasta (manel1.jpeg?)
-						
+
 						//limitar o tipo de ficheiros a jpg, png, photomanel0.png
 
 
 						File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
 						File fileName = new File(photoFolder.getAbsolutePath(),"photo_"+currentClient.getUser()
-								+ "_"+currentClient.nrOfPhotos() + ".jpg");
+						+ "_"+currentClient.nrOfPhotos() + ".jpg");
 
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 
 						//byte[] buffer = new byte[1024];
-						
+
 						Long dimensao; //ADICIONADO
 						try {
 							dimensao = (Long) inStream.readObject();
 							byte[] buffer = new byte[dimensao.intValue()];
 							byte[] recebidos = (byte[]) inStream.readObject();
 							photoRecebida.write(recebidos);
-							
-							
+
+
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
 							currentClient.publishPhoto(fileName);
-							
+
 							File fileDirectory = new File("..\\data\\Server Files");
 							File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
 							//allPhotos
 							BufferedWriter bW = new BufferedWriter(new FileWriter(filePhotos,true)); 
-							
+
 							//mudar o path para a foto
 							bW.write(currentClient.getUser() + "::" + filePhotos.getAbsolutePath()); //userID, 2*dois pontos, photoPath
 							bW.newLine();
 							bW.close();
-							
+
 							//por isto antes do publish foto caso n funcione 
 							outStream.reset();
 							outStream.writeObject("File was submitted with success in " + fileName.getAbsolutePath()); //	
 							photoRecebida.close();
-							
+
 							System.out.println("Fim da foto");
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
 						}
 						break;
-					
+
 					case "w" :
 					case "wall":
+						String wall = "";
 						//devolver os ids das n fotografias mais recentes (tem de tar ordenadas) e o nr de likes destas
 						//se houverem menos que o n dado apenas mostrar essas
 						//se n exisitirem nns dizer isso
-						outStream.writeObject("Your recent " + splittado[1] + " photos are " + "mostrarfotos"); //tem de ir a diretoria da foto e copiar para o mural
-						break;
+						//outStream.writeObject("Your recent " + splittado[1] + " photos are " + "mostrarfotos"); //tem de ir a diretoria da foto e copiar para o mural
+
+						//ir a allPhotos buscar as n photos mais recentes
+						int nLinhas = Integer.parseInt(splittado[1]);
+						File allPhotos = new File("..\\data\\Server Files\\allPhotos.txt");
+						Scanner input = new Scanner(allPhotos);
+						if (allPhotos.length() > 0) {
+							wall = "Your recent photos are:\n";
+							ArrayList<String> userId_Path = new ArrayList<String>();
+							int counter = 0;
+							while(input.hasNextLine() && counter < nLinhas) { // le n linhas ou apenas as disponiveis
+								userId_Path.add(input.nextLine());
+								counter++;
+							}
+							//diogoiD::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
+							for (String string : userId_Path) {
+								String[] s = string.split("::");
+								String uid = s[0];
+								String path = s[1];
+								String[] subDirs = path.split(Pattern.quote(File.separator));
+								String likes = "2"; //TODO: catClientes.getCliente(uid).getLikes(path);
+								String nomephoto = subDirs[subDirs.length-1];
+								wall += "Photo '" + nomephoto + "' of user '" + uid + "' has " + likes + " likes\n";
+							}
+								 
+							
+							//wall = "Your recent " + counter + " photos are:\n";
+							
+							//userId - nomefoto - likes
+
+						} else {
+							wall = "No photos were posted\n";
+						}
+
+
 						
+
+						//para cada uma delas ir buscar o nr de likes
+						//dar print dessa informacao
+						outStream.writeObject(wall);
+						input.close();
+						break;
+
 					case "l":
 					case "like":
 						//primeiro fazemos wall x para ter os ids das fotos
 						//ir ao txt pessoal e adicionar likeFoto1 (p exemplo??), ter mais uma seccao para as fotos que gosta, entre os $$?
 						outStream.writeObject("You liked the photo with ID " + splittado[1]);
 						break;
-						
+
 					case "n":
 					case "newgroup":
 						//como crl vamos guardar os grupos+membros nos txts, este prob � o mm pas outras merdas p baixo glhf gg
@@ -265,7 +311,7 @@ public class SeiTchizServer {
 						}
 
 						break;
-					
+
 					case "a":
 					case "addu":
 
@@ -293,10 +339,10 @@ public class SeiTchizServer {
 						}
 
 						break;
-					
+
 					case "r":
 					case "removeu":
-						
+
 						if(catClientes.existeUser(splittado[1])){
 							if(!catGrupos.existeGrupo(splittado[2])){
 								outStream.writeObject("The group with ID " + splittado[2] + " is invalid!");
@@ -317,9 +363,9 @@ public class SeiTchizServer {
 						} else {
 							outStream.writeObject("The user with ID " + splittado[1] + " is invalid!");
 						}	
-						
+
 						break;
-					
+
 					case "g":
 					case "ginfo":
 
@@ -362,7 +408,7 @@ public class SeiTchizServer {
 							else {
 								ArrayList<String> membros =  catGrupos.getMembros(splittado[1]);
 								String output = "The owner of the group with ID " + splittado[1] + " is: " + membros.get(0)
-										+ "\nThe members of that group are:\n";
+								+ "\nThe members of that group are:\n";
 								for(int i = 0; i < membros.size(); ++i){
 									output += membros.get(i) + "\n";
 								}
@@ -371,7 +417,7 @@ public class SeiTchizServer {
 						}
 
 						break;
-					
+
 					case "m":
 					case "msg":
 						if(!catGrupos.existeGrupo(splittado[1])){
@@ -397,7 +443,7 @@ public class SeiTchizServer {
 							outStream.writeObject("You sent a message to the group with ID " + splittado[1] + " with the text: " + msg);
 						}
 						break;
-					
+
 					case "c":
 					case "collect":
 
@@ -432,7 +478,7 @@ public class SeiTchizServer {
 
 						}
 						break;
-						
+
 					case "h":
 					case "history":
 						if(!catGrupos.existeGrupo(splittado[1])){
@@ -461,7 +507,7 @@ public class SeiTchizServer {
 							}
 						}
 						break;
-						
+
 					default:
 						outStream.writeObject("Invalid command, please type help to check the available ones");
 						break;
