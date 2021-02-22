@@ -224,8 +224,7 @@ public class SeiTchizServer {
 							//allPhotos
 							BufferedWriter bW = new BufferedWriter(new FileWriter(filePhotos,true)); 
 
-							//mudar o path para a foto
-							bW.write(currentClient.getUser() + "::" + filePhotos.getAbsolutePath()); //userID, 2*dois pontos, photoPath
+							bW.write(currentClient.getUser() + "::" + fileName.getAbsolutePath()); 
 							bW.newLine();
 							bW.close();
 
@@ -261,19 +260,20 @@ public class SeiTchizServer {
 								counter++;
 							}
 							//diogoiD::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
+							//para cada uma delas ir buscar o nr de likes
 							for (String string : userId_Path) {
 								String[] s = string.split("::");
 								String uid = s[0];
 								String path = s[1];
 								String[] subDirs = path.split(Pattern.quote(File.separator));
-								String likes = "2"; //TODO: catClientes.getCliente(uid).getLikes(path);
+								String likes = catClientes.getCliente(uid).getLikes(path);
 								String nomephoto = subDirs[subDirs.length-1];
 								wall += "Photo '" + nomephoto + "' of user '" + uid + "' has " + likes + " likes\n";
 							}
-								 
-							
+
+
 							//wall = "Your recent " + counter + " photos are:\n";
-							
+
 							//userId - nomefoto - likes
 
 						} else {
@@ -281,9 +281,6 @@ public class SeiTchizServer {
 						}
 
 
-						
-
-						//para cada uma delas ir buscar o nr de likes
 						//dar print dessa informacao
 						outStream.writeObject(wall);
 						input.close();
@@ -293,6 +290,8 @@ public class SeiTchizServer {
 					case "like":
 						//primeiro fazemos wall x para ter os ids das fotos
 						//ir ao txt pessoal e adicionar likeFoto1 (p exemplo??), ter mais uma seccao para as fotos que gosta, entre os $$?
+						
+						
 						outStream.writeObject("You liked the photo with ID " + splittado[1]);
 						break;
 

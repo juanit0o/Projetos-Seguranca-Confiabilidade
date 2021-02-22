@@ -24,5 +24,13 @@ public class Photo {
 		}
 		return output; 
 	}
+
+	public boolean samePath(String path) {
+		return photoPath.equals(path);
+	}
+
+	public String getLikes() {
+		return String.valueOf(likesClientes.size());
+	}
 	
 }

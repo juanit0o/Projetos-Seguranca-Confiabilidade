@@ -223,6 +223,16 @@ public class Cliente {
 		}
 	}
 
+	public String getLikes(String path) {
+		String likes= "0";
+		for (Photo ph : photos) {
+			if (ph.samePath(path)) {
+				likes = ph.getLikes();
+			}
+		}
+		return likes;
+	}
+
 	
 
 }
