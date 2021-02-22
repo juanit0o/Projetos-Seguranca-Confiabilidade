@@ -30,10 +30,9 @@ public class SeiTchiz {
 			System.out.println("Invalid username (least 2 characters)!");
 			System.exit(-1);
 		} else {
-			System.out.println("Wrong commands latah");
+			System.out.println("Invalid commands");
 			System.exit(-1);
 		}
-
 
 		//verifica se tem porto ou nao, caso nao PORT_DEFAULT
 		if (args[0].contains(":")) {
@@ -94,102 +93,191 @@ public class SeiTchiz {
 					e1.printStackTrace();
 				}
 				return;
+			case "v":
+			case "viewfollowers":
+				if (comando.length != 1){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					try {
+						outObj.writeObject(output);
+						System.out.println((String) inObj.readObject());
+						System.out.println("\nInsert a command or type help to see commands: ");
+					} catch (IOException | ClassNotFoundException e) {
+						System.out.println("The server is now offline :(");
+					}
+				}
+				break;
+
+			case "f":
+			case "follow":
+			case "u":
+			case "unfollow":
+			case "l":
+			case "like":
+			case "n":
+			case "newgroup":
+			case "c":
+			case "collect":
+			case "h":
+			case "history":
+				if (comando.length != 2){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					try {
+						outObj.writeObject(output);
+						System.out.println((String) inObj.readObject());
+						System.out.println("\nInsert a command or type help to see commands: ");
+					} catch (IOException | ClassNotFoundException e) {
+						System.out.println("The server is now offline :(");
+					}
+				}
+				break;
+			case "a":
+			case "add":
+			case "r":
+			case "removeu":
+				if (comando.length != 3){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					try {
+						outObj.writeObject(output);
+						System.out.println((String) inObj.readObject());
+						System.out.println("\nInsert a command or type help to see commands: ");
+					} catch (IOException | ClassNotFoundException e) {
+						System.out.println("The server is now offline :(");
+					}
+				}
+				break;
+
+			case "m":
+			case "msg":
+					if (comando.length < 3){
+						System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+					} else {
+						try {
+							outObj.writeObject(output);
+							System.out.println((String) inObj.readObject());
+							System.out.println("\nInsert a command or type help to see commands: ");
+						} catch (IOException | ClassNotFoundException e) {
+							System.out.println("The server is now offline :(");
+						}
+					}
+					break;
+
+			case "g":
+			case "ginfo":
+				if (comando.length >= 3){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					try {
+						outObj.writeObject(output);
+						System.out.println((String) inObj.readObject());
+						System.out.println("\nInsert a command or type help to see commands: ");
+					} catch (IOException | ClassNotFoundException e) {
+						System.out.println("The server is now offline :(");
+					}
+				}
+				break;
+
 			case "p":
 			case "post":
-			
-				//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
-				try {
-					//enviar comando
-                	 outObj.writeObject("post");
-					 String photoPath = comando[1]; //path para onde se encontra a fotografia
-					 for(int i = 2; i < comando.length; ++i){
-						photoPath += " " + comando[i];
-					 }
-					 
-					 File myPhoto = new File(photoPath);
-					 if(myPhoto.exists()) {
-						 Long tamanho = (Long) myPhoto.length();
-						 byte[] buffer = new byte[tamanho.intValue()];
-						 //outObj.reset(); //same aqui
-						 outObj.writeObject(tamanho);
-						 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+				if (comando.length <= 1){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
+					try {
+						//enviar comando
+						outObj.writeObject("post");
+						String photoPath = comando[1]; //path para onde se encontra a fotografia
+						for (int i = 2; i < comando.length; ++i) {
+							photoPath += " " + comando[i];
+						}
 
-						part.read(buffer);
-						outObj.writeObject(buffer);
-						
-						part.close();
-						 
-						System.out.println((String) inObj.readObject());
-						//System.out.println((String) inObj.readObject()); /*crash aqui*/
-						System.out.println("\nInsert a command or type help to see commands: ");
-						 
-					 }else {
-						 System.out.println("The file with the path " + photoPath +  " doesn't exist");
-						 System.out.println("\nInsert a command or type help to see commands: ");
-					 }
-					  
-			  
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+						File myPhoto = new File(photoPath);
+						if (myPhoto.exists()) {
+							Long tamanho = (Long) myPhoto.length();
+							byte[] buffer = new byte[tamanho.intValue()];
+							//outObj.reset(); //same aqui
+							outObj.writeObject(tamanho);
+							InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+
+							part.read(buffer);
+							outObj.writeObject(buffer);
+
+							part.close();
+
+							System.out.println((String) inObj.readObject());
+							//System.out.println((String) inObj.readObject()); /*crash aqui*/
+							System.out.println("\nInsert a command or type help to see commands: ");
+
+						} else {
+							System.out.println("The file with the path " + photoPath + " doesn't exist");
+							System.out.println("\nInsert a command or type help to see commands: ");
+						}
+
+
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
-		        
 				break;
 			
 			case "w":
 			case "wall":
-				
-				File wallFolder = new File("..\\Wall\\"+ user);
-				if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
-					String[] entries = wallFolder.list();
-					for(String s: entries){
-					    File currentFile = new File(wallFolder.getPath(),s);
-					    currentFile.delete();
+				if (comando.length != 2){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					File wallFolder = new File("..\\Wall\\"+ user);
+					if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
+						String[] entries = wallFolder.list();
+						for(String s: entries){
+							File currentFile = new File(wallFolder.getPath(),s);
+							currentFile.delete();
+						}
+					}
+
+					try {
+						outObj.writeObject("wall "+comando[1]);
+						int nrFotos = (int) inObj.readObject();
+
+						for(int i = 0; i < nrFotos; i++) {
+							File fileName = new File(wallFolder.getAbsolutePath(),"wall_"+user
+									+ "_"+ i + ".jpg");
+
+							OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
+							Long dimensao; //ADICIONADO
+							try {
+								dimensao = (Long) inObj.readObject();
+								byte[] buffer = new byte[dimensao.intValue()];
+								byte[] recebidos = (byte[]) inObj.readObject();
+								photoRecebida.write(recebidos);
+								photoRecebida.close();
+							} catch (Exception e1) {
+								e1.printStackTrace();
+							}
+							System.out.println("foto " + i + "recebida");
+						}
+
+						System.out.println((String) inObj.readObject());
+						System.out.println("\nInsert a command or type help to see commands: ");
+
+					} catch (Exception e1) {
+						e1.printStackTrace();
 					}
 				}
-				
-				
-				
-				try {
-					outObj.writeObject("wall "+comando[1]);
-					int nrFotos = (int) inObj.readObject();
-					
-					for(int i = 0; i < nrFotos; i++) {
-						File fileName = new File(wallFolder.getAbsolutePath(),"wall_"+user
-						+ "_"+ i + ".jpg");
-						
-						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
-						Long dimensao; //ADICIONADO
-						try {
-							dimensao = (Long) inObj.readObject();
-							byte[] buffer = new byte[dimensao.intValue()];
-							byte[] recebidos = (byte[]) inObj.readObject();
-							photoRecebida.write(recebidos);
-							photoRecebida.close();
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						} 
-						System.out.println("foto " + i + "recebida");
-					}
-					
-					System.out.println((String) inObj.readObject());
-					System.out.println("\nInsert a command or type help to see commands: ");
-					
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				} 
+
 
 				break;
 				
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
-				try {
-					outObj.writeObject(output);
-					System.out.println((String) inObj.readObject());
-					System.out.println("\nInsert a command or type help to see commands: ");
-				} catch (IOException | ClassNotFoundException e) {
-					System.out.println("The server is now offline :(");
+				//try {
+					//outObj.writeObject(output);
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				//} catch (IOException | ClassNotFoundException e) {
+				//	System.out.println("The server is now offline :(");
 					//e.printStackTrace();
-				}
+				//}
 				break;
 			}
 		}
@@ -240,7 +328,8 @@ public class SeiTchiz {
 			outObj = new ObjectOutputStream(cSoc.getOutputStream());
 			inObj = new ObjectInputStream(cSoc.getInputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Couldnt connect to the server!");
+			System.exit(-1);
 		}		
 	}
 

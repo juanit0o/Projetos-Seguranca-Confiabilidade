@@ -26,20 +26,6 @@ public class Photo {
 		return output; 
 	}
 
-	public boolean samePath(String path) {
-		return photoPath.equals(path);
-	}
-
-	public String getLikes() {
-		return String.valueOf(likesClientes.size());
-	}
-	
-	public boolean samePhotoId(String phId) {
-		String[] subDirs = photoPath.split(Pattern.quote(File.separator));
-		String nomephoto = subDirs[subDirs.length-1];
-		return phId.equals(nomephoto);
-	}
-
 	public void addLike(String userLiking) {
 		this.likesClientes.add(userLiking);
 	}
@@ -55,5 +41,11 @@ public class Photo {
 			}
 		}
 		return false;
+	}
+
+	public String getPhoto(){
+		String[] subDirs = photoPath.split(Pattern.quote(File.separator));
+		String nomephoto = subDirs[subDirs.length-1];
+		return nomephoto + " from " + cliente + " has " + likesClientes.size() + " likes\n";
 	}
 }

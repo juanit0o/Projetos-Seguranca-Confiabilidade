@@ -92,10 +92,6 @@ public class Cliente {
 		return this.user;
 	}
 
-	public String getName() {
-		return this.nome;
-	}
-
 	public boolean seguir(Cliente clientASeguir) {
 
 		// verificar se o cliente ja segue essa pessoa (parte da pessoa exisitr ou nao
@@ -184,9 +180,7 @@ public class Cliente {
 		photos.add(new Photo(fileName.getAbsolutePath(), new ArrayList<String>(), this.user));
 		userContentsToFile();
 	}
-	
-	
-	
+
 	// por agora ainda so preenche o ficheiro com os followers e a quem da follow
 	public void userContentsToFile() {
 
@@ -224,16 +218,6 @@ public class Cliente {
 		}
 	}
 
-	public String getLikes(String path) {
-		String likes= "0";
-		for (Photo ph : photos) {
-			if (ph.samePath(path)) {
-				likes = ph.getLikes();
-			}
-		}
-		return likes;
-	}
-
 	public void putLike(String phId, String userLiking) {
 		for (int i = 0; i < photos.size(); i++) {
 			if (photos.get(i).getPhotoPath().equals(phId)) {
@@ -249,18 +233,13 @@ public class Cliente {
 		return follows.contains(uid);
 	}
 
-	public boolean followsSomeone() {
-		return follows.size() > 0;
-	}
-
-	
-	public boolean hasPhoto(String phId) {
-		for (int i = 0; i < photos.size(); i++) {
-			if (photos.get(i).samePhotoId(phId)) {
-				return true;
+	public String getPhoto(String path){
+		for(int i = 0; i < photos.size(); ++i){
+			if(photos.get(i).getPhotoPath().equals(path)){
+				return photos.get(i).getPhoto();
 			}
 		}
-		return false;
+		return "";
 	}
 
 	public boolean alreadyLiked(String liker, String pathFoto) {
