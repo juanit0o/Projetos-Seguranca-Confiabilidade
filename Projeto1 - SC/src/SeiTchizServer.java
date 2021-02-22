@@ -282,7 +282,7 @@ public class SeiTchizServer {
 	
 									part.read(buffer);
 									outStream.writeObject(buffer);
-									
+									System.out.println("Enviada foto nr " + i);
 									part.close();
 									 
 									 
@@ -296,10 +296,12 @@ public class SeiTchizServer {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
-						}
+							
+						} //mudar o comando para mostrar qd nao ha fotos
 						outStream.writeObject("All the photos from who you follow were sent :)"); //mudar as msgs
 							  
-
+						
+						/*
 						//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 						//ir a allPhotos buscar as n photos mais recentes
 						int nLinhas = Integer.parseInt(splittado[1]);
@@ -340,7 +342,7 @@ public class SeiTchizServer {
 
 						//dar print dessa informacao
 						outStream.writeObject(wall);
-						input.close();
+						input.close();*/
 						break;
 
 					case "l":

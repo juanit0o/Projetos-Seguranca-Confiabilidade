@@ -149,7 +149,9 @@ public class SeiTchiz {
 				}
 				
 				
+				
 				try {
+					outObj.writeObject("wall "+comando[1]);
 					int nrFotos = (int) inObj.readObject();
 					
 					for(int i = 0; i < nrFotos; i++) {
@@ -167,9 +169,11 @@ public class SeiTchiz {
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						} 
+						System.out.println("foto " + i + "recebida");
 					}
 					
 					System.out.println((String) inObj.readObject());
+					System.out.println("\nInsert a command or type help to see commands: ");
 					
 				} catch (Exception e1) {
 					e1.printStackTrace();
