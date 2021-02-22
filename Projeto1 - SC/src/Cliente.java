@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -232,6 +233,34 @@ public class Cliente {
 		}
 		return likes;
 	}
+
+	public void putLike(String phId, String userLiking) {
+		for (int i = 0; i < photos.size(); i++) {
+			if (photos.get(i).samePhotoId(phId)) {
+				photos.get(i).addLike(userLiking);
+			}
+		}
+		
+	}
+
+	public boolean follows(String uid) {
+		return follows.contains(uid);
+	}
+
+	public boolean followsSomeone() {
+		return follows.size() > 0;
+	}
+
+	
+	public boolean hasPhoto(String phId) {
+		for (int i = 0; i < photos.size(); i++) {
+			if (photos.get(i).samePhotoId(phId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	
 

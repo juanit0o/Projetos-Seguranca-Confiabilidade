@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import com.sun.corba.se.spi.orbutil.fsm.Input;
 
 import java.io.*;
 
@@ -247,11 +246,50 @@ public class SeiTchizServer {
 						//se n exisitirem nns dizer isso
 						//outStream.writeObject("Your recent " + splittado[1] + " photos are " + "mostrarfotos"); //tem de ir a diretoria da foto e copiar para o mural
 
+						//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+						try {
+							//enviar comando
+							outStream.reset(); //ver se convem apagar os resets dos dois lados (eles podem nao gostar, ver se funciona sem isto pq ja n tenho paciencia hj)
+	
+							 String photoPath = splittado[1]; //path para onde se encontra a fotografia
+							 for(int i = 2; i < comando.length; ++i){
+								photoPath += " " + comando[i];
+							 }
+							 
+							 File myPhoto = new File(photoPath);
+							 if(myPhoto.exists()) {
+								 Long tamanho = (Long) myPhoto.length();
+								 byte[] buffer = new byte[tamanho.intValue()];
+								 outObj.reset(); //same aqui
+								 outObj.writeObject(tamanho);
+								 InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+
+								part.read(buffer);
+								outStream.writeObject(buffer);
+								
+								part.close();
+								 
+								System.out.println((String) inObj.readObject());
+								//System.out.println((String) inObj.readObject()); /*crash aqui*/
+								System.out.println("\nInsert a command or type help to see commands: ");
+								 
+							 }else {
+								 System.out.println("The file with the path " + photoPath +  " doesn't exist");
+								 System.out.println("\nInsert a command or type help to see commands: ");
+							 }
+							  
+					  
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 						//ir a allPhotos buscar as n photos mais recentes
 						int nLinhas = Integer.parseInt(splittado[1]);
 						File allPhotos = new File("..\\data\\Server Files\\allPhotos.txt");
 						Scanner input = new Scanner(allPhotos);
-						if (allPhotos.length() > 0) {
+
+						if (allPhotos.length() > 0 && currentClient.followsSomeone()) {
 							wall = "Your recent photos are:\n";
 							ArrayList<String> userId_Path = new ArrayList<String>();
 							int counter = 0;
@@ -259,27 +297,29 @@ public class SeiTchizServer {
 								userId_Path.add(input.nextLine());
 								counter++;
 							}
-							//diogoiD::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Server Files\allPhotos.txt
+
+							//ArrayList<String> photosQueSigo = new ArrayList<String>();
+
+							//diogid::C:\Users\diogo\git\ProjetoSC1\Projeto1 - SC\src\..\data\Personal User Files\diogid\Photos\photo_diogid_0.jpg
 							//para cada uma delas ir buscar o nr de likes
 							for (String string : userId_Path) {
 								String[] s = string.split("::");
 								String uid = s[0];
 								String path = s[1];
 								String[] subDirs = path.split(Pattern.quote(File.separator));
-								String likes = catClientes.getCliente(uid).getLikes(path);
-								String nomephoto = subDirs[subDirs.length-1];
-								wall += "Photo '" + nomephoto + "' of user '" + uid + "' has " + likes + " likes\n";
+								if (currentClient.follows(uid)) {
+									String likes = catClientes.getCliente(uid).getLikes(path);
+									String nomephoto = subDirs[subDirs.length-1];
+									wall += "Photo '" + nomephoto + "' of user '" + uid + "' has " + likes + " likes\n";
+								} else {
+
+								}
 							}
-
-
-							//wall = "Your recent " + counter + " photos are:\n";
-
-							//userId - nomefoto - likes
-
 						} else {
-							wall = "No photos were posted\n";
+							wall = "You dont follow anyone, no photos available\n";
 						}
-
+						//TODO: adicionar ao array para poder dar reverse
+						//percorre as fotos da mais antiga para a mais recente
 
 						//dar print dessa informacao
 						outStream.writeObject(wall);
@@ -288,11 +328,28 @@ public class SeiTchizServer {
 
 					case "l":
 					case "like":
+						String phId = splittado[1];
 						//primeiro fazemos wall x para ter os ids das fotos
 						//ir ao txt pessoal e adicionar likeFoto1 (p exemplo??), ter mais uma seccao para as fotos que gosta, entre os $$?
-						
-						
-						outStream.writeObject("You liked the photo with ID " + splittado[1]);
+
+						ArrayList<String> clientList = catClientes.getUsersList();
+						for (String usr : clientList) {
+							if (catClientes.getCliente(usr).hasPhoto(phId)) {
+								catClientes.getCliente(usr).putLike(phId, currentClient.getUser());
+							} else {
+								outStream.writeObject("You liked the photo with ID " + splittado[1]);
+							}
+						}
+
+						//por fim enviar msg ao cliente
+						outStream.writeObject("You liked the photo with ID " + splittado[1]);	
+
+
+
+
+
+
+						outStream.writeObject("Not able to like the photo with ID '" + splittado[1]+"'");
 						break;
 
 					case "n":

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class Photo {
 	
@@ -33,4 +34,14 @@ public class Photo {
 		return String.valueOf(likesClientes.size());
 	}
 	
+	public boolean samePhotoId(String phId) {
+		String[] subDirs = photoPath.split(Pattern.quote(File.separator));
+		String nomephoto = subDirs[subDirs.length-1];
+		return phId.equals(nomephoto);
+	}
+
+	public void addLike(String userLiking) {
+		this.likesClientes.add(userLiking);
+		
+	}
 }

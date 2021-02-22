@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class CatalogoClientes {
@@ -112,5 +113,28 @@ public class CatalogoClientes {
 	public boolean passCorreta(String user, String password) {
 		return mapClientes.get(user).isPass(password);
 	}
+
+	public boolean existsPhoto(String phId) {
+		long i = 0;
+		Iterator<String> itr = mapClientes.keySet().iterator();
+		while (itr.hasNext()) {
+		    String key = itr.next();
+		}
+		return false;
+	}
+
+	
+
+	public ArrayList<String> getUsersList() {
+		ArrayList<String> result = new ArrayList<String> ();
+		for (String key : mapClientes.keySet()) {
+			result.add(key);
+		}
+		return result;
+	}
+
+	
+
+	
 
 }

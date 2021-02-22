@@ -1,1 +1,2 @@
-diogid:diogopintonome:passdiogo
+diogoid:diogo:passdiogo
+joaoid:joao:passjoao
