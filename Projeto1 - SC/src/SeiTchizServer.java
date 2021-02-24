@@ -1,6 +1,7 @@
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.regex.Pattern;
 import java.io.*;
 
@@ -222,38 +223,49 @@ public class SeiTchizServer {
 
 							BufferedReader bR = new BufferedReader(new FileReader(filePhotos));
 
-							String line1;
-							ArrayList<String> allPhotoPaths = new ArrayList<String>();
+							ArrayList<String> followPhotoPaths = new ArrayList<String>();
 
 							ArrayList<String> outputAux = new ArrayList<String>();
-
-							while ((line1 = bR.readLine()) != null) {
-								//User::path
-								String[] splittada = line1.split("::");
-
-								if (allPhotoPaths.size() >= Integer.valueOf(splittado[1])) {
-									break;
-								} else {
-									if (currentClient.follows(splittada[0])) {
-										allPhotoPaths.add(splittada[1]);
-										outputAux.add(catClientes.getCliente(splittada[0]).getPhoto(splittada[1]));
-									}
+							
+							String lineO;
+							ArrayList<String> allPhotoPaths = new ArrayList<String>();
+							while ((lineO = bR.readLine()) != null) {
+								String[] splittada = lineO.split("::");
+								
+								if (currentClient.follows(splittada[0])) {
+									allPhotoPaths.add(splittada[1]);
+									outputAux.add(catClientes.getCliente(splittada[0]).getPhoto(splittada[1]));
+									
 								}
 							}
+							
+						
+							ArrayList<String> allPhotoPathsSplitted = new ArrayList<String>();
+							ArrayList<String> outputAuxSplitted = new ArrayList<String>();
+							
+							//cortar o arraylist allphotopaths
+							for(int i = allPhotoPaths.size() - 1; i >= 0; i-- ) {
+								if (allPhotoPathsSplitted.size() >= Integer.valueOf(splittado[1])) {
+									break;
+								}
+								allPhotoPathsSplitted.add(allPhotoPaths.get(i));
+								outputAuxSplitted.add(outputAux.get(i));
+							}
+							
 
-							outStream.writeObject(allPhotoPaths.size());
+							outStream.writeObject(allPhotoPathsSplitted.size());
 
 							//Caso nao haja fotos
-							if (allPhotoPaths.size() <= 0) {
+							if (allPhotoPathsSplitted.size() <= 0) {
 								outStream.writeObject("You have no photos");
 								System.out.println("Client '" + currentClient.getUser() + "' doesnt have any photos from who he follows");
 								break;
 							}
 
-							for (int i = 0; i < allPhotoPaths.size(); i++) {
+							for (int i = 0; i < allPhotoPathsSplitted.size(); i++) {
 
 								try {
-									File myPhoto = new File(allPhotoPaths.get(i));
+									File myPhoto = new File(allPhotoPathsSplitted.get(i));
 
 									if (myPhoto.exists()) {
 										Long tamanho = (Long) myPhoto.length();
@@ -272,13 +284,14 @@ public class SeiTchizServer {
 
 							}
 
-							String output = "All the " + allPhotoPaths.size() + " photos from who you follow were sent:\n";
-							for(int i = 0; i < outputAux.size(); ++i){
-								output += "\t" + outputAux.get(i);
+							String output = "All the " + allPhotoPathsSplitted.size() + " photos from who you follow were sent:\n";
+							
+							for(int i = 0; i < outputAuxSplitted.size(); ++i){
+								output += "\t" + i + " : " + outputAuxSplitted.get(i);
 							}
 							outStream.writeObject(output);
 
-							System.out.println("Client '" + currentClient.getUser() + "' received the " + allPhotoPaths.size() + "  most recent photos from who he follows");
+							System.out.println("Client '" + currentClient.getUser() + "' received the " + allPhotoPathsSplitted.size() + "  most recent photos from who he follows");
 							break;
 
 						case "l":

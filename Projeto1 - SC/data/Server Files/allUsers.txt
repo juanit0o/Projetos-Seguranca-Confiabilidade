@@ -1,1 +1,3 @@
-aluno:asdasds:123
+manel:manel:passas
+joao:joao:passas
+francisco:francisco:passas

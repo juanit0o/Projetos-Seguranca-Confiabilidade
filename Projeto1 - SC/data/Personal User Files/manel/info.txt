@@ -1,0 +1,10 @@
+$
+francisco
+$
+joao
+$
+$
+S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Personal User Files\manel\Photos\photo_manel_0.jpg::
+S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Personal User Files\manel\Photos\photo_manel_1.jpg::
+S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Personal User Files\manel\Photos\photo_manel_2.jpg::
+S:\Eclipse\eclipse-workspace\Projetos GIT\ProjetoSC1\Projeto1 - SC\src\..\data\Personal User Files\manel\Photos\photo_manel_3.jpg::joao
