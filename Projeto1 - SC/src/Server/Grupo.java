@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -5,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Classe representativa de um grupo, que é composta por um id,
+ * Classe representativa de um grupo, que ï¿½ composta por um id,
  * lista de clientes membros, lista de mensagens, lista de mensagens
  *  em historico, cliente dono do grupo, ficheiro de grupo, log de 
  *  mensagens, ficheiro de membros e ficheiro de historico mensagens.
@@ -39,7 +41,7 @@ public class Grupo {
 		membros.add(dono);
 		this.msgs = new ArrayList<Mensagem>();
 		this.historicoMsgs = new ArrayList<Mensagem>();
-		this.groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
+		this.groupFolder = new File("data\\Group Folder\\" + this.grupoID);
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
@@ -62,7 +64,7 @@ public class Grupo {
 		this.membros = membros;
 		this.msgs = msgs;
 		this.historicoMsgs = historico;
-		this.groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
+		this.groupFolder = new File("data\\Group Folder\\" + this.grupoID);
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
@@ -70,7 +72,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método que regista um grupo em disco.
+	 * Mï¿½todo que regista um grupo em disco.
 	 */
 	public void registaGrupo() {
 		try {
@@ -85,16 +87,16 @@ public class Grupo {
 	}
 
 	/**
-	 * Método que receve um cliente e verifica se este é dono do grupo.
+	 * Mï¿½todo que receve um cliente e verifica se este ï¿½ dono do grupo.
 	 * @param cliente - cliente
-	 * @return true se cliente é dono do grupo, senao false.
+	 * @return true se cliente ï¿½ dono do grupo, senao false.
 	 */
 	public boolean isDono(Cliente cliente){
 		return cliente.getUser().equals(dono.getUser());
 	}
 
 	/**
-	 * Método que identifica se um cliente recebido pertence ao grupo.
+	 * Mï¿½todo que identifica se um cliente recebido pertence ao grupo.
 	 * @param cliente - cliente
 	 * @return true se cliente pertence ao grupo, senao false.
 	 */
@@ -108,7 +110,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método que adiciona um cliente ao grupo atual.
+	 * Mï¿½todo que adiciona um cliente ao grupo atual.
 	 * @param cliente - cliente
 	 */
 	public void addMembro(Cliente cliente){
@@ -118,7 +120,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método que remove um cliente do grupo atual.
+	 * Mï¿½todo que remove um cliente do grupo atual.
 	 * @param cliente - cliente
 	 */
 	public void removeMembro(Cliente cliente){
@@ -128,7 +130,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método que guarda mensagem enviada de um cliente em listas 
+	 * Mï¿½todo que guarda mensagem enviada de um cliente em listas 
 	 * e em disco.
 	 * @param msg - mensagem enviada
 	 * @param cliente - cliente
@@ -143,7 +145,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método que devolve o Id do grupo atual.
+	 * Mï¿½todo que devolve o Id do grupo atual.
 	 * @return groupID
 	 */
 	public String getGrupoID(){
@@ -151,7 +153,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método devolve lista de iD's dos membros do grupo.
+	 * Mï¿½todo devolve lista de iD's dos membros do grupo.
 	 * @return lista de id's de membros.
 	 */
 	public ArrayList<String> getMembros(){
@@ -163,7 +165,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método devolve as mensagens por ler de um determinado cliente dentro 
+	 * Mï¿½todo devolve as mensagens por ler de um determinado cliente dentro 
 	 * do grupo.
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens por ler
@@ -180,7 +182,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método devolve as mensagens lidas de um determinado cliente dentro 
+	 * Mï¿½todo devolve as mensagens lidas de um determinado cliente dentro 
 	 * do grupo.
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens lidas
@@ -203,7 +205,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Método que envia e coloca os dados de um grupo em disco.
+	 * Mï¿½todo que envia e coloca os dados de um grupo em disco.
 	 */
 	public void groupContentsToFile() {
 		File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");

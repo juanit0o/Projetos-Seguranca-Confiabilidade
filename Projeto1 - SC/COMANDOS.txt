@@ -1,0 +1,18 @@
+javac -d bin src/Server/SeiTchizServer.java src/Server/CatalogoClientes.java src/Server/CatalogoGrupos.java src/Server/Cliente.java src/Server/Grupo.java src/Server/Mensagem.java src/Server/Photo.java
+
+
+java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy Server.SeiTchizServer 45678
+java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy -Djava.security.debug=all Server.SeiTchizServer 45678
+java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy -Djava.security.debug=access Server.SeiTchizServer 45678
+java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy -Djava.security.debug=policy Server.SeiTchizServer 45678
+
+
+
+
+-----------------------------------
+
+javac -d bin src/Client/SeiTchiz.java
+
+
+java -cp bin -Djava.security.manager -Djava.security.policy==src/client.policy Client.SeiTchiz 127.0.0.1:45678 test 123
+

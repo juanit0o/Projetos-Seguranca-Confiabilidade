@@ -1,9 +1,11 @@
+package Server;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
- * Classe representativa de uma fotografia, que é composta pelo path da 
+ * Classe representativa de uma fotografia, que ï¿½ composta pelo path da 
  * fotografia, lista de Clientes que colocaram gosto e id do cliente que 
  * publicou a fotografia.
  * @author Diogo Pinto 52763 
@@ -31,7 +33,7 @@ public class Photo {
 	}
 
 	/**
-	 * Método representativo textual de fotografia.
+	 * Mï¿½todo representativo textual de fotografia.
 	 */
 	public String toString() {
 		String output = photoPath;
@@ -46,7 +48,7 @@ public class Photo {
 	}
 
 	/**
-	 * Método adiciona like de um user.
+	 * Mï¿½todo adiciona like de um user.
 	 * @param userID - id do user que coloca gosto.
 	 */
 	public void addLike(String userID) {
@@ -54,7 +56,7 @@ public class Photo {
 	}
 
 	/**
-	 * Método devolve o caminho da fotografia atual.
+	 * Mï¿½todo devolve o caminho da fotografia atual.
 	 * @return camihnho da fotografia.
 	 */
 	public String getPhotoPath() {
@@ -62,9 +64,9 @@ public class Photo {
 	}
 
 	/**
-	 * Método devolve se a fotografia já tem um gosto do user recebido.
+	 * Mï¿½todo devolve se a fotografia jï¿½ tem um gosto do user recebido.
 	 * @param liker - userId recebido
-	 * @return true se liker já gosta da fotografia, senao false.
+	 * @return true se liker jï¿½ gosta da fotografia, senao false.
 	 */
 	public boolean alreadyLiked(String liker) {
 		for(int i = 0; i < likesClientes.size(); i++) {
@@ -76,8 +78,8 @@ public class Photo {
 	}
 
 	/**
-	 * Método devolve informação da fotografia agrupada numa
-	 * string com a informação: nome e quantos likes tem.
+	 * Mï¿½todo devolve informaï¿½ï¿½o da fotografia agrupada numa
+	 * string com a informaï¿½ï¿½o: nome e quantos likes tem.
 	 * @return String com nome e numero de likes.
 	 */
 	public String getPhoto(){

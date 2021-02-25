@@ -1,3 +1,5 @@
+package Server;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ public class SeiTchizServer {
 		System.out.println("Server");
 		SeiTchizServer server = new SeiTchizServer();
 		if (args.length != 1) {
-			System.out.println("Server is started by typing 'SeiTchizServer (PORT)'!");
+			System.out.println("Server is started by typing 'Server.SeiTchizServer (PORT)'!");
 			System.exit(-1);
 		}
 		System.out.println("- - - - - - - - - - -");
@@ -32,8 +34,8 @@ public class SeiTchizServer {
 		ServerSocket sSoc = null;
 		try {
 			sSoc = new ServerSocket(port);
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
+		} catch (IOException | SecurityException e) {
+			System.err.println("[ERROR]: Couldnt accept the socket!");
 			System.exit(-1);
 		}
 		catClientes = new CatalogoClientes();
@@ -62,7 +64,7 @@ public class SeiTchizServer {
 			try {
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-				//Metodo loginUser e autenticar (criar um obj da classe Cliente com esses atributos,
+				//Metodo loginUser e autenticar (criar um obj da classe Server.Cliente com esses atributos,
 				//e probs mais alguns a ser preenchidos dps la)
 				String password = null;
 				boolean autenticou = false;
@@ -161,9 +163,9 @@ public class SeiTchizServer {
 						break;
 					case "p":
 					case "post":
-						File photoFolder = new File("..\\data\\Personal User Files\\" + user + "\\Photos");
-						File fileName = new File(photoFolder.getAbsolutePath(), "photo_" + currentClient.getUser()
-						+ "_" + currentClient.nrOfPhotos() + ".jpg");
+						String path = "data\\Personal User Files\\" + user + "\\Photos\\photo_"
+								+ currentClient.getUser() + "_" + currentClient.nrOfPhotos() + ".jpg";
+						File fileName = new File(path);
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 						Long dimensao;
 						try {
@@ -172,11 +174,10 @@ public class SeiTchizServer {
 							buffer = (byte[]) inStream.readObject();
 							photoRecebida.write(buffer);
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
-							currentClient.publishPhoto(fileName);
-							File fileDirectory = new File("..\\data\\Server Files");
-							File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
+							currentClient.publishPhoto(path);
+							File filePhotos = new File("data\\Server Files\\allPhotos.txt");
 							BufferedWriter bW = new BufferedWriter(new FileWriter(filePhotos, true));
-							bW.write(currentClient.getUser() + "::" + fileName.getAbsolutePath());
+							bW.write(currentClient.getUser() + "::" + fileName.getPath());
 							bW.newLine();
 							bW.close();
 							outStream.writeObject("File was submitted with success");
@@ -188,13 +189,24 @@ public class SeiTchizServer {
 						break;
 					case "w":
 					case "wall":
+
+						//criar pasta para o cliente
+						File wallFolder = new File("wall\\" + splittado[2]);
+						if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
+							String[] entries = wallFolder.list();
+							for(String s: entries){
+								File currentFile = new File(wallFolder.getPath(),s);
+								currentFile.delete();
+							}
+						}
+
 						//devolver os ids das n fotografias mais recentes e o nr de likes destas
 						//se houverem menos que o n dado apenas mostrar essas
 						//se n exisitirem nns dizer isso
-						File fileDirectory = new File("..\\data\\Server Files");
+						File fileDirectory = new File("data\\Server Files");
 						File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
 						BufferedReader bR = new BufferedReader(new FileReader(filePhotos));
-						ArrayList<String> followPhotoPaths = new ArrayList<String>(); //TODO: ? tirar 
+
 						ArrayList<String> outputAux = new ArrayList<String>();
 						String lineO;
 						ArrayList<String> allPhotoPaths = new ArrayList<String>();
@@ -248,8 +260,7 @@ public class SeiTchizServer {
 					case "l":
 					case "like":
 						String phId = splittado[1];
-						File fileDirectory1 = new File("..\\data\\Server Files");
-						File filePhotos1 = new File(fileDirectory1.getAbsolutePath(), "allPhotos.txt");
+						File filePhotos1 = new File("data\\Server Files\\allPhotos.txt");
 						BufferedReader bR1 = new BufferedReader(new FileReader(filePhotos1));
 						//ver o ficheiro allPhotos a procura do user que publicou a foto que vai levar o like
 						String line;

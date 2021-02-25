@@ -1,3 +1,5 @@
+package Client;
+
 import java.net.Socket;
 import java.util.Scanner;
 import java.io.*;
@@ -50,7 +52,13 @@ public class SeiTchiz {
 		}
 		System.out.println("serverIp = "+serverIp+"\nserverPort = "+serverPort);
 		//conectar ao server
-		conectToServer(serverIp,serverPort);
+		try{
+			conectToServer(serverIp,serverPort);
+		} catch (SecurityException e) {
+			System.out.println("[ERROR]: Couldnt connect to the server!");
+			System.exit(-1);
+		}
+
 		//autenticacao 
 		autenticacao(user, pass);
 		sendReceiveComando(user);
@@ -66,10 +74,10 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * Método recebe um userId de um cliente que informa o cliente quais os comandos
-	 * disponiveis de serem usados pelo cliente. Os comandos são redirecionados para
+	 * Mï¿½todo recebe um userId de um cliente que informa o cliente quais os comandos
+	 * disponiveis de serem usados pelo cliente. Os comandos sï¿½o redirecionados para
 	 * o servidor que trata dos mesmos.
-	 * O método mantem-se ativo enquanto o cliente quiser fazer pedidos, caso contrário
+	 * O mï¿½todo mantem-se ativo enquanto o cliente quiser fazer pedidos, caso contrï¿½rio
 	 * basta sair, executando o comando quit ou exit. 
 	 * @param user - id do cliente que executa os comandos.
 	 */
@@ -225,25 +233,17 @@ public class SeiTchiz {
 				if (comando.length != 2){
 					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
 				} else {
-					File wallFolder = new File("..\\Wall\\"+ user);
-					if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
-						String[] entries = wallFolder.list();
-						for(String s: entries){
-							File currentFile = new File(wallFolder.getPath(),s);
-							currentFile.delete();
-						}
-					}
+					File wallFolder = new File("wall\\" + user);
 					try {
-						outObj.writeObject("wall "+comando[1]);
+						outObj.writeObject("wall " + comando[1] + " " + user);
 						int nrFotos = (int) inObj.readObject();
 						for(int i = 0; i < nrFotos; i++) {
-							File fileName = new File(wallFolder.getAbsolutePath(),"wall_"+user
-									+ "_"+ i + ".jpg");
+							File fileName = new File(wallFolder.getAbsolutePath(),"wall_" + user + "_"+ i + ".jpg");
 							OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
-							Long dimensao; //ADICIONADO
+							Long dimensao;
 							try {
 								dimensao = (Long) inObj.readObject();
-								byte[] buffer = new byte[dimensao.intValue()]; //TODO: tirar?
+								//byte[] buffer = new byte[dimensao.intValue()]; //TODO: tirar?
 								byte[] recebidos = (byte[]) inObj.readObject();
 								photoRecebida.write(recebidos);
 								photoRecebida.close();
@@ -273,9 +273,9 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * Método efetua a autentiacao de um cliente atraves do seu username 
+	 * Mï¿½todo efetua a autentiacao de um cliente atraves do seu username 
 	 * e da sua password.
-	 * São mostradas mensagens informativas ao cliente.
+	 * Sï¿½o mostradas mensagens informativas ao cliente.
 	 * @param user - username do cliente a autenticar.
 	 * @param pass - password do cliente a autenticar.
 	 */
@@ -287,7 +287,7 @@ public class SeiTchiz {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		System.out.println("Cliente enviou nome e pass");
+		System.out.println("Server.Cliente enviou nome e pass");
 		// verificar autenticacao
 		try {
 			String resposta = (String) inObj.readObject();
@@ -315,7 +315,7 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * Método estabele ligação ao servidor através de um ip e porto.
+	 * Mï¿½todo estabele ligaï¿½ï¿½o ao servidor atravï¿½s de um ip e porto.
 	 * @param ip - ip de ligacao.
 	 * @param port - porto de ligacao.
 	 */
@@ -331,7 +331,7 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * Método devolve o porto recebido de um endereço recebido 
+	 * Mï¿½todo devolve o porto recebido de um endereï¿½o recebido 
 	 * no formato de endereco:porto.
 	 * @param serverAdress - endereco e porto
 	 * @return porto do endereco recebido.
@@ -342,7 +342,7 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * Método devolve o ip recebido de um endereco:porto.
+	 * Mï¿½todo devolve o ip recebido de um endereco:porto.
 	 * @param serverAdress - endereco e porto
 	 * @return ip do endereco recebido.
 	 */

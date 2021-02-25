@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,8 +10,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 /**
- * Classe para objetos do tipo Cliente, permitindo um acesso 
- * mais facilitado aos mesmos através de um mapa.
+ * Classe para objetos do tipo Server.Cliente, permitindo um acesso
+ * mais facilitado aos mesmos atravï¿½s de um mapa.
  * @author Diogo Pinto 52763 
  * @author Francisco Ramalho 53472
  * @author Joao Funenga 53504
@@ -18,16 +20,16 @@ public class CatalogoClientes {
 
 	private HashMap<String, Cliente> mapClientes;
 	// Para criar a diretoria com os ficheiros do servidor
-	File fileDirectory = new File("..\\data\\Server Files");
+	File fileDirectory = new File("data\\Server Files");
 	// tenta criar esta nova diretoria caso nao exista
 	boolean value = fileDirectory.mkdirs();
 	// para o ficheiro allUsers dentro do Server Files com todos os users e passes
-	File file = new File(fileDirectory.getAbsolutePath(), "allUsers.txt");
-	File photoFile = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
+	File file = new File("data\\Server Files\\allUsers.txt");
+	File photoFile = new File("data\\Server Files\\allPhotos.txt");
 
 	/**
 	 * Construtor da classe que incia um mapa onde os clientes
-	 * são guardados por chave userId e valor classe Cliente.
+	 * sï¿½o guardados por chave userId e valor classe Server.Cliente.
 	 */
 	public CatalogoClientes() {
 		mapClientes = new HashMap<String, Cliente>();
@@ -58,7 +60,7 @@ public class CatalogoClientes {
 	}
 
 	/**
-	 * Método para adicionar um cliente ao catálogo de clientes.
+	 * Mï¿½todo para adicionar um cliente ao catï¿½logo de clientes.
 	 * @param user - userId do cliente.
 	 * @param pass - password do cliente.
 	 * @param outStream - stream de escrita.
@@ -77,13 +79,13 @@ public class CatalogoClientes {
 			// criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos
 			// $ mensagensPler +
 			// criar a diretoria para os personal files
-			File clientFolder = new File("..\\data\\Personal User Files\\" + user);
-			File photoFolder = new File("..\\data\\Personal User Files\\"+ user + "\\Photos");
+			File clientFolder = new File("data\\Personal User Files\\" + user);
+			File photoFolder = new File("data\\Personal User Files\\"+ user + "\\Photos");
 			// tenta criar essa diretoria
 			clientFolder.mkdirs();
 			photoFolder.mkdirs();
 			// para o ficheiro pesssoal por cliente
-			File fileCliente = new File(clientFolder.getAbsolutePath(), "info.txt");
+			File fileCliente = new File("data\\Personal User Files\\" + user + "\\info.txt");
 			fileCliente.createNewFile(); // cria o ficheiro para o cliente
 			cliente.userContentsToFile();
 		} catch (Exception e) {
@@ -92,28 +94,28 @@ public class CatalogoClientes {
 	}
 
 	/**
-	 * Método devolve um objeto Cliente, com base no userId recebido.
+	 * Mï¿½todo devolve um objeto Server.Cliente, com base no userId recebido.
 	 * @param username - userId do cliente.
-	 * @return objeto do tipo Cliente.
+	 * @return objeto do tipo Server.Cliente.
 	 */
 	public Cliente getCliente(String username) { //TODO: PUBLIC?
 		return mapClientes.get(username);
 	}
 
 	/**
-	 * Método que retorna se o user existe no catálogo de clientes.
+	 * Mï¿½todo que retorna se o user existe no catï¿½logo de clientes.
 	 * @param user - userId do cliente.
-	 * @return true se user existe no catálogo de clientes, senao false.
+	 * @return true se user existe no catï¿½logo de clientes, senao false.
 	 */
 	public boolean existeUser(String user) {
 		return mapClientes.get(user) != null;
 	}
 
 	/**
-	 * Método que retorna se a password do cliente está correta.
+	 * Mï¿½todo que retorna se a password do cliente estï¿½ correta.
 	 * @param user - userId do cliente.
 	 * @param password - password do cliente.
-	 * @return True se a password é a correta, senao false.
+	 * @return True se a password ï¿½ a correta, senao false.
 	 */
 	public boolean passCorreta(String user, String password) {
 		return mapClientes.get(user).isPass(password);

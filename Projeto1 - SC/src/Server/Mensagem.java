@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -26,7 +28,7 @@ public class Mensagem {
 
 	/**
 	 * Construtor da classe que inicia uma mensagem recebendo um id de grupo, 
-	 * Cliente remetente, a mensagem e uma lista de membros do grupo para
+	 * Server.Cliente remetente, a mensagem e uma lista de membros do grupo para
 	 * que se possa guardar e verificar melhor quem lê ou não lê. Este construtor
 	 * é usado quando é criada um mensagem nova.
 	 * @param grupoID - id do grupo
@@ -47,7 +49,7 @@ public class Mensagem {
 
 	/**
 	 * Construtor da classe que imicia uma mensagem recebendo um id de grupo, 
-	 * Cliente remetente, a mensagem e uma lista de membros do grupo para
+	 * Server.Cliente remetente, a mensagem e uma lista de membros do grupo para
 	 * que se possa guardar e verificar melhor quem lê ou não lê. Este construtor
 	 * é usado quando é feito load dos ficheiros em disco.
 	 * @param grupoID - id do grupo
@@ -124,7 +126,7 @@ public class Mensagem {
 	 * Método coloca e guarda os dados da mensagem atual em disco.
 	 */
 	private void moverMensagemParaHistorico(){
-		File groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
+		File groupFolder = new File("data\\Group Folder\\" + this.grupoID);
 		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(logGrupo, true));
@@ -155,7 +157,7 @@ public class Mensagem {
 		//remetente
 		output += remetente.getUser();
 		output += "%%";
-		//Mensagem
+		//Server.Mensagem
 		output += msg;
 		output += "%%";
 		//Membros por ler

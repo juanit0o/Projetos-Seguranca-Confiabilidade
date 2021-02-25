@@ -1,3 +1,5 @@
+package Server;
+
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Classe representativa de um cliente, que é composta por nome,
+ * Classe representativa de um cliente, que ï¿½ composta por nome,
  * username, password, lista de seguidores, lista de quem segue,
  * lista de grupos a que pertence e lista de fotografias publicadas.
  * @author Diogo Pinto 52763 
@@ -44,12 +46,12 @@ public class Cliente {
 
 	// carregar os seus followers,quem segue....
 	/**
-	 * Método que carrega a informação prévia armazenada em disco para as listas
+	 * Mï¿½todo que carrega a informaï¿½ï¿½o prï¿½via armazenada em disco para as listas
 	 * de seguidores, quem segue, grupos e fotografias.
 	 */
 	public void carregarConta() {
 		// pegar no seu ficheiro e preencher os array lists
-		File fileUser = new File("..\\data\\Personal User Files\\" + this.user + "\\info.txt");
+		File fileUser = new File("data\\Personal User Files\\" + this.user + "\\info.txt");
 		try {
 			BufferedReader rW = new BufferedReader(new FileReader(fileUser));
 			String line;
@@ -98,7 +100,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que retorna se a password dada é a password do cliente.
+	 * Mï¿½todo que retorna se a password dada ï¿½ a password do cliente.
 	 * @param password - password do cliente.
 	 * @return true se a password pertence ao cliente, senao false.
 	 */
@@ -107,7 +109,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que retorna o userId do cliente.
+	 * Mï¿½todo que retorna o userId do cliente.
 	 * @return userId do cliente.
 	 */
 	public String getUser() {
@@ -115,7 +117,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que retorna se começou a seguir um cliente, recebendo o mesmo.
+	 * Mï¿½todo que retorna se comeï¿½ou a seguir um cliente, recebendo o mesmo.
 	 * @param clientASeguir - cliente a seguir.
 	 * @return true se seguiu o cliente, senao false.
 	 */
@@ -132,7 +134,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que coloca um cliente como seguidor deste.
+	 * Mï¿½todo que coloca um cliente como seguidor deste.
 	 * @param follower - seguidor.
 	 */
 	public void seguidoPor(String follower) {
@@ -141,7 +143,7 @@ public class Cliente {
 	}
 	
 	/**
-	 * Método que retorna se deixou de seguir um cliente, recebendo o mesmo.
+	 * Mï¿½todo que retorna se deixou de seguir um cliente, recebendo o mesmo.
 	 * @param pessoa - cliente a deixar de seguir.
 	 * @return true se deixou de seguir o cliente, senao false.
 	 */
@@ -163,7 +165,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Retorna a lista de grupos em que o cliente está envolvido,
+	 * Retorna a lista de grupos em que o cliente estï¿½ envolvido,
 	 * seja como dono ou participante.
 	 * @return - lista de grupos que o cliente participa.
 	 */
@@ -172,7 +174,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que remove um seguidor através do seu userId.
+	 * Mï¿½todo que remove um seguidor atravï¿½s do seu userId.
 	 * @param follower - userId do cliente a deixar de ser seguidor.
 	 */
 	public void removerFollower(String follower) {
@@ -187,7 +189,7 @@ public class Cliente {
 	}
 	
 	/**
-	 * Método que adiciona o cliente atual aos grupos que participa.
+	 * Mï¿½todo que adiciona o cliente atual aos grupos que participa.
 	 * @param grupoID - groupId do grupo.
 	 */
 	public void entrarEmGrupo(String grupoID) {
@@ -196,7 +198,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que remove o cliente atual do grupo através do grupoId.
+	 * Mï¿½todo que remove o cliente atual do grupo atravï¿½s do grupoId.
 	 * @param grupoID - groupId do grupo.
 	 */
 	public void sairDeGrupo(String grupoID) {
@@ -205,7 +207,7 @@ public class Cliente {
 	}
 	
 	/**
-	 * Método que devolve uma lista dos seguidores.
+	 * Mï¿½todo que devolve uma lista dos seguidores.
 	 * @return lista de seguidores.
 	 */
 	public ArrayList<String> getFollowers (){
@@ -213,31 +215,31 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que devolve o número de seguidores.
-	 * @return número de seguidores.
+	 * Mï¿½todo que devolve o nï¿½mero de seguidores.
+	 * @return nï¿½mero de seguidores.
 	 */
 	public int nrOfPhotos() {
 		int nrPhotos = 0;
-		File photoFolder = new File("..\\data\\Personal User Files\\"+ this.user + "\\Photos");
+		File photoFolder = new File("data\\Personal User Files\\"+ this.user + "\\Photos");
 		nrPhotos = photoFolder.list().length;
 		return nrPhotos;
 	}
 
 	/**
-	 * Método que publica uma fotografia, colocando-a na lista de fotografias publicadas.
-	 * @param fileName - nome da fotografia.
+	 * Mï¿½todo que publica uma fotografia, colocando-a na lista de fotografias publicadas.
+	 * @param filePath - nome da fotografia.
 	 */
-	public void publishPhoto(File fileName) {
-		photos.add(new Photo(fileName.getAbsolutePath(), new ArrayList<String>(), this.user));
+	public void publishPhoto(String filePath) {
+		photos.add(new Photo(filePath, new ArrayList<String>(), this.user));
 		userContentsToFile();
 	}
 
 	/**
-	 * Método que carrega os conteudos do cliente para o disco.
+	 * Mï¿½todo que carrega os conteudos do cliente para o disco.
 	 */
 	public void userContentsToFile() {
 
-		File fileUser = new File("..\\data\\Personal User Files\\" + this.user + "\\info.txt"); // POR NO SITIO DOS FOLLOWERS
+		File fileUser = new File("data\\Personal User Files\\" + this.user + "\\info.txt"); // POR NO SITIO DOS FOLLOWERS
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow
@@ -271,7 +273,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que coloca like de um utilizador numa fotografia do cliente atual.
+	 * Mï¿½todo que coloca like de um utilizador numa fotografia do cliente atual.
 	 * @param phId - id da fotografia.
 	 * @param userLiking - utilizador que gostou.
 	 */
@@ -286,7 +288,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que retorna se segue um cliente recebido por userId.
+	 * Mï¿½todo que retorna se segue um cliente recebido por userId.
 	 * @param uid - userId do cliente.
 	 * @return true se segue o user, senao false.
 	 */
@@ -295,12 +297,15 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que retorna id da fotografia correspondente ao caminho recebido.
+	 * Mï¿½todo que retorna id da fotografia correspondente ao caminho recebido.
 	 * @param path - caminho da fotografia.
 	 * @return id da fotografia se existir, senao "".
 	 */
 	public String getPhoto(String path){
 		for(int i = 0; i < photos.size(); ++i){
+			System.out.println(photos.get(i).getPhotoPath());
+			System.out.println(path + "\n");
+
 			if(photos.get(i).getPhotoPath().equals(path)){
 				return photos.get(i).getPhoto();
 			}
@@ -309,7 +314,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Método que retorna se uma fotografia já tem gosto de um cliente.
+	 * Mï¿½todo que retorna se uma fotografia jï¿½ tem gosto de um cliente.
 	 * @param uidLiker - userId do cliente.
 	 * @param pathFoto - caminho da fotografia.
 	 * @return true se ja tem gosto, senao false.
