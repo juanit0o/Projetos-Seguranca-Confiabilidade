@@ -1,14 +1,20 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Classe representativa de um cliente, que é composta por nome,
+ * username, password, lista de seguidores, lista de quem segue,
+ * lista de grupos a que pertence e lista de fotografias publicadas.
+ * @author Diogo Pinto 52763 
+ * @author Francisco Ramalho 53472
+ * @author Joao Funenga 53504
+ *
+ */
 public class Cliente {
 
 	private String nome;
@@ -19,6 +25,13 @@ public class Cliente {
 	private ArrayList<String> grupos; 
 	private ArrayList<Photo> photos; 
 
+	/**
+	 * Construtor da classe que incia um cliente recebendo
+	 * um username, password e nome.
+	 * @param u - userId do cliente.
+	 * @param p - password do cliente.
+	 * @param nome - nome do cliente.
+	 */
 	public Cliente(String u, String p, String nome) {
 		this.nome = nome;
 		this.user = u;
@@ -30,6 +43,10 @@ public class Cliente {
 	}
 
 	// carregar os seus followers,quem segue....
+	/**
+	 * Método que carrega a informação prévia armazenada em disco para as listas
+	 * de seguidores, quem segue, grupos e fotografias.
+	 */
 	public void carregarConta() {
 		// pegar no seu ficheiro e preencher os array lists
 		File fileUser = new File("..\\data\\Personal User Files\\" + this.user + "\\info.txt");
@@ -51,12 +68,10 @@ public class Cliente {
 					case 3:
 						grupos.add(line);
 						break;
-					case 4: //TODO para a fotografia
-						
+					case 4: 
 						//path::like1;like
 						String[] splittada = line.split("::");
 						if(splittada.length == 2) {
-							
 							ArrayList<String> likes = new ArrayList<String>();
 							String[] likesFicheiros = splittada[1].split(";"); //cada posicao com o userID de quem deu like
 							for(int i = 0; i< likesFicheiros.length; i++) {
@@ -67,7 +82,6 @@ public class Cliente {
 						}else {
 							photos.add(new Photo(splittada[0],new ArrayList<String>(),this.user));
 						}
-						
 						break;
 					default:
 						System.out.println("Error beep bop");
@@ -75,7 +89,6 @@ public class Cliente {
 					}
 					System.out.println(line);
 				}
-
 			}
 			rW.close();
 		} catch (IOException e) {
@@ -84,43 +97,59 @@ public class Cliente {
 
 	}
 
+	/**
+	 * Método que retorna se a password dada é a password do cliente.
+	 * @param password - password do cliente.
+	 * @return true se a password pertence ao cliente, senao false.
+	 */
 	public boolean isPass(String password) {
 		return this.pass.equals(password);
 	}
 
+	/**
+	 * Método que retorna o userId do cliente.
+	 * @return userId do cliente.
+	 */
 	public String getUser() {
 		return this.user;
 	}
 
+	/**
+	 * Método que retorna se começou a seguir um cliente, recebendo o mesmo.
+	 * @param clientASeguir - cliente a seguir.
+	 * @return true se seguiu o cliente, senao false.
+	 */
 	public boolean seguir(Cliente clientASeguir) {
-
 		// verificar se o cliente ja segue essa pessoa (parte da pessoa exisitr ou nao
 		// feito no sv - existeId)
 		if (follows.contains(clientASeguir.getUser())) {
 			return false;
 		}
-
 		follows.add(clientASeguir.getUser()); // adicionar ao arraylist dos followers
 		userContentsToFile();
 		clientASeguir.seguidoPor(this.user);
 		return true;
 	}
 
+	/**
+	 * Método que coloca um cliente como seguidor deste.
+	 * @param follower - seguidor.
+	 */
 	public void seguidoPor(String follower) {
-		// ADICIONAR ESTE CLIENTE A LISTA DE FOLLOWERS
 		followers.add(follower);
 		userContentsToFile();
-
 	}
 	
+	/**
+	 * Método que retorna se deixou de seguir um cliente, recebendo o mesmo.
+	 * @param pessoa - cliente a deixar de seguir.
+	 * @return true se deixou de seguir o cliente, senao false.
+	 */
 	public boolean deixarDeSeguir(Cliente pessoa) {
-		//VERIFICAR SE JA DA FOLLOW A PESSOA 
+		//verifica se a pessoa ja existe
 		if(!follows.contains(pessoa.getUser())) {
 			return false;
-		}	
-		// REMOVER ESTE CLIENTE A LISTA DE quem da follow
-		//follows.remove(pessoa.getID());
-		
+		}
 		ArrayList<String> followsAux = new ArrayList<String>();
 		for(int i = 0; i < follows.size(); i++) {
 			if(follows.get(i) != pessoa.getUser()) {
@@ -128,19 +157,25 @@ public class Cliente {
 			}
 		}
 		follows = followsAux;
-
 		pessoa.removerFollower(this.user);
 		userContentsToFile();
-
 		return true;
 	}
 
+	/**
+	 * Retorna a lista de grupos em que o cliente está envolvido,
+	 * seja como dono ou participante.
+	 * @return - lista de grupos que o cliente participa.
+	 */
 	public ArrayList<String> getGrupos(){
 		return this.grupos;
 	}
 
+	/**
+	 * Método que remove um seguidor através do seu userId.
+	 * @param follower - userId do cliente a deixar de ser seguidor.
+	 */
 	public void removerFollower(String follower) {
-		// ADICIONAR ESTE CLIENTE A LISTA DE FOLLOWERS
 		ArrayList<String> followersAux = new ArrayList<String>();
 		for(int i = 0; i < followers.size(); i++) {
 			if(followers.get(i) != follower) {
@@ -149,43 +184,60 @@ public class Cliente {
 		}
 		followers = followersAux;
 		userContentsToFile();
-
 	}
 	
+	/**
+	 * Método que adiciona o cliente atual aos grupos que participa.
+	 * @param grupoID - groupId do grupo.
+	 */
 	public void entrarEmGrupo(String grupoID) {
 		grupos.add(grupoID);
 		userContentsToFile();
 	}
 
+	/**
+	 * Método que remove o cliente atual do grupo através do grupoId.
+	 * @param grupoID - groupId do grupo.
+	 */
 	public void sairDeGrupo(String grupoID) {
 		grupos.remove(grupoID);
 		userContentsToFile();
 	}
 	
+	/**
+	 * Método que devolve uma lista dos seguidores.
+	 * @return lista de seguidores.
+	 */
 	public ArrayList<String> getFollowers (){
 		return this.followers;
 	}
 
+	/**
+	 * Método que devolve o número de seguidores.
+	 * @return número de seguidores.
+	 */
 	public int nrOfPhotos() {
-		//percorrer a pasta 
 		int nrPhotos = 0;
 		File photoFolder = new File("..\\data\\Personal User Files\\"+ this.user + "\\Photos");
 		nrPhotos = photoFolder.list().length;
-		//System.out.println("nr photos na pasta: " + nrPhotos);
-		
 		return nrPhotos;
 	}
 
+	/**
+	 * Método que publica uma fotografia, colocando-a na lista de fotografias publicadas.
+	 * @param fileName - nome da fotografia.
+	 */
 	public void publishPhoto(File fileName) {
 		photos.add(new Photo(fileName.getAbsolutePath(), new ArrayList<String>(), this.user));
 		userContentsToFile();
 	}
 
-	// por agora ainda so preenche o ficheiro com os followers e a quem da follow
+	/**
+	 * Método que carrega os conteudos do cliente para o disco.
+	 */
 	public void userContentsToFile() {
 
-		File fileUser = new File("..\\data\\Personal User Files\\" + this.user + "\\info.txt"); // POR NO SITIO DOS
-																								// FOLLOWERS
+		File fileUser = new File("..\\data\\Personal User Files\\" + this.user + "\\info.txt"); // POR NO SITIO DOS FOLLOWERS
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow
@@ -218,6 +270,11 @@ public class Cliente {
 		}
 	}
 
+	/**
+	 * Método que coloca like de um utilizador numa fotografia do cliente atual.
+	 * @param phId - id da fotografia.
+	 * @param userLiking - utilizador que gostou.
+	 */
 	public void putLike(String phId, String userLiking) {
 		for (int i = 0; i < photos.size(); i++) {
 			if (photos.get(i).getPhotoPath().equals(phId)) {
@@ -226,13 +283,22 @@ public class Cliente {
 				return;
 			}
 		}
-		
 	}
 
+	/**
+	 * Método que retorna se segue um cliente recebido por userId.
+	 * @param uid - userId do cliente.
+	 * @return true se segue o user, senao false.
+	 */
 	public boolean follows(String uid) {
 		return follows.contains(uid);
 	}
 
+	/**
+	 * Método que retorna id da fotografia correspondente ao caminho recebido.
+	 * @param path - caminho da fotografia.
+	 * @return id da fotografia se existir, senao "".
+	 */
 	public String getPhoto(String path){
 		for(int i = 0; i < photos.size(); ++i){
 			if(photos.get(i).getPhotoPath().equals(path)){
@@ -242,13 +308,18 @@ public class Cliente {
 		return "";
 	}
 
-	public boolean alreadyLiked(String liker, String pathFoto) {
+	/**
+	 * Método que retorna se uma fotografia já tem gosto de um cliente.
+	 * @param uidLiker - userId do cliente.
+	 * @param pathFoto - caminho da fotografia.
+	 * @return true se ja tem gosto, senao false.
+	 */
+	public boolean alreadyLiked(String uidLiker, String pathFoto) {
 		for(int i = 0; i < photos.size(); i++) {
 			if(photos.get(i).getPhotoPath().equals(pathFoto)) {
-				return photos.get(i).alreadyLiked(liker);
+				return photos.get(i).alreadyLiked(uidLiker);
 			}
 		}
 		return false;
 	}	
-
 }

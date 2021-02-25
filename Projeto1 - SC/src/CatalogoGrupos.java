@@ -7,23 +7,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Classe para objetos do tipo Grupos, permitindo um acesso 
+ * mais facilitado aos mesmos. Composta por um catalogo de 
+ * Clientes e por uma lista de grupos que contem.
+ * @author Diogo Pinto 52763 
+ * @author Francisco Ramalho 53472
+ * @author Joao Funenga 53504
+ *
+ */
 public class CatalogoGrupos {
-
+	
 	private CatalogoClientes catClientes;
-
 	private ArrayList<Grupo> grupos;
 	private File groupFolder = new File("..\\data\\Group Folder");
 	private File serverFolder = new File("..\\data\\Server Files");
 	private File groupFile = new File(serverFolder.getAbsolutePath(), "allGroups.txt");
 	
-	
+	/**
+	 * Construtor da classe que incia uma lista onde os clientes
+	 * são guardados em grupos  do tipo Grupo, e no incio do programa
+	 * são carreagados todos os dados em disco para acesso ágil.
+	 * @param catClientes - catálogo de clientes.
+	 */
 	public CatalogoGrupos(CatalogoClientes catClientes) {
 		grupos = new ArrayList<Grupo>();
 		this.catClientes = catClientes;
-
 		groupFolder.mkdirs();
 		//carregar conteudo do ficheiro de grupos
-		
 		try {
 			if(!groupFile.createNewFile()) {
 				System.out.println("Group file loaded: " + groupFile.getName());
@@ -31,41 +42,30 @@ public class CatalogoGrupos {
 				while (scReader.hasNextLine()) {
 					//ver o nome de um grupo, ir ï¿½ pasta desse grupo, ler o ficheiro de membros e 
 					//mensagens para chamar o construtor do grupo
-					
 					//group id = cada linha tem o nome de um grupo
 					String linha = scReader.nextLine();
 					File fileGrupo = new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_membros.txt");
 					BufferedReader rW = new BufferedReader(new FileReader(fileGrupo));
 					String line = rW.readLine();
-					
 					//Apanhar o dono
 					Cliente dono = catClientes.getCliente(line);
 					ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 					clientes.add(dono);
-					
 					//Apanhar os membros
 					while ((line = rW.readLine()) != null) {
 						clientes.add(catClientes.getCliente(line));
 					}
-
 					rW.close();
-
 					//TODO
 					//DA NULLPOINTER
 					//FALHA NA LEITURA DOS DADOS APOS RENICIAR O SV
-
-
 					//LOAD DA CAIXA
 					File fileMsg= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
 					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
-
 					while ((line = rW2.readLine()) != null) {
-
 						String[] mensagem = line.split("%%");
-
 						String[] ler = mensagem[3].split("\\*\\*");
-
 						ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
 						String[] listaPorLerDeClientes = ler[0].split("%");
 						if(!listaPorLerDeClientes[0].equals("")){
@@ -73,7 +73,6 @@ public class CatalogoGrupos {
 								listaPorLer.add(catClientes.getCliente(listaPorLerDeClientes[i]));
 							}
 						}
-
 						ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
 						if(ler.length >= 2){
 							String[] listaLeuClientes = ler[1].split("%");
@@ -83,24 +82,18 @@ public class CatalogoGrupos {
 								}
 							}
 						}
-
 						//grupoID, remetente, msg, listagrupo, data
 						msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0]));
-
 					}
 					rW2.close();
-
 					System.out.println();
-
 					//LOAD DA HISTORICO (SO ESTAO AS MENSAGENS LIDAS POR TODOS, SEM POR LER)
 					File fileHist= new File("..\\data\\Group Folder\\" + linha + "\\"+linha +"_historico.txt");
 					BufferedReader rW3 = new BufferedReader(new FileReader(fileHist));
 					ArrayList<Mensagem> historico = new ArrayList<Mensagem>();
-
+					//Enquanto houver historico para ler
 					while ((line = rW3.readLine()) != null) {
-
 						String[] mensagem = line.split("%%");
-
 						ArrayList<Cliente> listaLeu = new ArrayList<Cliente>();
 						String[] listaLeuClientes = mensagem[3].split("%");
 						if(!listaLeuClientes[0].equals("")) {
@@ -108,28 +101,29 @@ public class CatalogoGrupos {
 								listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
 							}
 						}
-
 						historico.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, new ArrayList<Cliente>(), mensagem[0]));
-
-
 					}
 					rW3.close();
-
 					grupos.add(new Grupo(linha, dono, clientes, msgs, historico));
 				}
+				scReader.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-
+	/**
+	 * Método que adiciona um grupo ao catálogo de grupos com 
+	 * um id de grupo e quem cria o grupo, que será o dono.
+	 * @param grupoID - id para o grupo.
+	 * @param dono - cliente que cria e é dono do grupo.
+	 */
 	public void addGrupo(String grupoID, Cliente dono) {
 		Grupo grupo = new Grupo(grupoID, dono);
 		grupo.registaGrupo();
 		grupos.add(grupo);
 		dono.entrarEmGrupo(grupoID);
-		
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(groupFile, true));
 			bW.write(grupoID);
@@ -139,21 +133,31 @@ public class CatalogoGrupos {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
+	/**
+	 * Método que adiciona um cliente a um grupo.
+	 * @param cliente - userId do cliente a adicionar.
+	 * @param groupID - id do grupo.
+	 */
 	public void addMembro(String cliente, String groupID){
-
 		getGrupo(groupID).addMembro(catClientes.getCliente(cliente));
-
 	}
 
+	/**
+	 * Método que remove um cliente de um grupo.
+	 * @param cliente - userId do cliente a remover.
+	 * @param groupID - id do grupo.
+	 */
 	public void removeMembro(String cliente, String groupID){
-
 		getGrupo(groupID).removeMembro(catClientes.getCliente(cliente));
-
 	}
 
+	/**
+	 * Método que retorna um grupo através do id de grupo.
+	 * @param groupID - id do grupo.
+	 * @return Se existe, Grupo com groupId, senao null.
+	 */
 	private Grupo getGrupo(String groupID){
 		for(int i = 0; i < grupos.size(); ++i){
 			if(grupos.get(i).getGrupoID().equals(groupID)){
@@ -163,6 +167,11 @@ public class CatalogoGrupos {
 		return null;
 	}
 
+	/**
+	 * Método que retorna se um grupo existe.
+	 * @param groupID - id do grupo.
+	 * @return true se o grupo existe, senao false.
+	 */
 	public boolean existeGrupo(String groupID){
 		for(int i = 0; i < grupos.size(); ++i){
 			if(grupos.get(i).getGrupoID().equals(groupID)){
@@ -172,29 +181,64 @@ public class CatalogoGrupos {
 		return false;
 	}
 
+	/**
+	 * Método que retorna se um cliente pertence a um grupo.
+	 * @param cliente - userId do cliente.
+	 * @param groupID - groupId do grupo.
+	 * @return true se pertencer, senao false.
+	 */
 	public boolean pertenceAoGrupo(String cliente, String groupID) {
 		return getGrupo(groupID).pertenceGrupo(cliente);
 	}
 
+	/**
+	 * Método que retorna se um cliente é dono de um grupo.
+	 * @param cliente - userId do cliente.
+	 * @param groupID - groupId do grupo.
+	 * @return true se cliente é dono, senao false.
+	 */
 	public boolean isDono(Cliente cliente, String groupID) {
 		return getGrupo(groupID).isDono(cliente);
 	}
 
+	/**
+	 * Método que retorna uma lista de membros pertencentes a um grupo.
+	 * @param groupID - groupId do grupo. 
+	 * @return lista de userId's dos membros do grpo.
+	 */
 	public ArrayList<String> getMembros(String groupID){
 		return getGrupo(groupID).getMembros();
 	}
 
+	/**
+	 * Método que guarda uma mensagem enviada por um cliente num dado grupo.
+	 * @param groupID - groupId do grupo.
+	 * @param msg - mensagem do cliente.
+	 * @param cliente - Cliente que envia a mensagem.
+	 */
 	public void guardarMensagem(String groupID, String msg, Cliente cliente){
 		getGrupo(groupID).guardarMensagem(msg, cliente);
 	}
 
+	/**
+	 * Método que devolve uma lista das mensagens por ler de um cliente,
+	 * num grupo.
+	 * @param grupoID - groupId do grupo.
+	 * @param cliente - Cliente a ver mensagens.
+	 * @return lista de mensagens por ler no grupo.
+	 */
 	public ArrayList<String> getMensagensPorLer(String grupoID, Cliente cliente){
 		return getGrupo(grupoID).getMensagensPorLer(cliente.getUser());
-
 	}
 
+	/**
+	 * Método que retorna uma lista das mensagens lidas de um cliente,
+	 * num grupo.
+	 * @param grupoID - groupId do grupo.
+	 * @param cliente - Cliente a ver mensagens.
+	 * @return lista de mensagens lidas no grupo.
+	 */
 	public ArrayList<String> getMensagensJaLidas(String grupoID, Cliente cliente){
 		return getGrupo(grupoID).getMensagensJaLidas(cliente.getUser());
-
 	}
 }

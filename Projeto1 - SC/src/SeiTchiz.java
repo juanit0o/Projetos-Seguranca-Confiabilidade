@@ -2,23 +2,26 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.io.*;
 
+/**
+ * 
+ * @author Diogo Pinto 52763 
+ * @author Francisco Ramalho 53472
+ * @author Joao Funenga 53504
+ *
+ */
 public class SeiTchiz {
 	private static Socket cSoc = null;
 	private static final int PORT_DEFAULT = 45678;
-
 	private static ObjectInputStream inObj = null;
 	private static ObjectOutputStream outObj = null;
-
 	private static final Scanner inSc = new Scanner(System.in);
 
 	public static void main(String[] args) {
 		System.out.println("cliente: main");
-
 		String serverIp = "";
 		int serverPort = 0;
 		String user = "";
 		String pass = "";
-
 		if (args.length == 2) { //caso: 127.0.0.1:45500 clientId  || 127.0.0.1 clientId 
 			user = args[1];
 			System.out.println("You haven't inserted a password. Password?");
@@ -33,7 +36,6 @@ public class SeiTchiz {
 			System.out.println("Invalid commands");
 			System.exit(-1);
 		}
-
 		//verifica se tem porto ou nao, caso nao PORT_DEFAULT
 		if (args[0].contains(":")) {
 			serverIp = getIp(args[0]);
@@ -45,12 +47,9 @@ public class SeiTchiz {
 		System.out.println("serverIp = "+serverIp+"\nserverPort = "+serverPort);
 		//conectar ao server
 		conectToServer(serverIp,serverPort);
-
 		//autenticacao 
 		autenticacao(user, pass);
-
 		sendReceiveComando(user);
-
 		// fechar tudo
 		try {
 			outObj.close();
@@ -63,7 +62,6 @@ public class SeiTchiz {
 	}
 
 	private static void sendReceiveComando(String user) {
-
 		System.out.println("Available commands:\n"+"follow/f <userID>\n"+
 				"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
 				"wall/w <nPhotos>\n"+"like/l <photoId>\n"+"newGroup/n <groupID>\n"+
@@ -107,7 +105,6 @@ public class SeiTchiz {
 					}
 				}
 				break;
-
 			case "f":
 			case "follow":
 			case "u":
@@ -148,22 +145,20 @@ public class SeiTchiz {
 					}
 				}
 				break;
-
 			case "m":
 			case "msg":
-					if (comando.length < 3){
-						System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
-					} else {
-						try {
-							outObj.writeObject(output);
-							System.out.println((String) inObj.readObject());
-							System.out.println("\nInsert a command or type help to see commands: ");
-						} catch (IOException | ClassNotFoundException e) {
-							System.out.println("The server is now offline :(");
-						}
+				if (comando.length < 3){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					try {
+						outObj.writeObject(output);
+						System.out.println((String) inObj.readObject());
+						System.out.println("\nInsert a command or type help to see commands: ");
+					} catch (IOException | ClassNotFoundException e) {
+						System.out.println("The server is now offline :(");
 					}
-					break;
-
+				}
+				break;
 			case "g":
 			case "ginfo":
 				if (comando.length >= 3){
@@ -178,7 +173,6 @@ public class SeiTchiz {
 					}
 				}
 				break;
-
 			case "p":
 			case "post":
 				if (comando.length <= 1){
@@ -192,7 +186,6 @@ public class SeiTchiz {
 						for (int i = 2; i < comando.length; ++i) {
 							photoPath += " " + comando[i];
 						}
-
 						File myPhoto = new File(photoPath);
 						if (myPhoto.exists()) {
 							Long tamanho = (Long) myPhoto.length();
@@ -200,29 +193,21 @@ public class SeiTchiz {
 							//outObj.reset(); //same aqui
 							outObj.writeObject(tamanho);
 							InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
-
 							part.read(buffer);
 							outObj.writeObject(buffer);
-
 							part.close();
-
 							System.out.println((String) inObj.readObject());
 							//System.out.println((String) inObj.readObject()); /*crash aqui*/
 							System.out.println("\nInsert a command or type help to see commands: ");
-
 						} else {
 							System.out.println("The file with the path " + photoPath + " doesn't exist");
 							System.out.println("\nInsert a command or type help to see commands: ");
 						}
-
-
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
 				break;
-			
 			case "w":
 			case "wall":
 				if (comando.length != 2){
@@ -236,20 +221,17 @@ public class SeiTchiz {
 							currentFile.delete();
 						}
 					}
-
 					try {
 						outObj.writeObject("wall "+comando[1]);
 						int nrFotos = (int) inObj.readObject();
-
 						for(int i = 0; i < nrFotos; i++) {
 							File fileName = new File(wallFolder.getAbsolutePath(),"wall_"+user
 									+ "_"+ i + ".jpg");
-
 							OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 							Long dimensao; //ADICIONADO
 							try {
 								dimensao = (Long) inObj.readObject();
-								byte[] buffer = new byte[dimensao.intValue()];
+								byte[] buffer = new byte[dimensao.intValue()]; //TODO: tirar?
 								byte[] recebidos = (byte[]) inObj.readObject();
 								photoRecebida.write(recebidos);
 								photoRecebida.close();
@@ -258,25 +240,20 @@ public class SeiTchiz {
 							}
 							System.out.println("foto " + i + "recebida");
 						}
-
 						System.out.println((String) inObj.readObject());
 						System.out.println("\nInsert a command or type help to see commands: ");
-
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
 				}
-
-
 				break;
-				
 			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
 				//try {
-					//outObj.writeObject(output);
-					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				//outObj.writeObject(output);
+				System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
 				//} catch (IOException | ClassNotFoundException e) {
 				//	System.out.println("The server is now offline :(");
-					//e.printStackTrace();
+				//e.printStackTrace();
 				//}
 				break;
 			}
@@ -291,13 +268,10 @@ public class SeiTchiz {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-
 		System.out.println("Cliente enviou nome e pass");
-
 		// verificar autenticacao
 		try {
 			String resposta = (String) inObj.readObject();
-			
 			if(resposta.equals("What is your name?")) {
 				System.out.println(resposta);
 				outObj.writeObject(inSc.nextLine());
@@ -306,7 +280,6 @@ public class SeiTchiz {
 				if (!autenticated) {
 					System.exit(-1);
 				}
-				
 			}else {
 				//Boolean autenticated = Boolean.parseBoolean(resposta);
 				Boolean autenticated = (resposta.equals("true"));
@@ -342,5 +315,4 @@ public class SeiTchiz {
 		String[] tudo = serverAdress.split(":");
 		return tudo[0];
 	}
-
 }

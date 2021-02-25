@@ -2,8 +2,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+/**
+ * 
+ * @author Diogo Pinto 52763 
+ * @author Francisco Ramalho 53472
+ * @author Joao Funenga 53504
+ *
+ */
 public class Photo {
-	
+
 	private String photoPath;
 	private ArrayList<String> likesClientes;
 	private String cliente; 
@@ -29,7 +36,7 @@ public class Photo {
 	public void addLike(String userLiking) {
 		this.likesClientes.add(userLiking);
 	}
-	
+
 	public String getPhotoPath() {
 		return this.photoPath;
 	}

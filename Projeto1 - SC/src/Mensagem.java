@@ -1,4 +1,3 @@
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -7,6 +6,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author Diogo Pinto 52763 
+ * @author Francisco Ramalho 53472
+ * @author Joao Funenga 53504
+ *
+ */
 public class Mensagem {
 
 	private String grupoID; //p onde vai
@@ -16,14 +22,13 @@ public class Mensagem {
 	private ArrayList <Cliente> porLerMsg;
 	private ArrayList <Cliente> leuMsg;
 
-	//USAR ESTE CONSTRUTOR QUANDO Ã‰ CRIADA UMA MENSAGEM NOVA
+	//USAR ESTE CONSTRUTOR QUANDO EH CRIADA UMA MENSAGEM NOVA
 	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaGrupo) {
 		this.grupoID = grupoID;
 		this.remetente = remetente;
 		this.msg = msg;
 		this.porLerMsg = listaGrupo;
 		this.leuMsg = new ArrayList<Cliente>();
-
 		LocalDateTime myDateObj = LocalDateTime.now();
 		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 		this.data = myDateObj.format(myFormatObj);
@@ -39,18 +44,14 @@ public class Mensagem {
 		this.data = data;
 	}
 
-
 	private void lerMensagem(int id){
-
 		leuMsg.add(porLerMsg.get(id));
-
 		ArrayList <Cliente> porLerMsgAux = new ArrayList<Cliente>();
 		for(int i = 0; i < porLerMsg.size(); ++i){
 			if(i != id)
 				porLerMsgAux.add(porLerMsg.get(i));
 		}
 		porLerMsg = porLerMsgAux;
-
 		//VERIFICA SE JA FOI LIDA POR TODOS E MANDA PARA HISTORICO
 		if(porLerMsg.isEmpty()){
 			moverMensagemParaHistorico();
@@ -83,7 +84,6 @@ public class Mensagem {
 	}
 
 	private void moverMensagemParaHistorico(){
-
 		File groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
 		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 		try {
@@ -101,26 +101,19 @@ public class Mensagem {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public String msgContentToFile(){
-
 		String output = "";
-
 		//DATA ATUAL
 		output += data;
-
 		output += "%%";
-
 		//remetente
 		output += remetente.getUser();
 		output += "%%";
-
 		//Mensagem
 		output += msg;
 		output += "%%";
-
 		//Membros por ler
 		for(int i = 0; i < porLerMsg.size(); ++i){
 			output += porLerMsg.get(i).getUser();
@@ -129,7 +122,6 @@ public class Mensagem {
 			}
 		}
 		output += "**";
-
 		//Membros que ja leram
 		for(int i = 0; i < leuMsg.size(); ++i){
 			output += leuMsg.get(i).getUser();
@@ -137,8 +129,6 @@ public class Mensagem {
 				output += "%";
 			}
 		}
-
 		return output;
 	}
-	
 }
