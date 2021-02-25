@@ -3,7 +3,7 @@ import java.util.Scanner;
 import java.io.*;
 
 /**
- * 
+ * Classe 
  * @author Diogo Pinto 52763 
  * @author Francisco Ramalho 53472
  * @author Joao Funenga 53504
@@ -16,6 +16,10 @@ public class SeiTchiz {
 	private static ObjectOutputStream outObj = null;
 	private static final Scanner inSc = new Scanner(System.in);
 
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		System.out.println("cliente: main");
 		String serverIp = "";
@@ -61,6 +65,14 @@ public class SeiTchiz {
 		}
 	}
 
+	/**
+	 * Método recebe um userId de um cliente que informa o cliente quais os comandos
+	 * disponiveis de serem usados pelo cliente. Os comandos são redirecionados para
+	 * o servidor que trata dos mesmos.
+	 * O método mantem-se ativo enquanto o cliente quiser fazer pedidos, caso contrário
+	 * basta sair, executando o comando quit ou exit. 
+	 * @param user - id do cliente que executa os comandos.
+	 */
 	private static void sendReceiveComando(String user) {
 		System.out.println("Available commands:\n"+"follow/f <userID>\n"+
 				"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
@@ -260,6 +272,13 @@ public class SeiTchiz {
 		}
 	}
 
+	/**
+	 * Método efetua a autentiacao de um cliente atraves do seu username 
+	 * e da sua password.
+	 * São mostradas mensagens informativas ao cliente.
+	 * @param user - username do cliente a autenticar.
+	 * @param pass - password do cliente a autenticar.
+	 */
 	private static void autenticacao(String user, String pass) {
 		try {
 			outObj.writeObject(user);
@@ -295,6 +314,11 @@ public class SeiTchiz {
 		} 
 	}
 
+	/**
+	 * Método estabele ligação ao servidor através de um ip e porto.
+	 * @param ip - ip de ligacao.
+	 * @param port - porto de ligacao.
+	 */
 	private static void conectToServer(String ip, int port) {
 		try {
 			cSoc = new Socket(ip,port);
@@ -306,11 +330,22 @@ public class SeiTchiz {
 		}		
 	}
 
+	/**
+	 * Método devolve o porto recebido de um endereço recebido 
+	 * no formato de endereco:porto.
+	 * @param serverAdress - endereco e porto
+	 * @return porto do endereco recebido.
+	 */
 	private static int getPort(String serverAdress) {
 		String[] tudo = serverAdress.split(":");
 		return Integer.parseInt(tudo[1]);
 	}
 
+	/**
+	 * Método devolve o ip recebido de um endereco:porto.
+	 * @param serverAdress - endereco e porto
+	 * @return ip do endereco recebido.
+	 */
 	private static String getIp(String serverAdress) {
 		String[] tudo = serverAdress.split(":");
 		return tudo[0];

@@ -7,7 +7,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
- * 
+ * Classe representativa de uma mensagem, que é composta pelo Id do grupo 
+ * em que é enviada, data, remetente, mensagem, lista de Clientes que ainda 
+ * não leram a mensagem e lista de Clientes que já leu a mensagem.
  * @author Diogo Pinto 52763 
  * @author Francisco Ramalho 53472
  * @author Joao Funenga 53504
@@ -22,7 +24,16 @@ public class Mensagem {
 	private ArrayList <Cliente> porLerMsg;
 	private ArrayList <Cliente> leuMsg;
 
-	//USAR ESTE CONSTRUTOR QUANDO EH CRIADA UMA MENSAGEM NOVA
+	/**
+	 * Construtor da classe que inicia uma mensagem recebendo um id de grupo, 
+	 * Cliente remetente, a mensagem e uma lista de membros do grupo para
+	 * que se possa guardar e verificar melhor quem lê ou não lê. Este construtor
+	 * é usado quando é criada um mensagem nova.
+	 * @param grupoID - id do grupo
+	 * @param remetente - quem envia a mensagem
+	 * @param msg - mensagem a enviar
+	 * @param listaGrupo - lista de Clientes membros do grupo com grupoID
+	 */
 	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaGrupo) {
 		this.grupoID = grupoID;
 		this.remetente = remetente;
@@ -34,7 +45,16 @@ public class Mensagem {
 		this.data = myDateObj.format(myFormatObj);
 	}
 
-	//USAR ESTE CONSTRUTOR QUANDO DA LOAD DOS FICHEIROS
+	/**
+	 * Construtor da classe que imicia uma mensagem recebendo um id de grupo, 
+	 * Cliente remetente, a mensagem e uma lista de membros do grupo para
+	 * que se possa guardar e verificar melhor quem lê ou não lê. Este construtor
+	 * é usado quando é feito load dos ficheiros em disco.
+	 * @param grupoID - id do grupo
+	 * @param remetente - quem envia a mensagem
+	 * @param msg - mensagem a enviar
+	 * @param listaGrupo - lista de Clientes membros do grupo com grupoID
+	 */
 	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaLeuGrupo, ArrayList<Cliente> listaPorLerGrupo, String data) {
 		this.grupoID = grupoID;
 		this.remetente = remetente;
@@ -44,20 +64,29 @@ public class Mensagem {
 		this.data = data;
 	}
 
-	private void lerMensagem(int id){
-		leuMsg.add(porLerMsg.get(id));
+	/**
+	 * Método lê a mensagem atual pelo userId recebido.
+	 * @param userId - id do cliente que lê a mensagem. 
+	 */
+	private void lerMensagem(int userId){
+		leuMsg.add(porLerMsg.get(userId));
 		ArrayList <Cliente> porLerMsgAux = new ArrayList<Cliente>();
 		for(int i = 0; i < porLerMsg.size(); ++i){
-			if(i != id)
+			if(i != userId)
 				porLerMsgAux.add(porLerMsg.get(i));
 		}
 		porLerMsg = porLerMsgAux;
-		//VERIFICA SE JA FOI LIDA POR TODOS E MANDA PARA HISTORICO
+		//se foi lida por todos, colocar no historico
 		if(porLerMsg.isEmpty()){
 			moverMensagemParaHistorico();
 		}
 	}
 
+	/**
+	 * Método retorna se a mensagem atual está por ser lida pelo userId recebido.
+	 * @param cliente - id do cliente.
+	 * @return true se a mensagem ainda não foi lida pelo cliente, senao false.
+	 */
 	public boolean porLerMensagem(String cliente){
 		int i;
 		for(i = 0; i < porLerMsg.size(); ++i){
@@ -69,6 +98,11 @@ public class Mensagem {
 		return false;
 	}
 
+	/**
+	 * Método retorna se a mensagem atual foi lida pelo userId recebido.
+	 * @param cliente - id do cliente.
+	 * @return true se a mensagem foi lida pelo cliente, senao false.
+	 */
 	public boolean jaLeuMensagem(String cliente){
 		int i;
 		for(i = 0; i < leuMsg.size(); ++i){
@@ -79,10 +113,16 @@ public class Mensagem {
 		return false;
 	}
 
+	/**
+	 * Método representativo textual de mensagem.
+	 */
 	public String toString(){
 		return remetente.getUser() + " : " + msg;
 	}
 
+	/**
+	 * Método coloca e guarda os dados da mensagem atual em disco.
+	 */
 	private void moverMensagemParaHistorico(){
 		File groupFolder = new File("..\\data\\Group Folder\\" + this.grupoID);
 		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
@@ -103,6 +143,10 @@ public class Mensagem {
 		}
 	}
 
+	/**
+	 * Método devolve informação de mensagem a ser guardad em disco, em formato de string.
+	 * @return string com conteudo a ser guardado em disco
+	 */
 	public String msgContentToFile(){
 		String output = "";
 		//DATA ATUAL
