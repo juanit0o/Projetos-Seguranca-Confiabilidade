@@ -347,9 +347,15 @@ public class SeiTchizServer {
 										outStream.writeObject(splittado[1] + " doesn't belong to the group with ID '" + splittado[2] + "'");
 										System.out.println("Client '" + currentClient.getUser() + "' tried to remove a user that isnt in the group '" + splittado[2] + "'");
 									} else if (catGrupos.isDono(currentClient, splittado[2])) {
-										catGrupos.removeMembro(splittado[1], splittado[2]);
-										outStream.writeObject("You removed the user with ID '" + splittado[1] + "' from the group with ID '" + splittado[2] + "'");
-										System.out.println("Client '" + currentClient.getUser() + "' removed the user '" + splittado[1] +"' from the group '" + splittado[2] + "'");
+										if (catGrupos.isDono(catClientes.getCliente(splittado[1]), splittado[2])){
+											outStream.writeObject("You cant remove yourself from the group with ID '" + splittado[2] + "'");
+											System.out.println("Client '" + currentClient.getUser() + "' tried to remove himself from the group '" + splittado[2] + "'");
+										} else {
+											catGrupos.removeMembro(splittado[1], splittado[2]);
+											outStream.writeObject("You removed the user with ID '" + splittado[1] + "' from the group with ID '" + splittado[2] + "'");
+											System.out.println("Client '" + currentClient.getUser() + "' removed the user '" + splittado[1] +"' from the group '" + splittado[2] + "'");
+										}
+										
 									} else {
 										outStream.writeObject("You don't have permissions to remove the user with ID '" + splittado[1] + "' from the group with ID '" + splittado[2] + "'");
 										System.out.println("Client '" + currentClient.getUser() + "' doesnt have permissions to remove users from the group '" + splittado[2] + "'");
