@@ -85,6 +85,6 @@ public class Photo {
 	public String getPhoto(){
 		String[] subDirs = photoPath.split(Pattern.quote(File.separator));
 		String nomephoto = subDirs[subDirs.length-1];
-		return nomephoto + " from " + cliente + " has " + likesClientes.size() + " likes\n";
+		return nomephoto + " from '" + cliente + "' has " + likesClientes.size() + " likes\n";
 	}
 }
