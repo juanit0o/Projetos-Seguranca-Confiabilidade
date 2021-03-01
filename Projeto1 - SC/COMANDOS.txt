@@ -6,7 +6,9 @@ java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy -
 java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy -Djava.security.debug=access Server.SeiTchizServer 45678
 java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy -Djava.security.debug=policy Server.SeiTchizServer 45678
 
+CORRER SERVIDOR JAR
 
+java -cp bin -Djava.security.manager -Djava.security.policy==src/server.policy -jar SeiTchizServer.jar 45678
 
 
 -----------------------------------
@@ -16,3 +18,6 @@ javac -d bin src/Client/SeiTchiz.java
 
 java -cp bin -Djava.security.manager -Djava.security.policy==src/client.policy Client.SeiTchiz 127.0.0.1:45678 test 123
 
+CORRER CLIENTE JAR
+
+java -cp bin -Djava.security.manager -Djava.security.policy==src/client.policy -jar SeiTchiz.jar 127.0.0.1:45678 test 123

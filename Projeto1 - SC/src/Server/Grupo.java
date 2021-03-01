@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Classe representativa de um grupo, que � composta por um id,
+ * Classe representativa de um grupo, que e composto por um id,
  * lista de clientes membros, lista de mensagens, lista de mensagens
  *  em historico, cliente dono do grupo, ficheiro de grupo, log de 
  *  mensagens, ficheiro de membros e ficheiro de historico mensagens.
@@ -72,7 +72,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo que regista um grupo em disco.
+	 * Metodo que regista um grupo em disco.
 	 */
 	public void registaGrupo() {
 		try {
@@ -87,16 +87,16 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo que receve um cliente e verifica se este � dono do grupo.
+	 * Metodo que recebe um cliente e verifica se este e dono do grupo.
 	 * @param cliente - cliente
-	 * @return true se cliente � dono do grupo, senao false.
+	 * @return true se cliente e dono do grupo, senao false.
 	 */
 	public boolean isDono(Cliente cliente){
 		return cliente.getUser().equals(dono.getUser());
 	}
 
 	/**
-	 * M�todo que identifica se um cliente recebido pertence ao grupo.
+	 * Metodo que identifica se um cliente recebido pertence ao grupo.
 	 * @param cliente - cliente
 	 * @return true se cliente pertence ao grupo, senao false.
 	 */
@@ -110,7 +110,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo que adiciona um cliente ao grupo atual.
+	 * Metodo que adiciona um cliente ao grupo atual.
 	 * @param cliente - cliente
 	 */
 	public void addMembro(Cliente cliente){
@@ -120,7 +120,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo que remove um cliente do grupo atual.
+	 * Metodo que remove um cliente do grupo atual.
 	 * @param cliente - cliente
 	 */
 	public void removeMembro(Cliente cliente){
@@ -130,7 +130,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo que guarda mensagem enviada de um cliente em listas 
+	 * Metodo que guarda mensagem enviada de um cliente em listas 
 	 * e em disco.
 	 * @param msg - mensagem enviada
 	 * @param cliente - cliente
@@ -145,7 +145,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo que devolve o Id do grupo atual.
+	 * Metodo que devolve o Id do grupo atual.
 	 * @return groupID
 	 */
 	public String getGrupoID(){
@@ -153,7 +153,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo devolve lista de iD's dos membros do grupo.
+	 * Metodo devolve lista de id's dos membros do grupo.
 	 * @return lista de id's de membros.
 	 */
 	public ArrayList<String> getMembros(){
@@ -165,7 +165,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo devolve as mensagens por ler de um determinado cliente dentro 
+	 * Metodo devolve as mensagens por ler de um determinado cliente dentro 
 	 * do grupo.
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens por ler
@@ -182,7 +182,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo devolve as mensagens lidas de um determinado cliente dentro 
+	 * Metodo devolve as mensagens lidas de um determinado cliente dentro 
 	 * do grupo.
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens lidas
@@ -205,7 +205,7 @@ public class Grupo {
 	}
 
 	/**
-	 * M�todo que envia e coloca os dados de um grupo em disco.
+	 * Metodo que escreve os dados de um grupo em disco.
 	 */
 	public void groupContentsToFile() {
 		File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");

@@ -1,0 +1,12 @@
+$
+francisco
+$
+francisco
+$
+grupo1
+$
+data\Personal User Files\test\Photos\photo_test_0.jpg::francisco
+data\Personal User Files\test\Photos\photo_test_1.jpg::
+data\Personal User Files\test\Photos\photo_test_2.jpg::
+data\Personal User Files\test\Photos\photo_test_3.jpg::
+data\Personal User Files\test\Photos\photo_test_4.jpg::

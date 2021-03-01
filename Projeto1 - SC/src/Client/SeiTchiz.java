@@ -74,10 +74,10 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * M�todo recebe um userId de um cliente que informa o cliente quais os comandos
-	 * disponiveis de serem usados pelo cliente. Os comandos s�o redirecionados para
+	 * Metodo recebe um userId de um cliente que informa o cliente quais os comandos
+	 * disponiveis de serem usados pelo cliente. Os comandos sao redirecionados para
 	 * o servidor que trata dos mesmos.
-	 * O m�todo mantem-se ativo enquanto o cliente quiser fazer pedidos, caso contr�rio
+	 * O metodo mantem-se ativo enquanto o cliente quiser fazer pedidos, caso contrario
 	 * basta sair, executando o comando quit ou exit. 
 	 * @param user - id do cliente que executa os comandos.
 	 */
@@ -150,7 +150,7 @@ public class SeiTchiz {
 				}
 				break;
 			case "a":
-			case "add":
+			case "addu":
 			case "r":
 			case "removeu":
 				if (comando.length != 3){
@@ -211,14 +211,12 @@ public class SeiTchiz {
 							outObj.writeObject("post");
 							Long tamanho = (Long) myPhoto.length();
 							byte[] buffer = new byte[tamanho.intValue()];
-							//outObj.reset(); //same aqui
 							outObj.writeObject(tamanho);
 							InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 							part.read(buffer);
 							outObj.writeObject(buffer);
 							part.close();
 							System.out.println((String) inObj.readObject());
-							//System.out.println((String) inObj.readObject()); /*crash aqui*/
 							System.out.println("\nInsert a command or type help to see commands: ");
 						} else {
 							System.out.println("The file with the path " + photoPath + " doesn't exist");
@@ -245,14 +243,12 @@ public class SeiTchiz {
 							Long dimensao;
 							try {
 								dimensao = (Long) inObj.readObject();
-								//byte[] buffer = new byte[dimensao.intValue()]; //TODO: tirar?
 								byte[] recebidos = (byte[]) inObj.readObject();
 								photoRecebida.write(recebidos);
 								photoRecebida.close();
 							} catch (Exception e1) {
 								e1.printStackTrace();
 							}
-							System.out.println("foto " + i + "recebida");
 						}
 						System.out.println((String) inObj.readObject());
 						System.out.println("\nInsert a command or type help to see commands: ");
@@ -261,23 +257,17 @@ public class SeiTchiz {
 					}
 				}
 				break;
-			default: //QUANDO O SERVIDOR SE DESLIGA E VOLTA A LIGAR, O CLIENTE JA NAO CONSEGUE COMUNICAR C ELE, TENTAR LIGA-LOS OUTRA X
-				//try {
-				//outObj.writeObject(output);
+			default:
 				System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
-				//} catch (IOException | ClassNotFoundException e) {
-				//	System.out.println("The server is now offline :(");
-				//e.printStackTrace();
-				//}
 				break;
 			}
 		}
 	}
 
 	/**
-	 * M�todo efetua a autentiacao de um cliente atraves do seu username 
+	 * Metodo efetua a autentiacao de um cliente atraves do seu username 
 	 * e da sua password.
-	 * S�o mostradas mensagens informativas ao cliente.
+	 * Sao mostradas mensagens informativas ao cliente.
 	 * @param user - username do cliente a autenticar.
 	 * @param pass - password do cliente a autenticar.
 	 */
@@ -289,7 +279,6 @@ public class SeiTchiz {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		System.out.println("Server.Cliente enviou nome e pass");
 		// verificar autenticacao
 		try {
 			String resposta = (String) inObj.readObject();
@@ -297,27 +286,26 @@ public class SeiTchiz {
 				System.out.println(resposta);
 				outObj.writeObject(inSc.nextLine());
 				Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
-				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
+				System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
 				if (!autenticated) {
 					System.exit(-1);
 				}
 			}else {
-				//Boolean autenticated = Boolean.parseBoolean(resposta);
 				Boolean autenticated = (resposta.equals("true"));
-				System.out.println(autenticated ? "cliente autenticado" : "cliente nao autenticado");
+				System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
 				if (!autenticated) {
 					System.exit(-1);
 				}
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			System.out.println("Falha na autenticacao.");
+			System.out.println("Failed to authenticate :(");
 			System.exit(-1);
 		} 
 	}
 
 	/**
-	 * M�todo estabele liga��o ao servidor atrav�s de um ip e porto.
+	 * Metodo estabele ligacao ao servidor atraves de um ip e porto.
 	 * @param ip - ip de ligacao.
 	 * @param port - porto de ligacao.
 	 */
@@ -333,7 +321,7 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * M�todo devolve o porto recebido de um endere�o recebido 
+	 * Metodo devolve o porto recebido de um endereco recebido 
 	 * no formato de endereco:porto.
 	 * @param serverAdress - endereco e porto
 	 * @return porto do endereco recebido.
@@ -344,7 +332,7 @@ public class SeiTchiz {
 	}
 
 	/**
-	 * M�todo devolve o ip recebido de um endereco:porto.
+	 * Metodo devolve o ip recebido de um endereco:porto.
 	 * @param serverAdress - endereco e porto
 	 * @return ip do endereco recebido.
 	 */

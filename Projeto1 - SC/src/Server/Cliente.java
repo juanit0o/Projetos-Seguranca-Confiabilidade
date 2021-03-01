@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Classe representativa de um cliente, que � composta por nome,
+ * Classe representativa de um cliente, que e composta por nome,
  * username, password, lista de seguidores, lista de quem segue,
  * lista de grupos a que pertence e lista de fotografias publicadas.
  * @author Diogo Pinto 52763 
@@ -28,7 +28,7 @@ public class Cliente {
 	private ArrayList<Photo> photos; 
 
 	/**
-	 * Construtor da classe que incia um cliente recebendo
+	 * Construtor da classe que inicia um cliente recebendo
 	 * um username, password e nome.
 	 * @param u - userId do cliente.
 	 * @param p - password do cliente.
@@ -44,10 +44,10 @@ public class Cliente {
 		this.photos = new ArrayList<Photo>();
 	}
 
-	// carregar os seus followers,quem segue....
+
 	/**
-	 * M�todo que carrega a informa��o pr�via armazenada em disco para as listas
-	 * de seguidores, quem segue, grupos e fotografias.
+	 * Metodo que carrega a informacao previa armazenada em disco para as listas
+	 * de quem segue, de seguidores, grupos e fotografias.
 	 */
 	public void carregarConta() {
 		// pegar no seu ficheiro e preencher os array lists
@@ -67,26 +67,26 @@ public class Cliente {
 					case 2: // para os followers
 						followers.add(line);
 						break;
-					case 3:
+					case 3: // para os grupos
 						grupos.add(line);
 						break;
-					case 4: 
+					case 4: //para o path e likes das fotografias
 						//path::like1;like
 						String[] splittada = line.split("::");
 						if(splittada.length == 2) {
 							ArrayList<String> likes = new ArrayList<String>();
-							String[] likesFicheiros = splittada[1].split(";"); //cada posicao com o userID de quem deu like
+							//cada posicao com o userID de quem deu like
+							String[] likesFicheiros = splittada[1].split(";"); 
 							for(int i = 0; i< likesFicheiros.length; i++) {
 								likes.add(likesFicheiros[i]);
 							}
-							
   							photos.add(new Photo(splittada[0],likes,this.user));
 						}else {
 							photos.add(new Photo(splittada[0],new ArrayList<String>(),this.user));
 						}
 						break;
 					default:
-						System.out.println("Error beep bop");
+						System.out.println("[Error] Couldnt load client files information :(");
 						break;
 					}
 					System.out.println(line);
@@ -100,16 +100,16 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que retorna se a password dada � a password do cliente.
+	 * Metodo que retorna se a password dada e a password do cliente.
 	 * @param password - password do cliente.
-	 * @return true se a password pertence ao cliente, senao false.
+	 * @return true se a password e do cliente, senao false.
 	 */
 	public boolean isPass(String password) {
 		return this.pass.equals(password);
 	}
 
 	/**
-	 * M�todo que retorna o userId do cliente.
+	 * Metodo que retorna o userId do cliente.
 	 * @return userId do cliente.
 	 */
 	public String getUser() {
@@ -117,9 +117,9 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que retorna se come�ou a seguir um cliente, recebendo o mesmo.
+	 * Metodo que retorna se segue um cliente, recebendo o mesmo.
 	 * @param clientASeguir - cliente a seguir.
-	 * @return true se seguiu o cliente, senao false.
+	 * @return true se passou a seguir o cliente, false se ja seguia o cliente
 	 */
 	public boolean seguir(Cliente clientASeguir) {
 		// verificar se o cliente ja segue essa pessoa (parte da pessoa exisitr ou nao
@@ -127,14 +127,15 @@ public class Cliente {
 		if (follows.contains(clientASeguir.getUser())) {
 			return false;
 		}
-		follows.add(clientASeguir.getUser()); // adicionar ao arraylist dos followers
+		// adicionar ao arraylist de quem da follow
+		follows.add(clientASeguir.getUser()); 
 		userContentsToFile();
 		clientASeguir.seguidoPor(this.user);
 		return true;
 	}
 
 	/**
-	 * M�todo que coloca um cliente como seguidor deste.
+	 * Metodo que coloca um cliente como seguidor deste.
 	 * @param follower - seguidor.
 	 */
 	public void seguidoPor(String follower) {
@@ -143,9 +144,9 @@ public class Cliente {
 	}
 	
 	/**
-	 * M�todo que retorna se deixou de seguir um cliente, recebendo o mesmo.
+	 * Metodo que retorna se deixou de seguir um cliente, recebendo o mesmo.
 	 * @param pessoa - cliente a deixar de seguir.
-	 * @return true se deixou de seguir o cliente, senao false.
+	 * @return true se tiver a seguir e de seguida remove o follow, false se nao o estiver a seguir.
 	 */
 	public boolean deixarDeSeguir(Cliente pessoa) {
 		//verifica se a pessoa ja existe
@@ -165,7 +166,7 @@ public class Cliente {
 	}
 
 	/**
-	 * Retorna a lista de grupos em que o cliente est� envolvido,
+	 * Retorna a lista de grupos em que o cliente esta envolvido,
 	 * seja como dono ou participante.
 	 * @return - lista de grupos que o cliente participa.
 	 */
@@ -174,7 +175,7 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que remove um seguidor atrav�s do seu userId.
+	 * Metodo que remove um seguidor atraves do seu userId.
 	 * @param follower - userId do cliente a deixar de ser seguidor.
 	 */
 	public void removerFollower(String follower) {
@@ -189,7 +190,7 @@ public class Cliente {
 	}
 	
 	/**
-	 * M�todo que adiciona o cliente atual aos grupos que participa.
+	 * Metodo que adiciona o grupo do argumento aos grupos do cliente
 	 * @param grupoID - groupId do grupo.
 	 */
 	public void entrarEmGrupo(String grupoID) {
@@ -198,7 +199,7 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que remove o cliente atual do grupo atrav�s do grupoId.
+	 * Metodo que remove o cliente atual do grupo atraves do grupoId.
 	 * @param grupoID - groupId do grupo.
 	 */
 	public void sairDeGrupo(String grupoID) {
@@ -207,7 +208,7 @@ public class Cliente {
 	}
 	
 	/**
-	 * M�todo que devolve uma lista dos seguidores.
+	 * Metodo que devolve a lista dos seguidores.
 	 * @return lista de seguidores.
 	 */
 	public ArrayList<String> getFollowers (){
@@ -215,8 +216,8 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que devolve o n�mero de seguidores.
-	 * @return n�mero de seguidores.
+	 * Metodo que devolve o numero de fotos.
+	 * @return numero de fotos.
 	 */
 	public int nrOfPhotos() {
 		int nrPhotos = 0;
@@ -226,7 +227,7 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que publica uma fotografia, colocando-a na lista de fotografias publicadas.
+	 * Metodo que publica uma fotografia, colocando-a na lista de fotografias publicadas.
 	 * @param filePath - nome da fotografia.
 	 */
 	public void publishPhoto(String filePath) {
@@ -235,11 +236,11 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que carrega os conteudos do cliente para o disco.
+	 * Metodo que escreve os conteudos do cliente para o disco.
 	 */
 	public void userContentsToFile() {
 
-		File fileUser = new File("data\\Personal User Files\\" + this.user + "\\info.txt"); // POR NO SITIO DOS FOLLOWERS
+		File fileUser = new File("data\\Personal User Files\\" + this.user + "\\info.txt");
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow
@@ -273,7 +274,7 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que coloca like de um utilizador numa fotografia do cliente atual.
+	 * Metodo que coloca like de um utilizador numa fotografia do cliente atual.
 	 * @param phId - id da fotografia.
 	 * @param userLiking - utilizador que gostou.
 	 */
@@ -288,7 +289,7 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que retorna se segue um cliente recebido por userId.
+	 * Metodo que retorna se segue um cliente recebido por userId.
 	 * @param uid - userId do cliente.
 	 * @return true se segue o user, senao false.
 	 */
@@ -297,7 +298,7 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que retorna id da fotografia correspondente ao caminho recebido.
+	 * Metodo que retorna id da fotografia correspondente ao caminho recebido.
 	 * @param path - caminho da fotografia.
 	 * @return id da fotografia se existir, senao "".
 	 */
@@ -314,7 +315,7 @@ public class Cliente {
 	}
 
 	/**
-	 * M�todo que retorna se uma fotografia j� tem gosto de um cliente.
+	 * Metodo que retorna se uma fotografia ja tem gosto de um cliente.
 	 * @param uidLiker - userId do cliente.
 	 * @param pathFoto - caminho da fotografia.
 	 * @return true se ja tem gosto, senao false.

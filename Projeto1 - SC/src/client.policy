@@ -1,4 +1,4 @@
-grant {
+grant codeBase "file:./-"{
     permission java.util.PropertyPermission "user.dir", "read";
 
     permission java.net.SocketPermission "*:45678-", "connect, resolve";

@@ -9,9 +9,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
- * Classe representativa de uma mensagem, que é composta pelo Id do grupo 
- * em que é enviada, data, remetente, mensagem, lista de Clientes que ainda 
- * não leram a mensagem e lista de Clientes que já leu a mensagem.
+ * Classe representativa de uma mensagem, que e composta pelo Id do grupo 
+ * em que e enviada, data, remetente, mensagem, lista de Clientes que ainda 
+ * nao leram a mensagem e lista de Clientes que ja leu a mensagem.
  * @author Diogo Pinto 52763 
  * @author Francisco Ramalho 53472
  * @author Joao Funenga 53504
@@ -28,9 +28,9 @@ public class Mensagem {
 
 	/**
 	 * Construtor da classe que inicia uma mensagem recebendo um id de grupo, 
-	 * Server.Cliente remetente, a mensagem e uma lista de membros do grupo para
-	 * que se possa guardar e verificar melhor quem lê ou não lê. Este construtor
-	 * é usado quando é criada um mensagem nova.
+	 * Cliente remetente, a mensagem e uma lista de membros do grupo para
+	 * que se possa guardar e verificar melhor quem leu ou nao leu. Este construtor
+	 * e usado quando e criada um mensagem nova.
 	 * @param grupoID - id do grupo
 	 * @param remetente - quem envia a mensagem
 	 * @param msg - mensagem a enviar
@@ -49,9 +49,9 @@ public class Mensagem {
 
 	/**
 	 * Construtor da classe que imicia uma mensagem recebendo um id de grupo, 
-	 * Server.Cliente remetente, a mensagem e uma lista de membros do grupo para
-	 * que se possa guardar e verificar melhor quem lê ou não lê. Este construtor
-	 * é usado quando é feito load dos ficheiros em disco.
+	 * Cliente remetente, a mensagem e uma lista de membros do grupo para
+	 * que se possa guardar e verificar melhor quem leu ou nao leu. Este construtor
+	 * e usado quando e feito load dos ficheiros em disco.
 	 * @param grupoID - id do grupo
 	 * @param remetente - quem envia a mensagem
 	 * @param msg - mensagem a enviar
@@ -67,8 +67,8 @@ public class Mensagem {
 	}
 
 	/**
-	 * Método lê a mensagem atual pelo userId recebido.
-	 * @param userId - id do cliente que lê a mensagem. 
+	 * Metodo le a mensagem atual pelo userId recebido.
+	 * @param userId - id do cliente que le a mensagem. 
 	 */
 	private void lerMensagem(int userId){
 		leuMsg.add(porLerMsg.get(userId));
@@ -85,9 +85,9 @@ public class Mensagem {
 	}
 
 	/**
-	 * Método retorna se a mensagem atual está por ser lida pelo userId recebido.
+	 * Metodo retorna se a mensagem atual esta por ser lida pelo userId recebido.
 	 * @param cliente - id do cliente.
-	 * @return true se a mensagem ainda não foi lida pelo cliente, senao false.
+	 * @return true se a mensagem ainda nao foi lida pelo cliente, senao false.
 	 */
 	public boolean porLerMensagem(String cliente){
 		int i;
@@ -101,7 +101,7 @@ public class Mensagem {
 	}
 
 	/**
-	 * Método retorna se a mensagem atual foi lida pelo userId recebido.
+	 * Metodo retorna se a mensagem atual foi lida pelo userId recebido.
 	 * @param cliente - id do cliente.
 	 * @return true se a mensagem foi lida pelo cliente, senao false.
 	 */
@@ -116,14 +116,14 @@ public class Mensagem {
 	}
 
 	/**
-	 * Método representativo textual de mensagem.
+	 * Metodo representativo textual de mensagem.
 	 */
 	public String toString(){
 		return remetente.getUser() + " : " + msg;
 	}
 
 	/**
-	 * Método coloca e guarda os dados da mensagem atual em disco.
+	 * Metodo coloca e guarda os dados da mensagem atual em disco.
 	 */
 	private void moverMensagemParaHistorico(){
 		File groupFolder = new File("data\\Group Folder\\" + this.grupoID);
@@ -146,7 +146,7 @@ public class Mensagem {
 	}
 
 	/**
-	 * Método devolve informação de mensagem a ser guardad em disco, em formato de string.
+	 * Metodo devolve informacao de mensagem a ser guardada em disco, em formato de string.
 	 * @return string com conteudo a ser guardado em disco
 	 */
 	public String msgContentToFile(){
@@ -157,7 +157,7 @@ public class Mensagem {
 		//remetente
 		output += remetente.getUser();
 		output += "%%";
-		//Server.Mensagem
+		//Mensagem
 		output += msg;
 		output += "%%";
 		//Membros por ler

@@ -26,10 +26,10 @@ public class CatalogoGrupos {
 	private File groupFile = new File("data\\Server Files\\allGroups.txt");
 	
 	/**
-	 * Construtor da classe que incia uma lista onde os clientes
-	 * s�o guardados em grupos  do tipo Server.Grupo, e no incio do programa
-	 * s�o carreagados todos os dados em disco para acesso �gil.
-	 * @param catClientes - cat�logo de clientes.
+	 * Construtor da classe que inicia uma lista onde os clientes
+	 * sao guardados em grupos do tipo Server.Grupo, e no inicio do programa
+	 * sao carregados todos os dados do disco para estruturas de dados para acesso mais rapido.
+	 * @param catClientes - catalogo de clientes.
 	 */
 	public CatalogoGrupos(CatalogoClientes catClientes) {
 		grupos = new ArrayList<Grupo>();
@@ -41,7 +41,7 @@ public class CatalogoGrupos {
 				System.out.println("Group file loaded: " + groupFile.getName());
 				Scanner scReader = new Scanner(groupFile);
 				while (scReader.hasNextLine()) {
-					//ver o nome de um grupo, ir � pasta desse grupo, ler o ficheiro de membros e 
+					//ver o nome de um grupo, ir a pasta desse grupo, ler o ficheiro de membros e 
 					//mensagens para chamar o construtor do grupo
 					//group id = cada linha tem o nome de um grupo
 					String linha = scReader.nextLine();
@@ -57,10 +57,7 @@ public class CatalogoGrupos {
 						clientes.add(catClientes.getCliente(line));
 					}
 					rW.close();
-					//TODO
-					//DA NULLPOINTER
-					//FALHA NA LEITURA DOS DADOS APOS RENICIAR O SV
-					//LOAD DA CAIXA
+
 					File fileMsg= new File("data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
 					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
@@ -115,10 +112,10 @@ public class CatalogoGrupos {
 	}
 
 	/**
-	 * M�todo que adiciona um grupo ao cat�logo de grupos com 
-	 * um id de grupo e quem cria o grupo, que ser� o dono.
+	 * Metodo que adiciona um grupo ao catalogo de grupos com 
+	 * um id de grupo e quem cria o grupo, que sera o dono.
 	 * @param grupoID - id para o grupo.
-	 * @param dono - cliente que cria e � dono do grupo.
+	 * @param dono - cliente que cria e a dono do grupo.
 	 */
 	public void addGrupo(String grupoID, Cliente dono) {
 		Grupo grupo = new Grupo(grupoID, dono);
@@ -131,13 +128,12 @@ public class CatalogoGrupos {
 			bW.newLine();
 			bW.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * M�todo que adiciona um cliente a um grupo.
+	 * Metodo que adiciona um cliente a um grupo.
 	 * @param cliente - userId do cliente a adicionar.
 	 * @param groupID - id do grupo.
 	 */
@@ -146,7 +142,7 @@ public class CatalogoGrupos {
 	}
 
 	/**
-	 * M�todo que remove um cliente de um grupo.
+	 * Metodo que remove um cliente de um grupo.
 	 * @param cliente - userId do cliente a remover.
 	 * @param groupID - id do grupo.
 	 */
@@ -155,9 +151,9 @@ public class CatalogoGrupos {
 	}
 
 	/**
-	 * M�todo que retorna um grupo atrav�s do id de grupo.
+	 * Metodo que retorna um grupo atraves do id de grupo.
 	 * @param groupID - id do grupo.
-	 * @return Se existe, Server.Grupo com groupId, senao null.
+	 * @return Se existe, Grupo com groupId, senao null.
 	 */
 	private Grupo getGrupo(String groupID){
 		for(int i = 0; i < grupos.size(); ++i){
@@ -169,7 +165,7 @@ public class CatalogoGrupos {
 	}
 
 	/**
-	 * M�todo que retorna se um grupo existe.
+	 * Metodo que retorna se um grupo existe.
 	 * @param groupID - id do grupo.
 	 * @return true se o grupo existe, senao false.
 	 */
@@ -183,7 +179,7 @@ public class CatalogoGrupos {
 	}
 
 	/**
-	 * M�todo que retorna se um cliente pertence a um grupo.
+	 * Metodo que retorna se um cliente pertence a um grupo.
 	 * @param cliente - userId do cliente.
 	 * @param groupID - groupId do grupo.
 	 * @return true se pertencer, senao false.
@@ -193,36 +189,36 @@ public class CatalogoGrupos {
 	}
 
 	/**
-	 * M�todo que retorna se um cliente � dono de um grupo.
+	 * Metodo que retorna se um cliente e dono de um grupo.
 	 * @param cliente - userId do cliente.
 	 * @param groupID - groupId do grupo.
-	 * @return true se cliente � dono, senao false.
+	 * @return true se cliente e dono, senao false.
 	 */
 	public boolean isDono(Cliente cliente, String groupID) {
 		return getGrupo(groupID).isDono(cliente);
 	}
 
 	/**
-	 * M�todo que retorna uma lista de membros pertencentes a um grupo.
+	 * Metodo que retorna uma lista de membros pertencentes a um grupo.
 	 * @param groupID - groupId do grupo. 
-	 * @return lista de userId's dos membros do grpo.
+	 * @return lista de userId's dos membros do grupo.
 	 */
 	public ArrayList<String> getMembros(String groupID){
 		return getGrupo(groupID).getMembros();
 	}
 
 	/**
-	 * M�todo que guarda uma mensagem enviada por um cliente num dado grupo.
+	 * Metodo que guarda uma mensagem enviada por um cliente num dado grupo.
 	 * @param groupID - groupId do grupo.
 	 * @param msg - mensagem do cliente.
-	 * @param cliente - Server.Cliente que envia a mensagem.
+	 * @param cliente - Cliente que envia a mensagem.
 	 */
 	public void guardarMensagem(String groupID, String msg, Cliente cliente){
 		getGrupo(groupID).guardarMensagem(msg, cliente);
 	}
 
 	/**
-	 * M�todo que devolve uma lista das mensagens por ler de um cliente,
+	 * Metodo que devolve uma lista das mensagens por ler de um cliente,
 	 * num grupo.
 	 * @param grupoID - groupId do grupo.
 	 * @param cliente - Server.Cliente a ver mensagens.
@@ -233,7 +229,7 @@ public class CatalogoGrupos {
 	}
 
 	/**
-	 * M�todo que retorna uma lista das mensagens lidas de um cliente,
+	 * Metodo que retorna uma lista das mensagens lidas de um cliente,
 	 * num grupo.
 	 * @param grupoID - groupId do grupo.
 	 * @param cliente - Server.Cliente a ver mensagens.

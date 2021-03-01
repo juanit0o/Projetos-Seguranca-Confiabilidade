@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 /**
  * Classe para objetos do tipo Server.Cliente, permitindo um acesso
- * mais facilitado aos mesmos atrav�s de um mapa.
+ * mais facilitado aos mesmos atraves de um mapa.
  * @author Diogo Pinto 52763 
  * @author Francisco Ramalho 53472
  * @author Joao Funenga 53504
@@ -19,22 +19,25 @@ import java.util.Scanner;
 public class CatalogoClientes {
 
 	private HashMap<String, Cliente> mapClientes;
+	
 	// Para criar a diretoria com os ficheiros do servidor
 	File fileDirectory = new File("data\\Server Files");
+	
 	// tenta criar esta nova diretoria caso nao exista
 	boolean value = fileDirectory.mkdirs();
-	// para o ficheiro allUsers dentro do Server Files com todos os users e passes
+	
+	// para o ficheiro allUsers dentro do Server Files com todos os users,nomes e passes
 	File file = new File("data\\Server Files\\allUsers.txt");
 	File photoFile = new File("data\\Server Files\\allPhotos.txt");
 
 	/**
 	 * Construtor da classe que incia um mapa onde os clientes
-	 * s�o guardados por chave userId e valor classe Server.Cliente.
+	 * sao guardados por chave userId e valor classe Cliente.
 	 */
 	public CatalogoClientes() {
 		mapClientes = new HashMap<String, Cliente>();
 		try {
-			if (!file.createNewFile()) { // true- nao existe e cria false: nada ||| cria o ficheiro do allUsers
+			if (!file.createNewFile()) { // true- nao existe e cria allUsers || false: load do ficheiro
 				System.out.println("User file loaded: " + file.getName());
 				Scanner scReader = new Scanner(file);
 				while (scReader.hasNextLine()) {
@@ -60,7 +63,7 @@ public class CatalogoClientes {
 	}
 
 	/**
-	 * M�todo para adicionar um cliente ao cat�logo de clientes.
+	 * Metodo para adicionar um cliente ao catalogo de clientes.
 	 * @param user - userId do cliente.
 	 * @param pass - password do cliente.
 	 * @param outStream - stream de escrita.
@@ -76,6 +79,7 @@ public class CatalogoClientes {
 			bW.write(user + ":" + name + ":" + pass);
 			bW.newLine();
 			bW.close();
+			
 			// criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos
 			// $ mensagensPler +
 			// criar a diretoria para os personal files
@@ -84,9 +88,10 @@ public class CatalogoClientes {
 			// tenta criar essa diretoria
 			clientFolder.mkdirs();
 			photoFolder.mkdirs();
+			
 			// para o ficheiro pesssoal por cliente
 			File fileCliente = new File("data\\Personal User Files\\" + user + "\\info.txt");
-			fileCliente.createNewFile(); // cria o ficheiro para o cliente
+			fileCliente.createNewFile();
 			cliente.userContentsToFile();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -94,28 +99,28 @@ public class CatalogoClientes {
 	}
 
 	/**
-	 * M�todo devolve um objeto Server.Cliente, com base no userId recebido.
+	 * Metodo devolve um objeto Cliente, com base no userId recebido.
 	 * @param username - userId do cliente.
-	 * @return objeto do tipo Server.Cliente.
+	 * @return objeto do tipo Cliente.
 	 */
-	public Cliente getCliente(String username) { //TODO: PUBLIC?
+	public Cliente getCliente(String username) {
 		return mapClientes.get(username);
 	}
 
 	/**
-	 * M�todo que retorna se o user existe no cat�logo de clientes.
+	 * Metodo que retorna se o user existe no catalogo de clientes.
 	 * @param user - userId do cliente.
-	 * @return true se user existe no cat�logo de clientes, senao false.
+	 * @return true se user existe no catalogo de clientes, senao false.
 	 */
 	public boolean existeUser(String user) {
 		return mapClientes.get(user) != null;
 	}
 
 	/**
-	 * M�todo que retorna se a password do cliente est� correta.
+	 * Metodo que retorna se a password do cliente esta correta.
 	 * @param user - userId do cliente.
 	 * @param password - password do cliente.
-	 * @return True se a password � a correta, senao false.
+	 * @return True se a password e a correta, senao false.
 	 */
 	public boolean passCorreta(String user, String password) {
 		return mapClientes.get(user).isPass(password);

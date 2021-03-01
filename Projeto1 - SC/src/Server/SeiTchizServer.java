@@ -53,7 +53,7 @@ public class SeiTchizServer {
 		}
 	}
 
-	//Threads utilizadas para comunicacao com os clientes
+	//Threads utilizadas para comunicacao com os clientes(1 p cliente)
 	class ServerThread extends Thread {
 		private Socket socket = null;
 		ServerThread(Socket inSoc) {
@@ -64,8 +64,7 @@ public class SeiTchizServer {
 			try {
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-				//Metodo loginUser e autenticar (criar um obj da classe Server.Cliente com esses atributos,
-				//e probs mais alguns a ser preenchidos dps la)
+			
 				String password = null;
 				boolean autenticou = false;
 				try {
@@ -86,9 +85,7 @@ public class SeiTchizServer {
 					"Client '" + user + "' not authenticated.");
 				//GET CURRENT CLIENT
 				Cliente currentClient = catClientes.getCliente(user);
-				//guardar user e password no ficheiro
-				//ver se o ficheiro existe:  (caso ainda nao exista) criar ficheiro e adicionar o user:username:pass a uma linha
-				//caso o ficheiro ja exista, dar append a user:username:pass a uma linha
+
 				while(true) {
 					String comando = null;
 					try {
@@ -130,8 +127,8 @@ public class SeiTchizServer {
 						break;
 					case "u":
 					case "unfollow":
-						//ver se o id existe, se n existir avisar
-						//ver se tem follow nele, se n tivermos avisar
+						//ver se o id existe, se n existir - avisar
+						//ver se tem follow nele, se n tivermos - avisar
 						//caso estiver, tirar do info.txt (ficheiro pessoal)
 						if (currentClient.getUser().equals(splittado[1])) {
 							outStream.writeObject("You can't unfollow yourself");
@@ -202,7 +199,7 @@ public class SeiTchizServer {
 
 						//devolver os ids das n fotografias mais recentes e o nr de likes destas
 						//se houverem menos que o n dado apenas mostrar essas
-						//se n exisitirem nns dizer isso
+						//se n exisitirem nenhumas - avisar
 						File fileDirectory = new File("data\\Server Files");
 						File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
 						BufferedReader bR = new BufferedReader(new FileReader(filePhotos));
@@ -255,7 +252,8 @@ public class SeiTchizServer {
 							output += "\t" + i + " : " + outputAuxSplitted.get(i);
 						}
 						outStream.writeObject(output);
-						System.out.println("Client '" + currentClient.getUser() + "' received the " + allPhotoPathsSplitted.size() + "  most recent photos from who he follows");
+						System.out.println("Client '" + currentClient.getUser() + "' received the " + allPhotoPathsSplitted.size() 
+											+ "  most recent photos from who he follows");
 						break;
 					case "l":
 					case "like":

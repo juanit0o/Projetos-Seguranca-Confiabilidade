@@ -3,3 +3,12 @@ manel::data\Personal User Files\manel\Photos\photo_manel_1.jpg
 manel::data\Personal User Files\manel\Photos\photo_manel_2.jpg
 manelito::data\Personal User Files\manelito\Photos\photo_manelito_0.jpg
 manelito::data\Personal User Files\manelito\Photos\photo_manelito_1.jpg
+test::data\Personal User Files\test\Photos\photo_test_0.jpg
+test::data\Personal User Files\test\Photos\photo_test_1.jpg
+test::data\Personal User Files\test\Photos\photo_test_2.jpg
+test::data\Personal User Files\test\Photos\photo_test_3.jpg
+test::data\Personal User Files\test\Photos\photo_test_4.jpg
+francisco::data\Personal User Files\francisco\Photos\photo_francisco_0.jpg
+francisco::data\Personal User Files\francisco\Photos\photo_francisco_1.jpg
+francisco::data\Personal User Files\francisco\Photos\photo_francisco_2.jpg
+francisco::data\Personal User Files\francisco\Photos\photo_francisco_3.jpg
