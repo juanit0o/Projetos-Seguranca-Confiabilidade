@@ -201,13 +201,14 @@ public class SeiTchiz {
 					//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
 					try {
 						//enviar comando
-						outObj.writeObject("post");
+						
 						String photoPath = comando[1]; //path para onde se encontra a fotografia
 						for (int i = 2; i < comando.length; ++i) {
 							photoPath += " " + comando[i];
 						}
 						File myPhoto = new File(photoPath);
 						if (myPhoto.exists()) {
+							outObj.writeObject("post");
 							Long tamanho = (Long) myPhoto.length();
 							byte[] buffer = new byte[tamanho.intValue()];
 							//outObj.reset(); //same aqui
@@ -224,7 +225,8 @@ public class SeiTchiz {
 							System.out.println("\nInsert a command or type help to see commands: ");
 						}
 					} catch (Exception e1) {
-						e1.printStackTrace();
+						System.out.println("Invalid path! (path doesn't exist or you don't have permissions)");
+						System.out.println("\nInsert a command or type help to see commands: ");
 					}
 				}
 				break;

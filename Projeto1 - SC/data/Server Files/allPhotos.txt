@@ -1,0 +1,5 @@
+manel::data\Personal User Files\manel\Photos\photo_manel_0.jpg
+manel::data\Personal User Files\manel\Photos\photo_manel_1.jpg
+manel::data\Personal User Files\manel\Photos\photo_manel_2.jpg
+manelito::data\Personal User Files\manelito\Photos\photo_manelito_0.jpg
+manelito::data\Personal User Files\manelito\Photos\photo_manelito_1.jpg
