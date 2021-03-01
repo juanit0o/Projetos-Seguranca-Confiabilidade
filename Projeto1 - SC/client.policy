@@ -1,7 +1,7 @@
-grant codeBase "file:./-"{
+grant codeBase "file:bin/-"{
     permission java.util.PropertyPermission "user.dir", "read";
 
-    permission java.net.SocketPermission "*:45678-", "connect, resolve";
+    permission java.net.SocketPermission "*:1-", "connect, resolve";
 
     permission java.io.FilePermission "test/-", "read";
     permission java.io.FilePermission "wall/-", "write";
