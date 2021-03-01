@@ -1,0 +1,2 @@
+francisco:francisco:password
+joao:joao:pass

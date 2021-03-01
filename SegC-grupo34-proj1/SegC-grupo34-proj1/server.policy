@@ -1,0 +1,15 @@
+grant codeBase "file:bin/-" {
+    permission java.util.PropertyPermission "user.dir", "read";
+
+    permission java.net.SocketPermission "*:1-", "accept, listen, resolve";
+
+    permission java.io.FilePermission "./-", "read, write, delete";
+};
+
+grant codeBase "file:SeiTchizServer.jar" {
+    permission java.util.PropertyPermission "user.dir", "read";
+
+    permission java.net.SocketPermission "*:1-", "accept, listen, resolve";
+
+    permission java.io.FilePermission "./-", "read, write, delete";
+};
