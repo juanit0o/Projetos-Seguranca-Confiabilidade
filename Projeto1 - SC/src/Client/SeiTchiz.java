@@ -233,7 +233,7 @@ public class SeiTchiz {
 				if (comando.length != 2){
 					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
 				} else {
-					File wallFolder = new File("wall\\" + user);
+					File wallFolder = new File("wall//" + user);
 					try {
 						outObj.writeObject("wall " + comando[1] + " " + user);
 						int nrFotos = (int) inObj.readObject();

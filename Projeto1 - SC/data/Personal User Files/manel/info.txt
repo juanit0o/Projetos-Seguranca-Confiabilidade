@@ -1,8 +1,0 @@
-$
-manelito
-$
-$
-$
-data\Personal User Files\manel\Photos\photo_manel_0.jpg::
-data\Personal User Files\manel\Photos\photo_manel_1.jpg::
-data\Personal User Files\manel\Photos\photo_manel_2.jpg::

@@ -41,7 +41,7 @@ public class Grupo {
 		membros.add(dono);
 		this.msgs = new ArrayList<Mensagem>();
 		this.historicoMsgs = new ArrayList<Mensagem>();
-		this.groupFolder = new File("data\\Group Folder\\" + this.grupoID);
+		this.groupFolder = new File("data//Group Folder//" + this.grupoID);
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
@@ -64,7 +64,7 @@ public class Grupo {
 		this.membros = membros;
 		this.msgs = msgs;
 		this.historicoMsgs = historico;
-		this.groupFolder = new File("data\\Group Folder\\" + this.grupoID);
+		this.groupFolder = new File("data//Group Folder//" + this.grupoID);
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");

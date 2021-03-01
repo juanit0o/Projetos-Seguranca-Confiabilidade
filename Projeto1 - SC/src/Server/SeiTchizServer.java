@@ -160,7 +160,7 @@ public class SeiTchizServer {
 						break;
 					case "p":
 					case "post":
-						String path = "data\\Personal User Files\\" + user + "\\Photos\\photo_"
+						String path = "data//Personal User Files//" + user + "//Photos//photo_"
 								+ currentClient.getUser() + "_" + currentClient.nrOfPhotos() + ".jpg";
 						File fileName = new File(path);
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
@@ -172,7 +172,7 @@ public class SeiTchizServer {
 							photoRecebida.write(buffer);
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
 							currentClient.publishPhoto(path);
-							File filePhotos = new File("data\\Server Files\\allPhotos.txt");
+							File filePhotos = new File("data//Server Files//allPhotos.txt");
 							BufferedWriter bW = new BufferedWriter(new FileWriter(filePhotos, true));
 							bW.write(currentClient.getUser() + "::" + fileName.getPath());
 							bW.newLine();
@@ -188,7 +188,7 @@ public class SeiTchizServer {
 					case "wall":
 
 						//criar pasta para o cliente
-						File wallFolder = new File("wall\\" + splittado[2]);
+						File wallFolder = new File("wall//" + splittado[2]);
 						if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
 							String[] entries = wallFolder.list();
 							for(String s: entries){
@@ -200,7 +200,7 @@ public class SeiTchizServer {
 						//devolver os ids das n fotografias mais recentes e o nr de likes destas
 						//se houverem menos que o n dado apenas mostrar essas
 						//se n exisitirem nenhumas - avisar
-						File fileDirectory = new File("data\\Server Files");
+						File fileDirectory = new File("data//Server Files");
 						File filePhotos = new File(fileDirectory.getAbsolutePath(), "allPhotos.txt");
 						BufferedReader bR = new BufferedReader(new FileReader(filePhotos));
 
@@ -258,7 +258,7 @@ public class SeiTchizServer {
 					case "l":
 					case "like":
 						String phId = splittado[1];
-						File filePhotos1 = new File("data\\Server Files\\allPhotos.txt");
+						File filePhotos1 = new File("data//Server Files//allPhotos.txt");
 						BufferedReader bR1 = new BufferedReader(new FileReader(filePhotos1));
 						//ver o ficheiro allPhotos a procura do user que publicou a foto que vai levar o like
 						String line;

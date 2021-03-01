@@ -22,8 +22,8 @@ public class CatalogoGrupos {
 	
 	private CatalogoClientes catClientes;
 	private ArrayList<Grupo> grupos;
-	private File groupFolder = new File("data\\Group Folder");
-	private File groupFile = new File("data\\Server Files\\allGroups.txt");
+	private File groupFolder = new File("data//Group Folder");
+	private File groupFile = new File("data//Server Files//allGroups.txt");
 	
 	/**
 	 * Construtor da classe que inicia uma lista onde os clientes
@@ -45,7 +45,7 @@ public class CatalogoGrupos {
 					//mensagens para chamar o construtor do grupo
 					//group id = cada linha tem o nome de um grupo
 					String linha = scReader.nextLine();
-					File fileGrupo = new File("data\\Group Folder\\" + linha + "\\"+linha +"_membros.txt");
+					File fileGrupo = new File("data//Group Folder//" + linha + "//"+linha +"_membros.txt");
 					BufferedReader rW = new BufferedReader(new FileReader(fileGrupo));
 					String line = rW.readLine();
 					//Apanhar o dono
@@ -58,12 +58,12 @@ public class CatalogoGrupos {
 					}
 					rW.close();
 
-					File fileMsg= new File("data\\Group Folder\\" + linha + "\\"+linha +"_caixa.txt");
+					File fileMsg= new File("data//Group Folder//" + linha + "//"+linha +"_caixa.txt");
 					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
 					while ((line = rW2.readLine()) != null) {
 						String[] mensagem = line.split("%%");
-						String[] ler = mensagem[3].split("\\*\\*");
+						String[] ler = mensagem[3].split("//*//*");
 						ArrayList<Cliente> listaPorLer = new ArrayList<Cliente>();
 						String[] listaPorLerDeClientes = ler[0].split("%");
 						if(!listaPorLerDeClientes[0].equals("")){
@@ -86,7 +86,7 @@ public class CatalogoGrupos {
 					rW2.close();
 					System.out.println();
 					//LOAD DA HISTORICO (SO ESTAO AS MENSAGENS LIDAS POR TODOS, SEM POR LER)
-					File fileHist= new File("data\\Group Folder\\" + linha + "\\"+linha +"_historico.txt");
+					File fileHist= new File("data//Group Folder//" + linha + "//"+linha +"_historico.txt");
 					BufferedReader rW3 = new BufferedReader(new FileReader(fileHist));
 					ArrayList<Mensagem> historico = new ArrayList<Mensagem>();
 					//Enquanto houver historico para ler

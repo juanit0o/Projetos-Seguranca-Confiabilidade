@@ -126,7 +126,7 @@ public class Mensagem {
 	 * Metodo coloca e guarda os dados da mensagem atual em disco.
 	 */
 	private void moverMensagemParaHistorico(){
-		File groupFolder = new File("data\\Group Folder\\" + this.grupoID);
+		File groupFolder = new File("data//Group Folder//" + this.grupoID);
 		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(logGrupo, true));

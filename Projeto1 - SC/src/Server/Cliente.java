@@ -51,7 +51,7 @@ public class Cliente {
 	 */
 	public void carregarConta() {
 		// pegar no seu ficheiro e preencher os array lists
-		File fileUser = new File("data\\Personal User Files\\" + this.user + "\\info.txt");
+		File fileUser = new File("data//Personal User Files//" + this.user + "//info.txt");
 		try {
 			BufferedReader rW = new BufferedReader(new FileReader(fileUser));
 			String line;
@@ -89,7 +89,6 @@ public class Cliente {
 						System.out.println("[Error] Couldnt load client files information :(");
 						break;
 					}
-					System.out.println(line);
 				}
 			}
 			rW.close();
@@ -221,7 +220,7 @@ public class Cliente {
 	 */
 	public int nrOfPhotos() {
 		int nrPhotos = 0;
-		File photoFolder = new File("data\\Personal User Files\\"+ this.user + "\\Photos");
+		File photoFolder = new File("data//Personal User Files//"+ this.user + "//Photos");
 		nrPhotos = photoFolder.list().length;
 		return nrPhotos;
 	}
@@ -240,7 +239,7 @@ public class Cliente {
 	 */
 	public void userContentsToFile() {
 
-		File fileUser = new File("data\\Personal User Files\\" + this.user + "\\info.txt");
+		File fileUser = new File("data//Personal User Files//" + this.user + "//info.txt");
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow

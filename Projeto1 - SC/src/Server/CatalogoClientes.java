@@ -21,14 +21,14 @@ public class CatalogoClientes {
 	private HashMap<String, Cliente> mapClientes;
 	
 	// Para criar a diretoria com os ficheiros do servidor
-	File fileDirectory = new File("data\\Server Files");
+	File fileDirectory = new File("data//Server Files");
 	
 	// tenta criar esta nova diretoria caso nao exista
 	boolean value = fileDirectory.mkdirs();
 	
 	// para o ficheiro allUsers dentro do Server Files com todos os users,nomes e passes
-	File file = new File("data\\Server Files\\allUsers.txt");
-	File photoFile = new File("data\\Server Files\\allPhotos.txt");
+	File file = new File("data//Server Files//allUsers.txt");
+	File photoFile = new File("data//Server Files//allPhotos.txt");
 
 	/**
 	 * Construtor da classe que incia um mapa onde os clientes
@@ -83,14 +83,14 @@ public class CatalogoClientes {
 			// criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos
 			// $ mensagensPler +
 			// criar a diretoria para os personal files
-			File clientFolder = new File("data\\Personal User Files\\" + user);
-			File photoFolder = new File("data\\Personal User Files\\"+ user + "\\Photos");
+			File clientFolder = new File("data//Personal User Files//" + user);
+			File photoFolder = new File("data//Personal User Files//"+ user + "//Photos");
 			// tenta criar essa diretoria
 			clientFolder.mkdirs();
 			photoFolder.mkdirs();
 			
 			// para o ficheiro pesssoal por cliente
-			File fileCliente = new File("data\\Personal User Files\\" + user + "\\info.txt");
+			File fileCliente = new File("data//Personal User Files//" + user + "//info.txt");
 			fileCliente.createNewFile();
 			cliente.userContentsToFile();
 		} catch (Exception e) {
