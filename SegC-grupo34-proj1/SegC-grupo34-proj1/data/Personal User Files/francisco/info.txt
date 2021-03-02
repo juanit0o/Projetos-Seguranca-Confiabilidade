@@ -1,8 +1,0 @@
-$
-$
-joao
-$
-$
-data\Personal User Files\francisco\Photos\photo_francisco_0.jpg::
-data\Personal User Files\francisco\Photos\photo_francisco_1.jpg::
-data\Personal User Files\francisco\Photos\photo_francisco_2.jpg::joao

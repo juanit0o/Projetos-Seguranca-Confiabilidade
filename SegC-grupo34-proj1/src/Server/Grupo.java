@@ -175,6 +175,14 @@ public class Grupo {
 		for(int i = 0; i < msgs.size(); ++i){
 			if(msgs.get(i).porLerMensagem(cliente)){
 				output.add(msgs.get(i).toString());
+
+				//Verificar se todos ja leram, caso sim remover do msgs
+				if(msgs.get(i).jaLeramTodos()){
+					historicoMsgs.add(msgs.get(i));
+					msgs.remove(msgs.get(i));
+					--i;
+				}
+
 			}
 		}
 		groupContentsToFile();

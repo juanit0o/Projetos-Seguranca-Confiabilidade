@@ -303,9 +303,6 @@ public class Cliente {
 	 */
 	public String getPhoto(String path){
 		for(int i = 0; i < photos.size(); ++i){
-			System.out.println(photos.get(i).getPhotoPath());
-			System.out.println(path + "\n");
-
 			if(photos.get(i).getPhotoPath().equals(path)){
 				return photos.get(i).getPhoto();
 			}

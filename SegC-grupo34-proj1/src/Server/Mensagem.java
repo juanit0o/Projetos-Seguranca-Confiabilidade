@@ -123,6 +123,13 @@ public class Mensagem {
 	}
 
 	/**
+	 * Retorna se ja todos leram a msg
+	 */
+	public boolean jaLeramTodos(){
+		return porLerMsg.size() <= 0;
+	}
+
+	/**
 	 * Metodo coloca e guarda os dados da mensagem atual em disco.
 	 */
 	private void moverMensagemParaHistorico(){

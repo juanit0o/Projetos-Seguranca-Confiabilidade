@@ -51,5 +51,9 @@ As fotografias usadas para o comando Post devem estar dentro da pasta "test" na 
 A mensagem enviada para os grupos nao deve conter "%%" (é uma palavra reservada para tratamento de ficheiros).
 A pasta bin não pode ser apagada, apenas devem ser apagados os seus conteúdos.
 
+-----------------
 
+Observações
+As pastas wall e data (incluindo as subpastas) podem ser apagadas antes de correr o código. Caso existam ao iniciar o programa, serão carregados os
+dados existentes. Caso estas pastas tenham sido apagadas, são geradas automaticamente e a informação acerca dos clientes será "apagada".
 O codigo foi testado na imagem de linux do DI e no Windows 10. 

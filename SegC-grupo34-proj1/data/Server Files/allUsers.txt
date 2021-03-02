@@ -1,2 +1,2 @@
-francisco:francisco:password
-joao:joao:pass
+teste:teste:password123
+manel:manel:password123
