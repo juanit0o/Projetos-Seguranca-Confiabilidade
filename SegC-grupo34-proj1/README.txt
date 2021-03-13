@@ -1,3 +1,5 @@
+Neste momento disfuncional por ter alguns inicios das modificações para o projeto 2, o zip tem o funcional.
+
 Diogo Pinto 52763 
 Francisco Ramalho 53472
 Joao Funenga 53504
