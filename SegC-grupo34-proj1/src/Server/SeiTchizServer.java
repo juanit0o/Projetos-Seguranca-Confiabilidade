@@ -2,9 +2,14 @@ package Server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import javax.crypto.KeyGenerator;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -21,7 +26,24 @@ public class SeiTchizServer {
 
 	private CatalogoClientes catClientes;
 	private CatalogoGrupos catGrupos;
-
+	
+	//criar aqui a keystore do servidor ou dentro do main??
+	private static File keystoreFile = new File("data" + File.separator + "Server Files" + File.separator + "keystore.jks");
+	
+	//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no main)
+	//KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
+	//KeyStore keystore = KeyStore.getInstance("JKS");
+	//String keystorePassord;
+	//keystore.load(keystoreFile, keystorePassword);
+	
+	//criar aqui a pasta PubKeys?
+	File PubKeys = new File("PubKeys");
+	boolean value = PubKeys.mkdirs();
+	
+	//adicionar ao pubkeys o .cert do servidor (X509 auto-assinado)
+	
+	//adicionar o .cert do servidor tambem a uma truststore usada p todos os clientes
+	
 	public static void main(String[] args) {
 		//System.setProperty("javax.net.ssl.keyStore",Server.ficheiroKeyStore);
 		
@@ -32,6 +54,18 @@ public class SeiTchizServer {
 			System.exit(-1);
 		}
 		System.out.println("- - - - - - - - - - -");
+		
+		try {
+			//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no construtor)
+			KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
+			KeyStore keystore = KeyStore.getInstance("JKS");
+			String keystorePassword = args[2];
+			keystore.load(new FileInputStream(keystoreFile), keystorePassword.toCharArray());
+		} catch (NoSuchAlgorithmException  | CertificateException | IOException e) {
+			e.printStackTrace();
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		}
 		
 		//aqui vao mudar os argumentos
 		//String keyStoresFile = args[1];      ficheiro que contem o par de chaves do sv
