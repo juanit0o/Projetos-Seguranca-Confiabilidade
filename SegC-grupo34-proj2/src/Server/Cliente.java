@@ -26,6 +26,9 @@ public class Cliente {
 	private ArrayList<String> follows;
 	private ArrayList<String> grupos; 
 	private ArrayList<Photo> photos; 
+	
+	//onde criar a sua keystore (chave privada), no construtor ou aqui?
+	private File keystore = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "keystore.jks");
 
 	/**
 	 * Construtor da classe que inicia um cliente recebendo

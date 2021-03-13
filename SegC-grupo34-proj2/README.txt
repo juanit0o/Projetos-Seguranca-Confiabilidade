@@ -1,3 +1,5 @@
+Projeto 2 em trabalho, vai sendo atualizado.
+
 Diogo Pinto 52763 
 Francisco Ramalho 53472
 Joao Funenga 53504

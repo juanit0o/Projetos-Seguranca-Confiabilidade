@@ -2,8 +2,17 @@ package Server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+
+import javax.crypto.KeyGenerator;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+
 import java.io.*;
 
 /**
@@ -17,23 +26,62 @@ public class SeiTchizServer {
 
 	private CatalogoClientes catClientes;
 	private CatalogoGrupos catGrupos;
-
+	
+	//criar aqui a keystore do servidor ou dentro do main??
+	private static File keystoreFile = new File("data" + File.separator + "Server Files" + File.separator + "keystore.jks");
+	
+	//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no main)
+	//KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
+	//KeyStore keystore = KeyStore.getInstance("JKS");
+	//String keystorePassord;
+	//keystore.load(keystoreFile, keystorePassword);
+	
+	//criar aqui a pasta PubKeys?
+	File PubKeys = new File("PubKeys");
+	boolean value = PubKeys.mkdirs();
+	
+	//adicionar ao pubkeys o .cert do servidor (X509 auto-assinado)
+	
+	//adicionar o .cert do servidor tambem a uma truststore usada p todos os clientes
+	
 	public static void main(String[] args) {
+		//System.setProperty("javax.net.ssl.keyStore",Server.ficheiroKeyStore);
+		
 		System.out.println("Server");
 		SeiTchizServer server = new SeiTchizServer();
-		if (args.length != 1) {
-			System.out.println("Server is started by typing 'Server.SeiTchizServer (PORT)'!");
+		if (args.length != 3) {
+			System.out.println("Server is started by typing 'Server.SeiTchizServer (PORT) (KEYSTORE) (KEYSTORE-PASSWORD)'!");
 			System.exit(-1);
 		}
 		System.out.println("- - - - - - - - - - -");
-		server.startServer(Integer.parseInt(args[0]));
+		
+		try {
+			//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no construtor)
+			KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
+			KeyStore keystore = KeyStore.getInstance("JKS");
+			String keystorePassword = args[2];
+			keystore.load(new FileInputStream(keystoreFile), keystorePassword.toCharArray());
+		} catch (NoSuchAlgorithmException  | CertificateException | IOException e) {
+			e.printStackTrace();
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		}
+		
+		//aqui vao mudar os argumentos
+		//String keyStoresFile = args[1];      ficheiro que contem o par de chaves do sv
+		//String keyStoresPassword = args[2];  password do ficheiro
+		//System.setProperty("javax.net.ssl.keyStorePassword", keyStoresPassword);
+		server.startServer(Integer.parseInt(args[0]), args[1], args[2]);
 	}
 
 	//metodo para iniciar o servidor
-	public void startServer (int port) {
-		ServerSocket sSoc = null;
+	public void startServer (int port, String keyStoresFile, String keyStoresPassword) {
+		SSLServerSocketFactory sslfact = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+		SSLServerSocket ssl = null;
+		//sSoc = null;
 		try {
-			sSoc = new ServerSocket(port);
+			ssl = (SSLServerSocket) sslfact.createServerSocket(port);
+			//sSoc = new ServerSocket(port);
 		} catch (IOException | SecurityException e) {
 			System.err.println("[ERROR]: Couldnt accept the socket!");
 			System.exit(-1);
@@ -43,8 +91,9 @@ public class SeiTchizServer {
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
-				Socket inSoc = sSoc.accept();
-				ServerThread newServerThread = new ServerThread(inSoc);
+				Socket inSoc = ssl.accept();
+				//Socket inSoc = sSoc.accept();
+				ServerThread newServerThread = new ServerThread(inSoc, keyStoresFile, keyStoresPassword);
 				newServerThread.start();
 			}
 			catch (IOException e) {
@@ -56,8 +105,14 @@ public class SeiTchizServer {
 	//Threads utilizadas para comunicacao com os clientes(1 p cliente)
 	class ServerThread extends Thread {
 		private Socket socket = null;
-		ServerThread(Socket inSoc) {
+		private String keyStoreFile;
+		private String keyStorePassword;
+		
+		ServerThread(Socket inSoc, String keyStoreFile, String keyStorePassword) {
 			socket = inSoc;
+			this.keyStoreFile = keyStoreFile;
+			this.keyStorePassword = keyStorePassword;
+			System.out.println("Connected w client constructor test");
 		}
 		public void run(){
 			String user = null;

@@ -1,7 +1,21 @@
 package Client;
 
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import java.io.*;
 
 /**
@@ -12,7 +26,8 @@ import java.io.*;
  *
  */
 public class SeiTchiz {
-	private static Socket cSoc = null;
+	private static SSLSocket ssl;
+	private static Socket cSoc = null; //esta socket vai desaparecer e vai passar a ser usada a ssl
 	private static final int PORT_DEFAULT = 45678;
 	private static ObjectInputStream inObj = null;
 	private static ObjectOutputStream outObj = null;
@@ -23,21 +38,37 @@ public class SeiTchiz {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
+		//System.setProperty("javax.net.ssl.trustStore", Client.ficheiroTrustStore);
+		
+		
 		System.out.println("cliente: main");
 		String serverIp = "";
 		int serverPort = 0;
 		String user = "";
 		String pass = "";
-		if (args.length == 2) { //caso: 127.0.0.1:45500 clientId  || 127.0.0.1 clientId 
-			user = args[1];
-			System.out.println("You haven't inserted a password. Password?");
-			pass = inSc.nextLine();
-		} else if(args.length == 3 && args[1].length() > 1) { //caso: 127.0.0.1:45500 clientId pwd || 127.0.0.1 clientId pwd
-			user = args[1];
-			pass = args[2];
-		} else if (args.length == 3 && args[1].length() <= 1) {
-			System.out.println("Invalid username (least 2 characters)!");
-			System.exit(-1);
+		String truststore = "";
+		String keystoreFile = "";
+		String keystorePassword = "";
+		
+		//if (args.length == 2) { //caso: 127.0.0.1:45500 clientId  || 127.0.0.1 clientId 
+		//	user = args[1];
+		//	System.out.println("You haven't inserted a password. Password?");
+		//	pass = inSc.nextLine();
+		//} else if(args.length == 3 && args[1].length() > 1) { //caso: 127.0.0.1:45500 clientId pwd || 127.0.0.1 clientId pwd
+		//	user = args[1];
+		//	pass = args[2];
+		//} else if (args.length == 3 && args[1].length() <= 1) {
+		//	System.out.println("Invalid username (least 2 characters)!");
+		//	System.exit(-1);
+		
+		//fazer condicoes mais maricas para os args 
+		if( args.length == 5) {
+			serverIp = args[0];
+			truststore = args[1];  		//n percebo cm usamos
+			keystoreFile = args[2]; 	//n percebo cm usamos
+			keystorePassword = args[3]; //n percebo cm usamos
+			user = args[4];
 		} else {
 			System.out.println("Invalid commands");
 			System.exit(-1);
@@ -59,7 +90,7 @@ public class SeiTchiz {
 			System.exit(-1);
 		}
 
-		//autenticacao 
+		//autenticacao vai ser mudada para incluir as chaves
 		autenticacao(user, pass);
 		sendReceiveComando(user);
 		// fechar tudo
@@ -133,8 +164,62 @@ public class SeiTchiz {
 			case "like":
 			case "n":
 			case "newgroup":
+				if (comando.length != 2){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					try {
+						outObj.writeObject(output);
+						System.out.println((String) inObj.readObject());
+						System.out.println("\nInsert a command or type help to see commands: ");
+					} catch (IOException | ClassNotFoundException e) {
+						System.out.println("The server is now offline :(");
+					}
+				}
+				break;
 			case "c":
 			case "collect":
+				if (comando.length != 2){
+					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
+				} else {
+					try {
+						outObj.writeObject(output);
+						String recebido = (String) inObj.readObject();
+						System.out.println(recebido);
+						
+						//o recebido pode ter tanto o caso de sucesso como o de erro
+						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma delas
+						
+						ArrayList<String> msgsDecoded = new ArrayList<>();
+						
+						/*Percorrer todas as mensagens recebidas (codificadas) e descodificar e adicionar ao array
+						for(int i = 0; i < nrMensagens; i++) {
+							SecretKeySpec keySpec2 = new SecretKeySpec(msg[i], "AES");
+						    Cipher c2 = Cipher.getInstance("AES");
+						    c2.init(Cipher.DECRYPT_MODE, keySpec2);
+						    
+						    byte[] arrayCoded;
+						    ByteArrayInputStream ba = new ByteArrayInputStream(array);
+						    CipherInputStream cis2 = new CipherInputStream(ba, c2);
+						    
+						    ByteArrayOutputStream bo = new ByteArrayOutputStream();
+						    byte[] b3 = new byte[16];
+						    int j = cis2.read(b3);
+						    while(j != -1){
+						        bo.write(b3, 0, j);
+						        j = cis2.read(b3);
+						    }
+						    msgsDecoded.add(b3.toString());
+						    bo.close();
+						    cis2.close();
+						}*/
+						
+						
+						System.out.println("\nInsert a command or type help to see commands: ");
+					} catch (IOException | ClassNotFoundException e) {
+						System.out.println("The server is now offline :(");
+					}
+				}
+				break;
 			case "h":
 			case "history":
 				if (comando.length != 2){
@@ -149,6 +234,7 @@ public class SeiTchiz {
 					}
 				}
 				break;
+				
 			case "a":
 			case "addu":
 			case "r":
@@ -171,11 +257,37 @@ public class SeiTchiz {
 					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
 				} else {
 					try {
-						outObj.writeObject(output);
+						//output tem "msg gr texto"
+						//tem de se cifrar o texto (com a chave do grupo mais atual?/¿
+						//reconstruir o output e mandá-lo com o texto cifrado
+						
+						//Gerar a chave
+						KeyGenerator kg = KeyGenerator.getInstance("AES");
+						kg.init(128);
+						SecretKey key = kg.generateKey();
+						Cipher c = Cipher.getInstance("AES");
+						c.init(Cipher.ENCRYPT_MODE, key);
+						
+						System.out.println("1");
+						String textoMensagem = comando[2];
+						ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
+						CipherOutputStream cos = new CipherOutputStream(bo,c);
+						
+						byte[] b = textoMensagem.getBytes();  
+					    cos.write(b);
+					    cos.close();
+					    System.out.println(b.toString());
+					    
+					    //o que é o key/keyencoded/b? key=?/ keyEncoded=key em array de bytes/ b= o que supostamente mandamos?
+					    //byte[] keyEncoded = key.getEncoded(); manda se o array de bytes ou a string correspondente? b ou key?
+					    
+						String outputCifrado = comando[0] + " " + comando[1] + " " + b;
+						//envio da suposta mensagem cifrada (confirmar o que está a aparecer no b) depois de conseguir mandar msg)
+						outObj.writeObject(outputCifrado);
 						System.out.println((String) inObj.readObject());
 						System.out.println("\nInsert a command or type help to see commands: ");
-					} catch (IOException | ClassNotFoundException e) {
-						System.out.println("The server is now offline :(");
+					} catch (IOException | ClassNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+						System.out.println("The server is now offline :(" + e);
 					}
 				}
 				break;
@@ -279,7 +391,7 @@ public class SeiTchiz {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		// verificar autenticacao
+		// verificar autenticacao vai ser mudada para usar os ficheiros keystores
 		try {
 			String resposta = (String) inObj.readObject();
 			if(resposta.equals("What is your name?")) {
@@ -311,11 +423,28 @@ public class SeiTchiz {
 	 */
 	private static void conectToServer(String ip, int port) {
 		try {
-			cSoc = new Socket(ip,port);
-			outObj = new ObjectOutputStream(cSoc.getOutputStream());
-			inObj = new ObjectInputStream(cSoc.getInputStream());
+			///tentativa com ssl
+			SSLSocketFactory sslfact = (SSLSocketFactory) SSLSocketFactory.getDefault();
+			SSLSocket ssl = null;
+			ssl = (SSLSocket) sslfact.createSocket(ip, port);
+			if(ssl.isConnected())
+			    System.out.println("Connected.");
+			
+			//isto vai dar a excecao handshake certificate failed, e representa que nao temos o 
+			//certificado publico do servidor a que nos estamos a tentar conectar na Java Truststore
+			//P tratar, temos de apontar a variavel de ambiente javax.net.ssl.trustStore para o nosso
+			//ficheiro truststore
+			//https://www.baeldung.com/java-ssl
+			outObj = new ObjectOutputStream(ssl.getOutputStream());
+			inObj = new ObjectInputStream(ssl.getInputStream());
+			//////
+			
+			//Forma antiga
+			//cSoc = new Socket(ip,port);
+			//outObj = new ObjectOutputStream(cSoc.getOutputStream());
+			//inObj = new ObjectInputStream(cSoc.getInputStream());
 		} catch (IOException e) {
-			System.out.println("Couldnt connect to the server!");
+			System.out.println("Couldnt connect to the server! " + e);
 			System.exit(-1);
 		}		
 	}
