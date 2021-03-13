@@ -1,2 +1,3 @@
 teste:teste:password123
 manel:manel:password123
+userName:user:password123
