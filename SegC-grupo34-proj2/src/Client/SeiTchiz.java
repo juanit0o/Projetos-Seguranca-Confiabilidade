@@ -268,7 +268,6 @@ public class SeiTchiz {
 						Cipher c = Cipher.getInstance("AES");
 						c.init(Cipher.ENCRYPT_MODE, key);
 						
-						System.out.println("1");
 						String textoMensagem = comando[2];
 						ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
 						CipherOutputStream cos = new CipherOutputStream(bo,c);
@@ -276,7 +275,7 @@ public class SeiTchiz {
 						byte[] b = textoMensagem.getBytes();  
 					    cos.write(b);
 					    cos.close();
-					    System.out.println(b.toString());
+					    //System.out.println(b.toString());
 					    
 					    //o que é o key/keyencoded/b? key=?/ keyEncoded=key em array de bytes/ b= o que supostamente mandamos?
 					    //byte[] keyEncoded = key.getEncoded(); manda se o array de bytes ou a string correspondente? b ou key?

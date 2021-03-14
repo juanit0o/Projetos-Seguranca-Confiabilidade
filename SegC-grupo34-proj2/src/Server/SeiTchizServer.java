@@ -55,9 +55,13 @@ public class SeiTchizServer {
 		}
 		System.out.println("- - - - - - - - - - -");
 		
+		System.setProperty("javax.net.ssl.keyStore",args[1]);
+		System.setProperty("javax.net.ssl.keyStorePassword",args[2]);
+		
 		try {
 			//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no construtor)
 			KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
+			AESKeyGen.init(128);
 			KeyStore keystore = KeyStore.getInstance("JKS");
 			String keystorePassword = args[2];
 			keystore.load(new FileInputStream(keystoreFile), keystorePassword.toCharArray());
@@ -80,7 +84,7 @@ public class SeiTchizServer {
 		SSLServerSocket ssl = null;
 		//sSoc = null;
 		try {
-			ssl = (SSLServerSocket) sslfact.createServerSocket(port);
+			ssl =  (SSLServerSocket) sslfact.createServerSocket(port);
 			//sSoc = new ServerSocket(port);
 		} catch (IOException | SecurityException e) {
 			System.err.println("[ERROR]: Couldnt accept the socket!");
