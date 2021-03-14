@@ -24,6 +24,7 @@ Ter em atencao, que para ser possivel o uso da aplicacao, e necessario iniciar o
 - Exemplo de comando para execucao do servidor:
 Executar ficheiros .class:
 java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678
+java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678 keystore keystore-password
 
 Executar ficheiro .jar:
 java -cp bin -Djava.security.manager -Djava.security.policy==server.policy -jar SeiTchizServer.jar 45678
@@ -32,6 +33,7 @@ java -cp bin -Djava.security.manager -Djava.security.policy==server.policy -jar 
 - Exemplo de comando para execucao do cliente:
 Executar ficheiros .class:
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 userName password123
+java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore keystore keystore-password clientid
 
 Executar ficheiro .jar:
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy -jar SeiTchiz.jar 127.0.0.1:45678 userName password123
