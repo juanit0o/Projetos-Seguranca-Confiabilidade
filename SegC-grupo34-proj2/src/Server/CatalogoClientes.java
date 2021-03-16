@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -69,16 +70,17 @@ public class CatalogoClientes {
 	 * @param outStream - stream de escrita.
 	 * @param inStream - stream de leitura.
 	 */
-	public void addClient(String user, String pass, ObjectOutputStream outStream, ObjectInputStream inStream) {
+	public void addClient(String user, PublicKey pubk, ObjectOutputStream outStream, ObjectInputStream inStream) {
 		try {
 			outStream.writeObject("What is your name?");
 			String name = (String) inStream.readObject();
-			Cliente cliente = new Cliente(user, pass, name);
+			Cliente cliente = new Cliente(user, pubk, name);
 			mapClientes.put(user, cliente);
 			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
-			bW.write(user + ":" + name + ":" + pass);
+			bW.write(user + ":" + pubk);
 			bW.newLine();
 			bW.close();
+			//TODO allusers tem de ser cifrado pelo servidor (guardado cifrado)
 			
 			// criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos
 			// $ mensagensPler +

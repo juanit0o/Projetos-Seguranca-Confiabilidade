@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.PublicKey;
 
 /**
  * Classe representativa de um cliente, que e composta por nome,
@@ -21,7 +22,7 @@ public class Cliente {
 
 	private String nome;
 	private String user;
-	private String pass;
+	private PublicKey pubk;
 	private ArrayList<String> followers;
 	private ArrayList<String> follows;
 	private ArrayList<String> grupos; 
@@ -37,10 +38,10 @@ public class Cliente {
 	 * @param p - password do cliente.
 	 * @param nome - nome do cliente.
 	 */
-	public Cliente(String u, String p, String nome) {
+	public Cliente(String u, PublicKey pubk, String nome) {
 		this.nome = nome;
 		this.user = u;
-		this.pass = p;
+		this.pubk = pubk;
 		this.followers = new ArrayList<String>();
 		this.follows = new ArrayList<String>();
 		this.grupos = new ArrayList<String>();

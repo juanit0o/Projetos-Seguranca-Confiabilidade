@@ -2,7 +2,12 @@ package Client;
 
 import java.net.Socket;
 import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -47,7 +52,7 @@ public class SeiTchiz {
 		int serverPort = 0;
 		String user = "";
 		String pass = "";
-		String truststore = "";
+		String truststore = ""; //p agora n fazer isto, esta relacionado com a parte do tls
 		String keystoreFile = "";
 		String keystorePassword = "";
 		
@@ -63,12 +68,12 @@ public class SeiTchiz {
 		//	System.exit(-1);
 		
 		//fazer condicoes mais maricas para os args 
-		if( args.length == 5) {
+		if( args.length == 4) { //mudar para 5 depois, falta a truststore
 			serverIp = args[0];
 			truststore = args[1];  		//n percebo cm usamos
 			keystoreFile = args[2]; 	//n percebo cm usamos
 			keystorePassword = args[3]; //n percebo cm usamos
-			user = args[4];
+			user = args[3];
 		} else {
 			System.out.println("Invalid commands");
 			System.exit(-1);
@@ -91,7 +96,7 @@ public class SeiTchiz {
 		}
 
 		//autenticacao vai ser mudada para incluir as chaves
-		autenticacao(user, pass);
+		autenticacao(user, keystoreFile, keystorePassword);
 		sendReceiveComando(user);
 		// fechar tudo
 		try {
@@ -382,10 +387,10 @@ public class SeiTchiz {
 	 * @param user - username do cliente a autenticar.
 	 * @param pass - password do cliente a autenticar.
 	 */
-	private static void autenticacao(String user, String pass) {
+	private static void autenticacao(String user, String keystoreFile, String keystorePass) {
 		try {
 			outObj.writeObject(user);
-			outObj.writeObject(pass);
+			//outObj.writeObject(pass);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -393,6 +398,46 @@ public class SeiTchiz {
 		// verificar autenticacao vai ser mudada para usar os ficheiros keystores
 		try {
 			String resposta = (String) inObj.readObject();
+			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Personal User Files" + File.separator + user + keystoreFile);
+			//ficheiro keystore cliente
+			KeyStore kstore = KeyStore.getInstance("JCEKS");
+			kstore.load(keyfile, user.toCharArray()); //password da keystore
+			
+			Key myPrivateKey = kstore.getKey(user, keystorePass.toCharArray()); //alias do keypair(fazer hardcode)?  + password
+			PrivateKey pk = (PrivateKey) myPrivateKey; //ver cm obter slides
+			
+			
+			if(resposta.charAt(resposta.length()-1) =='D') {
+				
+				//enviar a assinatura do nonce com a sua chave privada
+				
+				Signature signature = Signature.getInstance("MD5withRSA");
+				signature.initSign(pk);
+				byte buffer[] = resposta.getBytes();
+				signature.update(buffer);
+				
+				//enviar o nonce e dps assinatura
+				outObj.writeObject(resposta);
+				outObj.writeObject(signature.sign());
+				
+				
+				//enviar o certificado com a chave publica correspondente
+				Certificate certificado = kstore.getCertificate(user); //alias do keypair
+				outObj.writeObject(certificado);
+			}else { //qd ja existe no servidor
+				
+				
+				Signature signature = Signature.getInstance("MD5withRSA");
+				signature.initSign(pk);
+				byte buffer[] = resposta.getBytes();
+				signature.update(buffer);
+				
+				//outObj.writeObject(resposta);
+				//enviar assinatura é preciso responder com o nonce?
+				outObj.writeObject(signature.sign());
+			}
+			
+			
 			if(resposta.equals("What is your name?")) {
 				System.out.println(resposta);
 				outObj.writeObject(inSc.nextLine());
@@ -423,25 +468,25 @@ public class SeiTchiz {
 	private static void conectToServer(String ip, int port) {
 		try {
 			///tentativa com ssl
-			SSLSocketFactory sslfact = (SSLSocketFactory) SSLSocketFactory.getDefault();
-			SSLSocket ssl = null;
-			ssl = (SSLSocket) sslfact.createSocket(ip, port);
-			if(ssl.isConnected())
-			    System.out.println("Connected.");
+			//SSLSocketFactory sslfact = (SSLSocketFactory) SSLSocketFactory.getDefault();
+			//SSLSocket ssl = null;
+			//ssl = (SSLSocket) sslfact.createSocket(ip, port);
+			//if(ssl.isConnected())
+			//    System.out.println("Connected.");
 			
 			//isto vai dar a excecao handshake certificate failed, e representa que nao temos o 
 			//certificado publico do servidor a que nos estamos a tentar conectar na Java Truststore
 			//P tratar, temos de apontar a variavel de ambiente javax.net.ssl.trustStore para o nosso
 			//ficheiro truststore
 			//https://www.baeldung.com/java-ssl
-			outObj = new ObjectOutputStream(ssl.getOutputStream());
-			inObj = new ObjectInputStream(ssl.getInputStream());
+			//outObj = new ObjectOutputStream(ssl.getOutputStream());
+			//inObj = new ObjectInputStream(ssl.getInputStream());
 			//////
 			
 			//Forma antiga
-			//cSoc = new Socket(ip,port);
-			//outObj = new ObjectOutputStream(cSoc.getOutputStream());
-			//inObj = new ObjectInputStream(cSoc.getInputStream());
+			cSoc = new Socket(ip,port);
+			outObj = new ObjectOutputStream(cSoc.getOutputStream());
+			inObj = new ObjectInputStream(cSoc.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Couldnt connect to the server! " + e);
 			System.exit(-1);

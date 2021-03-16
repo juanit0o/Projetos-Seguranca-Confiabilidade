@@ -2,9 +2,15 @@ package Server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -28,7 +34,7 @@ public class SeiTchizServer {
 	private CatalogoGrupos catGrupos;
 	
 	//criar aqui a keystore do servidor ou dentro do main??
-	private static File keystoreFile = new File("data" + File.separator + "Server Files" + File.separator + "keystore.jks");
+	//private static File keystoreFile = new File("data" + File.separator + "Server Files" + File.separator + "keystore.jks");
 	
 	//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no main)
 	//KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
@@ -55,21 +61,21 @@ public class SeiTchizServer {
 		}
 		System.out.println("- - - - - - - - - - -");
 		
-		System.setProperty("javax.net.ssl.keyStore",args[1]);
-		System.setProperty("javax.net.ssl.keyStorePassword",args[2]);
+		//System.setProperty("javax.net.ssl.keyStore",args[1]); ver com o que isto esta relacionado
+		//System.setProperty("javax.net.ssl.keyStorePassword",args[2]);
 		
-		try {
+		//try {
 			//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no construtor)
-			KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
-			AESKeyGen.init(128);
-			KeyStore keystore = KeyStore.getInstance("JKS");
-			String keystorePassword = args[2];
-			keystore.load(new FileInputStream(keystoreFile), keystorePassword.toCharArray());
-		} catch (NoSuchAlgorithmException  | CertificateException | IOException e) {
-			e.printStackTrace();
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
-		}
+			//KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
+			//AESKeyGen.init(128);
+			//KeyStore keystore = KeyStore.getInstance("JKS");
+			//String keystorePassword = args[2];
+			//keystore.load(new FileInputStream(keystoreFile), keystorePassword.toCharArray());
+		//} catch (NoSuchAlgorithmException  | CertificateException | IOException e) {
+		//	e.printStackTrace();
+		//} catch (KeyStoreException e) {
+		//	e.printStackTrace();
+		//}
 		
 		//aqui vao mudar os argumentos
 		//String keyStoresFile = args[1];      ficheiro que contem o par de chaves do sv
@@ -80,12 +86,12 @@ public class SeiTchizServer {
 
 	//metodo para iniciar o servidor
 	public void startServer (int port, String keyStoresFile, String keyStoresPassword) {
-		SSLServerSocketFactory sslfact = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-		SSLServerSocket ssl = null;
-		//sSoc = null;
+		//SSLServerSocketFactory sslfact = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+		//SSLServerSocket ssl = null;
+		ServerSocket sSoc = null;
 		try {
-			ssl =  (SSLServerSocket) sslfact.createServerSocket(port);
-			//sSoc = new ServerSocket(port);
+			//ssl =  (SSLServerSocket) sslfact.createServerSocket(port);
+			sSoc = new ServerSocket(port);
 		} catch (IOException | SecurityException e) {
 			System.err.println("[ERROR]: Couldnt accept the socket!");
 			System.exit(-1);
@@ -95,8 +101,8 @@ public class SeiTchizServer {
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
-				Socket inSoc = ssl.accept();
-				//Socket inSoc = sSoc.accept();
+				//Socket inSoc = ssl.accept();
+				Socket inSoc = sSoc.accept();
 				ServerThread newServerThread = new ServerThread(inSoc, keyStoresFile, keyStoresPassword);
 				newServerThread.start();
 			}
@@ -124,22 +130,73 @@ public class SeiTchizServer {
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
 			
-				String password = null;
+				//String password = null;
 				boolean autenticou = false;
 				try {
 					user = (String) inStream.readObject();
-					password = (String) inStream.readObject();
+					//password = (String) inStream.readObject();
 				}catch (ClassNotFoundException e1) {
 					System.out.println("[ERROR]: Couldnt read user or pass from client!");
 				}
+				//gerar nonce para devolver
+				Autenticacao aut = new Autenticacao();
+				long nonce = aut.generateNonce();
+				
+				
+				//D=desconhecido
 				//comparar se ja existe user
 				if (catClientes.existeUser(user)) {
-					autenticou = catClientes.passCorreta(user, password);
+					
+					outStream.writeObject(String.valueOf(nonce));
+					
+					//assinatura do nonce com chave privada do cliente
+					byte assinatura[] = (byte[]) inStream.readObject();
+					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
+					
+					//como obter o certificado dele, supostamente foi exportado e tem pass
+					Certificate certificadoCliente = aut.getCertificate(user);
+					
+					PublicKey pubK = certificadoCliente.getPublicKey();
+					Signature signature = Signature.getInstance("MD5withRSA");
+					signature.initVerify(pubK);
+					//signature.update(nonceRecebido.getBytes());
+					
+					
+					//autenticou = catClientes.passCorreta(user, password);
 				} else {//adicionar a lista
 					autenticou = true;
-					catClientes.addClient(user, password, outStream, inStream);
+					String clienteDesconhecido = String.valueOf(nonce);
+					clienteDesconhecido += "D"; //flag de desconhecido (tem de se registar)
+					outStream.writeObject(clienteDesconhecido);
+					
+					
+					//nonce recebido do cliente
+					String nonceRecebido = (String) inStream.readObject();
+					if(!clienteDesconhecido.equals(nonceRecebido)) {
+						System.out.println("Nonce diferente");
+						System.exit(-1);
+					}
+					
+					//assinatura do nonce com chave privada do cliente
+					byte assinatura[] = (byte[]) inStream.readObject();
+					
+					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
+					Certificate certificadoCliente = (Certificate) inStream.readObject();
+					
+					PublicKey pubK = certificadoCliente.getPublicKey();
+					Signature signature = Signature.getInstance("MD5withRSA");
+					signature.initVerify(pubK);
+					signature.update(nonceRecebido.getBytes());
+					if(signature.verify(assinatura)) {
+						System.out.println("Msg valida");
+					}else {
+						System.out.println("msg c assinatura invalida");
+					}
+
+					catClientes.addClient(user, pubK, outStream, inStream);
+					
 				}
-				outStream.writeObject(String.valueOf(autenticou));
+				
 				System.out.println(autenticou ? "Client '" + user + "' authenticated." :
 					"Client '" + user + "' not authenticated.");
 				//GET CURRENT CLIENT
@@ -564,7 +621,20 @@ public class SeiTchizServer {
 				}
 			} catch (IOException e) {
 				System.out.println("Client '"+user+"' disconnected.");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidKeyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SignatureException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+		
 	}
 }
