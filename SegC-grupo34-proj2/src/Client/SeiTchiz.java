@@ -398,12 +398,12 @@ public class SeiTchiz {
 		// verificar autenticacao vai ser mudada para usar os ficheiros keystores
 		try {
 			String resposta = (String) inObj.readObject();
-			//FileInputStream keyfile = new FileInputStream("data" + File.separator + "Personal User Files" + File.separator + keystoreFile); //da access denied aqui
+			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + keystoreFile); //da access denied aqui
 			//ficheiro keystore cliente
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //TODO com jceks diz que nao tem este algoritmo e com keystore.getdefaulttype diz acesso negado
-			//kstore.load(keyfile, user.toCharArray()); //password da keystore
-			kstore.load(new FileInputStream("data" + File.separator + "Personal User Files" + File.separator + keystoreFile), user.toCharArray());
+			kstore.load(keyfile, keystorePass.toCharArray());
 			
+			System.out.println(keystorePass);
 			Key myPrivateKey = kstore.getKey(user, keystorePass.toCharArray());
 			PrivateKey pk = (PrivateKey) myPrivateKey; //ver cm obter slides
 			

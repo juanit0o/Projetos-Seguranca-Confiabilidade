@@ -1,3 +1,7 @@
+grant codeBase "file:${java.home}/lib/ext/*" { 
+permission java.security.AllPermission; 
+}; 
+
 grant codeBase "file:bin/-"{
     permission java.util.PropertyPermission "user.dir", "read";
 
