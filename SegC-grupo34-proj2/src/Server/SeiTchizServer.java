@@ -168,7 +168,7 @@ public class SeiTchizServer {
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
 					signature.initVerify(pubK);
-					//signature.update(nonceRecebido.getBytes()); o nonce tem de ser mandado outra vez para se fazer a verificacao IMO
+					//signature.update(nonceRecebido.getBytes()); o nonce tem de ser mandado outra vez para se fazer a verificacao? IMO
 					
 					//usar a chave publica (certif) associada ao cliente para verificar a assinatura do nonce
 					signature.update(nonceReceb.getBytes());

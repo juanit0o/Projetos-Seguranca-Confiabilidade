@@ -15,9 +15,9 @@ public class Autenticacao {
 	
 	public Certificate getCertificate(String user) {
 		//pasta do lado do sv
-		//File cert = new File("PubKeys" + File.separator + user + ".cer");
+		File cert = new File("PubKeys" + File.separator + user + ".cer");
 		//como dar load do certificado do utilizador
-		//return cert;
-		return null;
+		return cert;
+		//return null;
 	}
 }
