@@ -17,7 +17,7 @@ public class Autenticacao {
 		//pasta do lado do sv
 		//File cert = new File("PubKeys" + File.separator + user + ".cer");
 		//como dar load do certificado do utilizador
-		//return (Certificate) cert;
+		//return cert;
 		return null;
 	}
 }

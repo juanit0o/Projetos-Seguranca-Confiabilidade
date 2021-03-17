@@ -156,15 +156,29 @@ public class SeiTchizServer {
 					byte assinatura[] = (byte[]) inStream.readObject();
 					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
 					
-					//TODO como obter o certificado dele, supostamente foi exportado e tem pass
+					//verificar se é preciso receber o nonce
+					String nonceReceb = (String) inStream.readObject();
+					
+					//TODO como obter o certificado dele, ja esta do lado do servidor mas cm vamos buscar
+					//File certificadoCliente = aut.getCertificate(user);
 					Certificate certificadoCliente = aut.getCertificate(user);
+					
+					//https://stackoverflow.com/questions/9219966/how-to-do-verify-using-java-security-signature
 					
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
 					signature.initVerify(pubK);
 					//signature.update(nonceRecebido.getBytes()); o nonce tem de ser mandado outra vez para se fazer a verificacao IMO
 					
-					//vai guardar no ficheiro <user, pathCertificado?> ?
+					//usar a chave publica (certif) associada ao cliente para verificar a assinatura do nonce
+					signature.update(nonceReceb.getBytes());
+					if(signature.verify(assinatura)) {
+						System.out.println("Msg valida");
+					}else {
+						System.out.println("msg c assinatura invalida");
+					}
+					
+					
 					//autenticou = catClientes.passCorreta(user, password);
 				} else {//adicionar a lista
 					autenticou = true;
@@ -182,18 +196,19 @@ public class SeiTchizServer {
 					
 					//assinatura do nonce com chave privada do cliente
 					byte assinatura[] = (byte[]) inStream.readObject();
+					System.out.println("assinatura lado sv: " + assinatura.toString());
 					
 					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
-					byte b[] = (byte[]) inStream.readObject(); //TODO certificado, confirmar slide 22 ppt 5
+					byte certificado[] = (byte[]) inStream.readObject(); //TODO certificado, confirmar slide 22 ppt 5
 					CertificateFactory cf = CertificateFactory.getInstance("X509");
 					//TODO gerado o certificado do cliente a partir do array de bytes do certificado do cliente?
-					Certificate certificadoCliente = cf.generateCertificate(new ByteArrayInputStream(b)); 
+					Certificate certificadoCliente = cf.generateCertificate(new ByteArrayInputStream(certificado)); 
 					
 					//TODO fazer aqui fileoutputstream para por o certificado num ficheiro do lado do servidor?
 					//depois ja podiamos aceder a ele
 					FileOutputStream fileCert = new FileOutputStream("PubKeys" + File.separator + user + ".cer");
 					//escrever certificado para o fileCert
-					//fileCert.write(certificadoCliente); TODO como escrever o certificado para o ficheiro
+					fileCert.write(certificadoCliente.getEncoded()); //TODO como escrever o certificado para o ficheiro, supostamente csg mas n sei se é o que la aparece
 					
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
@@ -206,7 +221,8 @@ public class SeiTchizServer {
 					}
 
 					//TODO mandar o path do certificado do user dentro do lado do servidor?
-					catClientes.addClient(user, "PubKeys" + File.separator + user, outStream, inStream);
+					//criar o cliente com o path para o seu certificado do lado do sv
+					catClientes.addClient(user, "PubKeys" + File.separator + user + ".cer", outStream, inStream);
 					
 				}
 				

@@ -397,6 +397,7 @@ public class SeiTchiz {
 		}
 		// verificar autenticacao vai ser mudada para usar os ficheiros keystores
 		try {
+			//NONCE recebido do sv
 			String resposta = (String) inObj.readObject();
 			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + keystoreFile); //da access denied aqui
 			//ficheiro keystore cliente
@@ -409,7 +410,7 @@ public class SeiTchiz {
 			
 			
 			if(resposta.charAt(resposta.length()-1) =='D') {
-				
+				System.out.println("nao existo");
 				//enviar a assinatura do nonce com a sua chave privada
 				
 				Signature signature = Signature.getInstance("MD5withRSA");
@@ -424,23 +425,28 @@ public class SeiTchiz {
 				
 				//enviar o certificado com a chave publica correspondente
 				Certificate certificado = kstore.getCertificate(user); //alias do keypair
+				
+				
 				outObj.writeObject(certificado.getEncoded()); //envia o array de bytes do certificado
+				
+				System.out.println("nao existo final");
 			}else { //qd ja existe no servidor
 				
-				
+				System.out.println("ja existo");
 				Signature signature = Signature.getInstance("MD5withRSA");
 				signature.initSign(pk);
 				byte buffer[] = resposta.getBytes();
 				signature.update(buffer);
 				
-				//outObj.writeObject(resposta);
+				//enviar o nonce
+				outObj.writeObject(resposta);
 				//enviar assinatura é preciso responder com o nonce?
 				outObj.writeObject(signature.sign());
 			}
 			
-			
-			if(resposta.equals("What is your name?")) {
-				System.out.println(resposta);
+			String askName = (String) inObj.readObject();
+			if(askName.equals("What is your name?")) {
+				System.out.println(askName);
 				outObj.writeObject(inSc.nextLine());
 				Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
 				System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");

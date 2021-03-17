@@ -78,7 +78,8 @@ public class CatalogoClientes {
 			Cliente cliente = new Cliente(user, pubk);
 			mapClientes.put(user, cliente);
 			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
-			bW.write(user + ":" + pubk);
+			//bW.newLine(); //pq ja la havia pessoas, senao escreve na mm linha
+			bW.write("\n" + user + ":" + pubk);
 			bW.newLine();
 			bW.close();
 			//TODO allusers tem de ser cifrado pelo servidor (guardado cifrado)
