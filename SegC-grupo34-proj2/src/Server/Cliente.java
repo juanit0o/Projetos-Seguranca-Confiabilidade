@@ -22,7 +22,7 @@ public class Cliente {
 
 	private String nome;
 	private String user;
-	private PublicKey pubk;
+	private String pubk; //TODO path para a chave publica/cert p causa da linha 48 Cat Clientes?
 	private ArrayList<String> followers;
 	private ArrayList<String> follows;
 	private ArrayList<String> grupos; 
@@ -38,15 +38,23 @@ public class Cliente {
 	 * @param p - password do cliente.
 	 * @param nome - nome do cliente.
 	 */
-	public Cliente(String u, PublicKey pubk, String nome) {
-		this.nome = nome;
-		this.user = u;
-		this.pubk = pubk;
-		this.followers = new ArrayList<String>();
-		this.follows = new ArrayList<String>();
-		this.grupos = new ArrayList<String>();
-		this.photos = new ArrayList<Photo>();
-	}
+	//public Cliente(String u, PublicKey pubk, String nome) {
+	//	this.nome = nome;
+	//	this.user = u;
+	//	this.pubk = pubk;
+	//	this.followers = new ArrayList<String>();
+	//	this.follows = new ArrayList<String>();
+	//	this.grupos = new ArrayList<String>();
+	//	this.photos = new ArrayList<Photo>();
+	//}
+	public Cliente(String u, String pubk) { //path para a chave publica
+			this.user = u;
+			this.pubk = pubk;
+			this.followers = new ArrayList<String>();
+			this.follows = new ArrayList<String>();
+			this.grupos = new ArrayList<String>();
+			this.photos = new ArrayList<Photo>();
+		}
 
 
 	/**
@@ -108,7 +116,8 @@ public class Cliente {
 	 * @return true se a password e do cliente, senao false.
 	 */
 	public boolean isPass(String password) {
-		return this.pass.equals(password);
+		//return this.pass.equals(password);
+		return false;
 	}
 
 	/**

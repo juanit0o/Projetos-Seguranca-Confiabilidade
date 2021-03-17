@@ -44,7 +44,8 @@ public class CatalogoClientes {
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
 					String[] aux = linha.split(":");
-					Cliente newClient = new Cliente(aux[0], aux[2], aux[1]); // userID, nome real, pass
+					//Cliente newClient = new Cliente(aux[0], aux[2], aux[1]); // userID, nome real, pass
+					Cliente newClient = new Cliente(aux[0], aux[1]); //clientID, pathChavePublica?Certificado?
 					newClient.carregarConta();
 					mapClientes.put(aux[0], newClient);
 				}
@@ -70,11 +71,11 @@ public class CatalogoClientes {
 	 * @param outStream - stream de escrita.
 	 * @param inStream - stream de leitura.
 	 */
-	public void addClient(String user, PublicKey pubk, ObjectOutputStream outStream, ObjectInputStream inStream) {
+	public void addClient(String user, String pubk, ObjectOutputStream outStream, ObjectInputStream inStream) {
 		try {
 			outStream.writeObject("What is your name?");
 			String name = (String) inStream.readObject();
-			Cliente cliente = new Cliente(user, pubk, name);
+			Cliente cliente = new Cliente(user, pubk);
 			mapClientes.put(user, cliente);
 			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
 			bW.write(user + ":" + pubk);

@@ -2,9 +2,11 @@ package Server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -12,6 +14,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -153,15 +156,15 @@ public class SeiTchizServer {
 					byte assinatura[] = (byte[]) inStream.readObject();
 					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
 					
-					//como obter o certificado dele, supostamente foi exportado e tem pass
+					//TODO como obter o certificado dele, supostamente foi exportado e tem pass
 					Certificate certificadoCliente = aut.getCertificate(user);
 					
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
 					signature.initVerify(pubK);
-					//signature.update(nonceRecebido.getBytes());
+					//signature.update(nonceRecebido.getBytes()); o nonce tem de ser mandado outra vez para se fazer a verificacao IMO
 					
-					
+					//vai guardar no ficheiro <user, pathCertificado?> ?
 					//autenticou = catClientes.passCorreta(user, password);
 				} else {//adicionar a lista
 					autenticou = true;
@@ -181,7 +184,16 @@ public class SeiTchizServer {
 					byte assinatura[] = (byte[]) inStream.readObject();
 					
 					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
-					Certificate certificadoCliente = (Certificate) inStream.readObject();
+					byte b[] = (byte[]) inStream.readObject(); //TODO certificado, confirmar slide 22 ppt 5
+					CertificateFactory cf = CertificateFactory.getInstance("X509");
+					//TODO gerado o certificado do cliente a partir do array de bytes do certificado do cliente?
+					Certificate certificadoCliente = cf.generateCertificate(new ByteArrayInputStream(b)); 
+					
+					//TODO fazer aqui fileoutputstream para por o certificado num ficheiro do lado do servidor?
+					//depois ja podiamos aceder a ele
+					FileOutputStream fileCert = new FileOutputStream("PubKeys" + File.separator + user + ".cer");
+					//escrever certificado para o fileCert
+					//fileCert.write(certificadoCliente); TODO como escrever o certificado para o ficheiro
 					
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
@@ -193,7 +205,8 @@ public class SeiTchizServer {
 						System.out.println("msg c assinatura invalida");
 					}
 
-					catClientes.addClient(user, pubK, outStream, inStream);
+					//TODO mandar o path do certificado do user dentro do lado do servidor?
+					catClientes.addClient(user, "PubKeys" + File.separator + user, outStream, inStream);
 					
 				}
 				
@@ -280,12 +293,26 @@ public class SeiTchizServer {
 								+ currentClient.getUser() + "_" + currentClient.nrOfPhotos() + ".jpg";
 						File fileName = new File(path);
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
+						
+						
+						
+						
 						Long dimensao;
 						try {
 							dimensao = (Long) inStream.readObject();
 							byte[] buffer = new byte[dimensao.intValue()];
 							buffer = (byte[]) inStream.readObject();
 							photoRecebida.write(buffer);
+							
+							MessageDigest md = MessageDigest.getInstance("SHA");
+							byte hash[] = md.digest(buffer); //hash dos bytes de uma fotografia
+							//escrever a hash (sintese) da fotografia para um ficheiro que vai ficar na mmm pasta que a prt
+							FileOutputStream fileHash = new FileOutputStream("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "Photos" + File.separator + "photo_"
+									+ currentClient.getUser() + "_" + currentClient.nrOfPhotos() + ".txt");
+							//escrever a hash no ficheiro
+							fileHash.write(hash); 
+							
+							
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
 							currentClient.publishPhoto(path);
 							File filePhotos = new File("data" + File.separator + "Server Files" + File.separator + "allPhotos.txt");
@@ -302,7 +329,11 @@ public class SeiTchizServer {
 						break;
 					case "w":
 					case "wall":
-
+						
+						//antes de se mandar as fotografias de volta para o cliente verificar se a hash nao foi modificada
+						MessageDigest md = MessageDigest.getInstance("SHA");
+						
+						
 						//criar pasta para o cliente
 						File wallFolder = new File("wall" + File.separator + splittado[2]);
 						if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
@@ -356,6 +387,25 @@ public class SeiTchizServer {
 									outStream.writeObject(tamanho);
 									InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 									part.read(buffer);
+									
+									
+									File digestAntiga = new File("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "Photos" + File.separator + "photo_"
+																	+ currentClient.getUser() + "_" + i + ".txt"); //confirmar se é i ou currentClient.nrOfPhotos()
+									
+									
+									byte[] bytes = new byte[(int) digestAntiga.length()];
+									
+									FileInputStream fis = new FileInputStream(digestAntiga);
+									
+									fis.read(bytes);
+									fis.close();
+									
+									if(MessageDigest.isEqual(md.digest(buffer), bytes)) {
+										System.out.print("Fotografia " + i + " valida");
+									}else {
+										System.out.println("Fotografia " + i + " invalida");
+									}
+									
 									outStream.writeObject(buffer);
 									part.close();
 								}
@@ -379,7 +429,8 @@ public class SeiTchizServer {
 						//ver o ficheiro allPhotos a procura do user que publicou a foto que vai levar o like
 						String line;
 						String pathFoto = null;
-						Cliente publisher = new Cliente(null, null, null);
+						//Cliente publisher = new Cliente(null, null, null);
+						Cliente publisher = new Cliente(null, null);
 						while ((line = bR1.readLine()) != null) {
 							//user::path
 							String[] splittada = line.split("::");
@@ -631,6 +682,9 @@ public class SeiTchizServer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SignatureException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (CertificateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
