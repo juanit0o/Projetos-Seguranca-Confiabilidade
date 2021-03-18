@@ -405,24 +405,10 @@ public class SeiTchizServer {
 								if (myPhoto.exists()) {
 									
 									
-									
-									
-									
-									
-									
-									Long tamanho = (Long) myPhoto.length();
-									byte[] buffer = new byte[tamanho.intValue()];
-									outStream.writeObject(tamanho);
-									InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
-									part.read(buffer);
-									
-									outStream.writeObject(buffer);
-									
 									String firstSplit = allPhotoPathsSplitted.get(i).split("_")[2];
 									System.out.println(firstSplit + " firstSplit nr fotos allphotoso");
 									
 									String secondSplit = String.valueOf(firstSplit.charAt(0));
-									System.out.println(secondSplit + " secSplit nr fotos allphotoso");
 									
 									String donoPhoto = myPhoto.getName().split("_")[1];
 									
@@ -438,15 +424,24 @@ public class SeiTchizServer {
 									fis.read(bytes);
 									fis.close();
 									
+									Long tamanho = (Long) myPhoto.length();
+									byte[] buffer = new byte[tamanho.intValue()];
+									InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
+									part.read(buffer);
+									
 									//TODO fotografia so deve ser enviada qd esta valida
 									if(MessageDigest.isEqual(md.digest(buffer), bytes)) {
-										System.out.print("Fotografia " + i + " valida");
+										System.out.print("Fotografia " + i + " valida \n");
+										
+										outStream.writeObject(tamanho);
+										
+										outStream.writeObject(buffer);
+										part.close();
 									}else {
-										System.out.println("Fotografia " + i + " invalida");
-									}
+										System.out.println("Fotografia " + i + " invalida\n");
+										outStream.writeObject(0L);
+									}		
 									
-									
-									part.close();
 								}
 							} catch (Exception e1) {
 								System.out.println("[ERROR]: Couldnt send the photo to the client!");

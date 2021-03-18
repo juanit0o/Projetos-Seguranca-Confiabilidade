@@ -359,9 +359,15 @@ public class SeiTchiz {
 							Long dimensao;
 							try {
 								dimensao = (Long) inObj.readObject();
-								byte[] recebidos = (byte[]) inObj.readObject();
-								photoRecebida.write(recebidos);
+								if(dimensao > 0) {
+									byte[] recebidos = (byte[]) inObj.readObject();
+									photoRecebida.write(recebidos);
+									
+								}else {
+									System.out.println("erro na fotografia");
+								}
 								photoRecebida.close();
+								
 							} catch (Exception e1) {
 								e1.printStackTrace();
 							}
