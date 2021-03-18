@@ -1,5 +1,7 @@
 package Server;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -56,11 +58,15 @@ public class Autenticacao {
 			Cipher cDec = Cipher.getInstance("RSA");
 			cDec.init(Cipher.DECRYPT_MODE, myPrivateKey);
 
-			FileInputStream fisDec;
-			fisDec = new FileInputStream(fileUser);
+			FileInputStream fisDec = new FileInputStream(fileUser);
+			
+			
+			byte[] inputBytes = new byte[(int) fileUser.length()];
+			fisDec.read(inputBytes);
+			byte[] outputBytes = cDec.doFinal(inputBytes);
+			System.out.println(outputBytes.toString() +  "   akljhhabvsdfjhasdfljk");
 			//TODO: verificar se escreve por cima ou temos de apagar o conteudo do ficheiro
-			CipherInputStream cis;
-			cis = new CipherInputStream(fisDec, cDec);
+			//CipherInputStream cis = new CipherInputStream(fisDec, cDec);
 
 			int index = fileUser.getPath().lastIndexOf(".");
 			String fileinfo = fileUser.getPath().substring(0,index) + ".txt";
@@ -72,22 +78,26 @@ public class Autenticacao {
 			//FileOutputStream fosDec = new FileOutputStream(fileUser,false);
 			FileOutputStream fosDec = new FileOutputStream(fcif,false);
 
-			try {
-				byte[] b1 = new byte[16];
-				int j = cis.read(b1);
-				while (j != -1) {
-					fosDec.write(b1, 0, j);
-					j = cis.read(b1);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-
+			//TODO erro a ler a input stream do cis
+			//byte[] buffer = new byte[16];
+			//int length;
+			//ByteArrayOutputStream os = new ByteArrayOutputStream();
+			//while ((length = cis.read(buffer)) >= 0) {
+		    //    os.write(buffer, 0, length);
+			//}
+			//System.out.println(buffer +  " adsjhngflkjdsafbngfadsf");
+			/*
+			byte[] b1 = new byte[16];
+			int j = cis.read(b1);
+			while (j != -1) {
+				fosDec.write(b1, 0, j);
+				j = cis.read(b1);
+			}*/
+			
 
 			fisDec.close();
 			fosDec.close();
-			cis.close();
+			//cis.close();
 			kfile.close();
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -106,11 +116,14 @@ public class Autenticacao {
 			Cipher cDec = Cipher.getInstance("RSA");
 			cDec.init(Cipher.ENCRYPT_MODE, myPrivateKey);
 
-			FileInputStream fisEnc;
-			fisEnc = new FileInputStream(fileUser);
+			FileInputStream fisEnc = new FileInputStream(fileUser);
 			//TODO: temos de apagar o conteudo do ficheiro
-			CipherInputStream cis;
-			cis = new CipherInputStream(fisEnc, cDec);
+			
+			byte[] inputBytes = new byte[(int) fileUser.length()];
+			fisEnc.read(inputBytes);
+			byte[] outputBytes = cDec.doFinal(inputBytes);
+			System.out.println(outputBytes + " asdfasdfasdf");
+			//CipherInputStream cis = new CipherInputStream(fisEnc, cDec);
 
 			int index = fileUser.getPath().lastIndexOf(".");
 			String fcif = fileUser.getPath().substring(0,index) + ".cif";
@@ -118,16 +131,16 @@ public class Autenticacao {
 
 			FileOutputStream fosDec = new FileOutputStream(fcif,false);
 
-			byte[] b1 = new byte[16];
-			int j = cis.read(b1);
+			//byte[] b1 = new byte[16];
+			//int j = cis.read(b1);
 
-			while (j != -1) {
-				fosDec.write(b1, 0, j);
-				j = cis.read(b1);
-			}
+			//while (j != -1) {
+			//	fosDec.write(b1, 0, j);
+			//	j = cis.read(b1);
+			//}
 			fisEnc.close();
 			fosDec.close();
-			cis.close();
+			//cis.close();
 			kfile.close();
 
 			//TODO: depois de verificar que funciona fileUser.delete();
