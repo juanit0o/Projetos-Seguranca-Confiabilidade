@@ -35,7 +35,7 @@ public class CatalogoClientes {
 	 * Construtor da classe que incia um mapa onde os clientes
 	 * sao guardados por chave userId e valor classe Cliente.
 	 */
-	public CatalogoClientes() {
+	public CatalogoClientes(String keyStoreFile, String keyStorePassword) {
 		mapClientes = new HashMap<String, Cliente>();
 		try {
 			if (!file.createNewFile()) { // true- nao existe e cria allUsers || false: load do ficheiro
@@ -46,7 +46,7 @@ public class CatalogoClientes {
 					String[] aux = linha.split(":");
 					//Cliente newClient = new Cliente(aux[0], aux[2], aux[1]); // userID, nome real, pass
 					Cliente newClient = new Cliente(aux[0], aux[1]); //clientID, pathChavePublica?Certificado?
-					newClient.carregarConta();
+					newClient.carregarConta(keyStoreFile, keyStorePassword);
 					mapClientes.put(aux[0], newClient);
 				}
 				scReader.close();

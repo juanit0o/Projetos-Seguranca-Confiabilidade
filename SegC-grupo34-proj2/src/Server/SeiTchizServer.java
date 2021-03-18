@@ -99,8 +99,8 @@ public class SeiTchizServer {
 			System.err.println("[ERROR]: Couldnt accept the socket!");
 			System.exit(-1);
 		}
-		catClientes = new CatalogoClientes();
-		catGrupos = new CatalogoGrupos(catClientes);
+		catClientes = new CatalogoClientes(keyStoreFile, keyStorePassword);
+		catGrupos = new CatalogoGrupos(catClientes, keyStoreFile, keyStorePassword);
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
@@ -152,7 +152,7 @@ public class SeiTchizServer {
 					
 					outStream.writeObject(String.valueOf(nonce));
 					
-					//verificar se é preciso receber o nonce
+					//verificar se ï¿½ preciso receber o nonce
 					String nonceReceb = (String) inStream.readObject();
 					
 					//assinatura do nonce com chave privada do cliente
@@ -199,7 +199,7 @@ public class SeiTchizServer {
 					System.out.println("assinatura lado sv: " + assinatura.toString());
 					
 					
-					//TODO VER SE É ASSIM QUE SE GERA O CERTIFICADO
+					//TODO VER SE ï¿½ ASSIM QUE SE GERA O CERTIFICADO
 					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
 					byte certificado[] = (byte[]) inStream.readObject(); //TODO certificado, confirmar slide 22 ppt 5
 					CertificateFactory cf = CertificateFactory.getInstance("X509");
@@ -210,7 +210,7 @@ public class SeiTchizServer {
 					//depois ja podiamos aceder a ele
 					FileOutputStream fileCert = new FileOutputStream("PubKeys" + File.separator + user + ".cer");
 					//escrever certificado para o fileCert
-					fileCert.write(certificadoCliente.getEncoded()); //TODO como escrever o certificado para o ficheiro, supostamente csg mas n sei se é o que la aparece
+					fileCert.write(certificadoCliente.getEncoded()); //TODO como escrever o certificado para o ficheiro, supostamente csg mas n sei se ï¿½ o que la aparece
 					
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
@@ -414,9 +414,9 @@ public class SeiTchizServer {
 
 									String donoPhoto = myPhoto.getName().split("_")[1];
 									
-									//aqui nao é na pasta do user, é na pasta de quem é a foto
+									//aqui nao ï¿½ na pasta do user, ï¿½ na pasta de quem ï¿½ a foto
 									File digestAntiga = new File("data" + File.separator + "Personal User Files" + File.separator + donoPhoto + File.separator + "Photos" + File.separator + "photo_"
-																	+ donoPhoto + "_" + Integer.parseInt(firstSplit.substring(0,firstSplit.indexOf("."))) + ".txt"); //confirmar se é i ou currentClient.nrOfPhotos()
+																	+ donoPhoto + "_" + Integer.parseInt(firstSplit.substring(0,firstSplit.indexOf("."))) + ".txt"); //confirmar se ï¿½ i ou currentClient.nrOfPhotos()
 									
 									
 									byte[] bytes = new byte[(int) digestAntiga.length()];

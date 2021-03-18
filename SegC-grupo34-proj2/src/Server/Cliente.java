@@ -61,9 +61,12 @@ public class Cliente {
 	 * Metodo que carrega a informacao previa armazenada em disco para as listas
 	 * de quem segue, de seguidores, grupos e fotografias.
 	 */
-	public void carregarConta() {
+	public void carregarConta(String keyStoreFile, String keyStorePassword) {
 		// pegar no seu ficheiro e preencher os array lists
 		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
+
+		//TODO DECIFRAR
+
 		try {
 			BufferedReader rW = new BufferedReader(new FileReader(fileUser));
 			String line;
@@ -103,6 +106,9 @@ public class Cliente {
 					}
 				}
 			}
+
+			//TODO CIFRAR
+			
 			rW.close();
 		} catch (IOException e) {
 			e.printStackTrace();
