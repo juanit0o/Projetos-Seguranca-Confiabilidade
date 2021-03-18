@@ -1,3 +1,1 @@
-teste::data\Personal User Files\teste\Photos\photo_teste_0.jpg
-teste::data\Personal User Files\teste\Photos\photo_teste_1.jpg
-manel::data\Personal User Files\manel\Photos\photo_manel_0.jpg
+manelteste::data\Personal User Files\manelteste\Photos\photo_manelteste_0.jpg

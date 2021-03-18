@@ -1,4 +1,8 @@
 $
+manelteste
 $
 $
 $
+data\Personal User Files\clientid\Photos\photo_clientid_0.jpg::
+data\Personal User Files\clientid\Photos\photo_clientid_2.jpg::
+data\Personal User Files\clientid\Photos\photo_clientid_4.jpg::

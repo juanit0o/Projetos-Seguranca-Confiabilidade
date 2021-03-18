@@ -152,7 +152,6 @@ public class SeiTchizServer {
 					
 					outStream.writeObject(String.valueOf(nonce));
 					
-					
 					//verificar se é preciso receber o nonce
 					String nonceReceb = (String) inStream.readObject();
 					
@@ -168,8 +167,6 @@ public class SeiTchizServer {
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
 					signature.initVerify(pubK);
-					//signature.update(nonceRecebido.getBytes()); o nonce tem de ser mandado outra vez para se fazer a verificacao? IMO
-					
 					//usar a chave publica (certif) associada ao cliente para verificar a assinatura do nonce
 					signature.update(nonceReceb.getBytes());
 					if(signature.verify(assinatura)) {
@@ -231,7 +228,6 @@ public class SeiTchizServer {
 					outStream.writeObject(autenticou);
 					
 				}
-				//outStream.writeObject(autenticou);
 				
 				System.out.println(autenticou ? "Client '" + user + "' authenticated." :
 					"Client '" + user + "' not authenticated.");
@@ -312,8 +308,9 @@ public class SeiTchizServer {
 						break;
 					case "p":
 					case "post":
+						int nrPhotosAt = currentClient.nrOfPhotos();
 						String path = "data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "Photos" + File.separator + "photo_"
-								+ currentClient.getUser() + "_" + currentClient.nrOfPhotos() + ".jpg";
+								+ currentClient.getUser() + "_" + nrPhotosAt + ".jpg";
 						File fileName = new File(path);
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
 						
@@ -330,8 +327,9 @@ public class SeiTchizServer {
 							MessageDigest md = MessageDigest.getInstance("SHA");
 							byte hash[] = md.digest(buffer); //hash dos bytes de uma fotografia
 							//escrever a hash (sintese) da fotografia para um ficheiro que vai ficar na mmm pasta que a prt
+							
 							FileOutputStream fileHash = new FileOutputStream("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "Photos" + File.separator + "photo_"
-									+ currentClient.getUser() + "_" + currentClient.nrOfPhotos() + ".txt");
+									+ currentClient.getUser() + "_" + nrPhotosAt + ".txt");
 							//escrever a hash no ficheiro
 							fileHash.write(hash); 
 							
@@ -405,15 +403,32 @@ public class SeiTchizServer {
 							try {
 								File myPhoto = new File(allPhotoPathsSplitted.get(i));
 								if (myPhoto.exists()) {
+									
+									
+									
+									
+									
+									
+									
 									Long tamanho = (Long) myPhoto.length();
 									byte[] buffer = new byte[tamanho.intValue()];
 									outStream.writeObject(tamanho);
 									InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 									part.read(buffer);
 									
+									outStream.writeObject(buffer);
 									
-									File digestAntiga = new File("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "Photos" + File.separator + "photo_"
-																	+ currentClient.getUser() + "_" + i + ".txt"); //confirmar se é i ou currentClient.nrOfPhotos()
+									String firstSplit = allPhotoPathsSplitted.get(i).split("_")[2];
+									System.out.println(firstSplit + " firstSplit nr fotos allphotoso");
+									
+									String secondSplit = String.valueOf(firstSplit.charAt(0));
+									System.out.println(secondSplit + " secSplit nr fotos allphotoso");
+									
+									String donoPhoto = myPhoto.getName().split("_")[1];
+									
+									//aqui nao é na pasta do user, é na pasta de quem é a foto
+									File digestAntiga = new File("data" + File.separator + "Personal User Files" + File.separator + donoPhoto + File.separator + "Photos" + File.separator + "photo_"
+																	+ donoPhoto + "_" + Integer.parseInt(secondSplit) + ".txt"); //confirmar se é i ou currentClient.nrOfPhotos()
 									
 									
 									byte[] bytes = new byte[(int) digestAntiga.length()];
@@ -423,17 +438,19 @@ public class SeiTchizServer {
 									fis.read(bytes);
 									fis.close();
 									
+									//TODO fotografia so deve ser enviada qd esta valida
 									if(MessageDigest.isEqual(md.digest(buffer), bytes)) {
 										System.out.print("Fotografia " + i + " valida");
 									}else {
 										System.out.println("Fotografia " + i + " invalida");
 									}
 									
-									outStream.writeObject(buffer);
+									
 									part.close();
 								}
 							} catch (Exception e1) {
 								System.out.println("[ERROR]: Couldnt send the photo to the client!");
+								e1.printStackTrace();
 							}
 						}
 						String output = "All the " + allPhotoPathsSplitted.size() + " photos from who you follow were sent:\n";

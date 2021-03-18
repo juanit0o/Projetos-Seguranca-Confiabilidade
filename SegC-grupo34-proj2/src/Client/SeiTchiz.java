@@ -436,10 +436,10 @@ public class SeiTchiz {
 					System.out.println(askName);
 					outObj.writeObject(inSc.nextLine());
 					Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
-					System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
-					if (!autenticated) {
-						System.exit(-1);
-					}
+					//System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
+					//if (!autenticated) {
+					//	System.exit(-1);
+					//}
 				}else {
 					System.out.println("error");
 					System.exit(-1);

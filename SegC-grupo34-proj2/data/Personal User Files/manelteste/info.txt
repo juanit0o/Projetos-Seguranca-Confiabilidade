@@ -1,0 +1,10 @@
+$
+$
+clientid
+$
+$
+data\Personal User Files\manelteste\Photos\photo_manelteste_0.jpg::
+data\Personal User Files\manelteste\Photos\photo_manelteste_2.jpg::
+data\Personal User Files\manelteste\Photos\photo_manelteste_0.jpg::
+data\Personal User Files\manelteste\Photos\photo_manelteste_0.jpg::
+data\Personal User Files\manelteste\Photos\photo_manelteste_0.jpg::
