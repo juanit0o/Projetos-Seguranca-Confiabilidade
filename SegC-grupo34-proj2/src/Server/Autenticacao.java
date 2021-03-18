@@ -12,6 +12,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -47,8 +48,6 @@ public class Autenticacao {
 	public void decryptFile(File fileUser ,String keyStoreFile, String keyStorePassword) {
 		try {
 			System.out.println("------------DECRYPT----------");
-			System.out.println(keyStoreFile);
-			System.out.println(keyStorePassword);
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
@@ -63,21 +62,29 @@ public class Autenticacao {
 			CipherInputStream cis;
 			cis = new CipherInputStream(fisDec, cDec);
 
-			
-			String[] v = fileUser.getPath().split(File.separator);
-			String userid = v[v.length-1];
-	        
-			File fcif = new File("data"+File.separator+"Personal User Files"+File.separator+userid+File.separator+"temporario.txt");
+			int index = fileUser.getPath().lastIndexOf(".");
+			String fileinfo = fileUser.getPath().substring(0,index) + ".txt";
+
+			System.out.println(fileinfo);
+
+			File fcif = new File(fileinfo);
+
 			//FileOutputStream fosDec = new FileOutputStream(fileUser,false);
 			FileOutputStream fosDec = new FileOutputStream(fcif,false);
-			
-			byte[] b1 = new byte[16];
-			int j = cis.read(b1);
 
-			while (j != -1) {
-				fosDec.write(b1, 0, j);
-				j = cis.read(b1);
+			try {
+				byte[] b1 = new byte[16];
+				int j = cis.read(b1);
+				while (j != -1) {
+					fosDec.write(b1, 0, j);
+					j = cis.read(b1);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+
+
+
 			fisDec.close();
 			fosDec.close();
 			cis.close();
@@ -106,9 +113,9 @@ public class Autenticacao {
 			cis = new CipherInputStream(fisEnc, cDec);
 
 			int index = fileUser.getPath().lastIndexOf(".");
-	        String fcif = fileUser.getPath().substring(0,index-1) + ".cif";
-	        System.out.println(fcif);
-	        
+			String fcif = fileUser.getPath().substring(0,index) + ".cif";
+			System.out.println(fcif);
+
 			FileOutputStream fosDec = new FileOutputStream(fcif,false);
 
 			byte[] b1 = new byte[16];
@@ -122,6 +129,8 @@ public class Autenticacao {
 			fosDec.close();
 			cis.close();
 			kfile.close();
+
+			//TODO: depois de verificar que funciona fileUser.delete();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.exit(-1);

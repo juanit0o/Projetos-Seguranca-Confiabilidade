@@ -42,8 +42,7 @@ public class Cliente {
 	private ArrayList<String> grupos; 
 	private ArrayList<Photo> photos; 
 
-	//onde criar a sua keystore (chave privada), no construtor ou aqui?
-	private File keystore = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "keystore.jks");
+
 
 	/**
 	 * Construtor da classe que inicia um cliente recebendo
@@ -77,12 +76,12 @@ public class Cliente {
 	 */
 	public void carregarConta(String keyStoreFile, String keyStorePassword) {
 		// pegar no seu ficheiro e preencher os array lists
-		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
+		File fileUserCifrado = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.cif");
 		
 		//decrypt fileUser
 		Autenticacao aut = new Autenticacao();
-		aut.decryptFile(fileUser, keyStoreFile, keyStorePassword);
-		
+		aut.decryptFile(fileUserCifrado, keyStoreFile, keyStorePassword);
+		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
 		//guardar info
 
 		try {
@@ -277,9 +276,11 @@ public class Cliente {
 	 * Metodo que escreve os conteudos do cliente para o disco.
 	 */
 	public void userContentsToFile(String keyStoreFile, String keyStorePassword) {
-
-		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
+		File fileUserCifrado = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.cif");
+		Autenticacao aut = new Autenticacao();
+		aut.decryptFile(fileUserCifrado, keyStoreFile, keyStorePassword);
 		
+		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow
@@ -310,9 +311,7 @@ public class Cliente {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Autenticacao aut = new Autenticacao();
 		aut.encryptFile(fileUser, keyStoreFile, keyStorePassword);
-		//fileUser.delete();
 		//encrypt e eliminar txt temporario
 	}
 
