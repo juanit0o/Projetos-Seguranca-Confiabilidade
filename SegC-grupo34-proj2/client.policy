@@ -9,7 +9,7 @@ grant codeBase "file:bin/-"{
 
     permission java.io.FilePermission "test/-", "read";
     permission java.io.FilePermission "wall/-", "write";
-    permission java.io.FilePermission "data/Personal User Files/-", "read";
+    permission java.io.FilePermission "data/Keystores/-", "read";
 };
 
 grant codeBase "file:SeiTchiz.jar"{
@@ -19,5 +19,5 @@ grant codeBase "file:SeiTchiz.jar"{
 
     permission java.io.FilePermission "test/-", "read";
     permission java.io.FilePermission "wall/-", "write";
-    permission java.io.FilePermission "data/Personal User Files/-", "read";
+    permission java.io.FilePermission "data/Keystores/-", "read";
 };

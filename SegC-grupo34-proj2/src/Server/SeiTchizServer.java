@@ -4,6 +4,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
@@ -12,13 +13,17 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -99,8 +104,8 @@ public class SeiTchizServer {
 			System.err.println("[ERROR]: Couldnt accept the socket!");
 			System.exit(-1);
 		}
-		catClientes = new CatalogoClientes(keyStoreFile, keyStorePassword);
-		catGrupos = new CatalogoGrupos(catClientes, keyStoreFile, keyStorePassword);
+		catClientes = new CatalogoClientes(keyStoresFile, keyStoresPassword);
+		catGrupos = new CatalogoGrupos(catClientes); //TODO: , keyStoresFile, keyStoresPassword
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
@@ -264,7 +269,7 @@ public class SeiTchizServer {
 							System.out.println("Client '" + currentClient.getUser() + "' tried to follow himself/herself");
 						} else if (catClientes.existeUser(splittado[1])) {
 							Cliente seguirClient = catClientes.getCliente(splittado[1]);
-							if (currentClient.seguir(seguirClient)) {
+							if (currentClient.seguir(seguirClient,keyStoreFile,keyStorePassword)) {
 								outStream.writeObject("You followed " + splittado[1]);
 								System.out.println("The client '" + currentClient.getUser() + "' followed '" + splittado[1] + "'");
 							} else {
@@ -286,7 +291,7 @@ public class SeiTchizServer {
 							System.out.println("Client '" + currentClient.getUser() + "' tried to unfollow himself/herself");
 						} else if (catClientes.existeUser(splittado[1])) {
 							Cliente unfollowClient = catClientes.getCliente(splittado[1]);
-							if (currentClient.deixarDeSeguir(unfollowClient)) {
+							if (currentClient.deixarDeSeguir(unfollowClient,keyStoreFile,keyStorePassword)) {
 								outStream.writeObject("You unfollowed '" + splittado[1]+ "'");
 								System.out.println("The client '" + currentClient.getUser() + "' unfollowed '" + splittado[1] + "'");
 							} else {
@@ -331,6 +336,7 @@ public class SeiTchizServer {
 							byte hash[] = md.digest(buffer); //hash dos bytes de uma fotografia
 							//escrever a hash (sintese) da fotografia para um ficheiro que vai ficar na mmm pasta que a prt
 							
+							
 							FileOutputStream fileHash = new FileOutputStream("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "Photos" + File.separator + "photo_"
 									+ currentClient.getUser() + "_" + nrPhotosAt + ".txt");
 							//escrever a hash no ficheiro
@@ -338,7 +344,7 @@ public class SeiTchizServer {
 							
 							
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
-							currentClient.publishPhoto(path);
+							currentClient.publishPhoto(path,keyStoreFile,keyStorePassword);
 							File filePhotos = new File("data" + File.separator + "Server Files" + File.separator + "allPhotos.txt");
 							BufferedWriter bW = new BufferedWriter(new FileWriter(filePhotos, true));
 							bW.write(currentClient.getUser() + "::" + fileName.getPath());
@@ -487,7 +493,7 @@ public class SeiTchizServer {
 								outStream.writeObject("You already liked that photo! :)");
 								System.out.println("Client '" + currentClient.getUser() + "' already liked the photo with the path " + pathFoto);
 							} else {
-								publisher.putLike(pathFoto, currentClient.getUser());
+								publisher.putLike(pathFoto, currentClient.getUser(),keyStoreFile,keyStorePassword);
 								outStream.writeObject("You liked the photo with ID " + splittado[1]);
 								System.out.println("Client '" + currentClient.getUser() + "' liked the photo with the path " + pathFoto);
 							}

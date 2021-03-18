@@ -10,7 +10,7 @@ Joao Funenga 53504
 ** COMANDOS DE COMPILACAO **
 
 - Comando para compilar as classes relativas ao servidor:
-javac -d bin src/Server/SeiTchizServer.java src/Server/CatalogoClientes.java src/Server/CatalogoGrupos.java src/Server/Cliente.java src/Server/Grupo.java src/Server/Mensagem.java src/Server/Photo.java
+javac -d bin src/Server/SeiTchizServer.java src/Server/CatalogoClientes.java src/Server/CatalogoGrupos.java src/Server/Cliente.java src/Server/Grupo.java src/Server/Mensagem.java src/Server/Photo.java src/Server/Autenticacao.java
 
 
 - Comando para compilar a classe relativa ao cliente:
@@ -24,7 +24,7 @@ Ter em atencao, que para ser possivel o uso da aplicacao, e necessario iniciar o
 
 - Exemplo de comando para execucao do servidor:
 Executar ficheiros .class:
-java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678
+java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678 kfalsa 
 java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678 keystore keystore-password
 
 Executar ficheiro .jar:

@@ -68,12 +68,12 @@ public class SeiTchiz {
 		//	System.exit(-1);
 		
 		//fazer condicoes mais maricas para os args 
-		if( args.length == 4) { //mudar para 5 depois, falta a truststore
+		if( args.length == 5) { //mudar para 5 depois, falta a truststore
 			serverIp = args[0];
 			truststore = args[1];  		//n percebo cm usamos
 			keystoreFile = args[2]; 	//n percebo cm usamos
 			keystorePassword = args[3]; //n percebo cm usamos
-			user = args[3];
+			user = args[4];
 		} else {
 			System.out.println("Invalid commands");
 			System.exit(-1);
@@ -405,7 +405,7 @@ public class SeiTchiz {
 		try {
 			//NONCE recebido do sv
 			String resposta = (String) inObj.readObject();
-			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + keystoreFile); //da access denied aqui
+			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile); //da access denied aqui
 			//ficheiro keystore cliente
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //TODO com jceks diz que nao tem este algoritmo e com keystore.getdefaulttype diz acesso negado
 			kstore.load(keyfile, keystorePass.toCharArray());

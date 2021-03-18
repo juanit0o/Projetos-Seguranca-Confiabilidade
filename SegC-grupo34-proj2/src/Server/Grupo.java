@@ -45,7 +45,6 @@ public class Grupo {
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
-
 	}
 
 	/**
@@ -113,20 +112,20 @@ public class Grupo {
 	 * Metodo que adiciona um cliente ao grupo atual.
 	 * @param cliente - cliente
 	 */
-	public void addMembro(Cliente cliente){
+	public void addMembro(Cliente cliente, String keyStoreFile, String keyStorePassword){
 		membros.add(cliente);
 		groupContentsToFile();
-		cliente.entrarEmGrupo(grupoID);
+		cliente.entrarEmGrupo(grupoID, keyStoreFile, keyStorePassword);
 	}
 
 	/**
 	 * Metodo que remove um cliente do grupo atual.
 	 * @param cliente - cliente
 	 */
-	public void removeMembro(Cliente cliente){
+	public void removeMembro(Cliente cliente, String keyStoreFile, String keyStorePassword){
 		membros.remove(cliente);
 		groupContentsToFile();
-		cliente.sairDeGrupo(grupoID);
+		cliente.sairDeGrupo(grupoID, keyStoreFile, keyStorePassword);
 	}
 
 	/**

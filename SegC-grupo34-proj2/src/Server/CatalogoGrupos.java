@@ -24,6 +24,8 @@ public class CatalogoGrupos {
 	private ArrayList<Grupo> grupos;
 	private File groupFolder = new File("data" + File.separator + "Group Folder");
 	private File groupFile = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.txt");
+	private String keyStoreFile;
+	private String keyStorePassword;
 	
 	/**
 	 * Construtor da classe que inicia uma lista onde os clientes
@@ -121,7 +123,7 @@ public class CatalogoGrupos {
 		Grupo grupo = new Grupo(grupoID, dono);
 		grupo.registaGrupo();
 		grupos.add(grupo);
-		dono.entrarEmGrupo(grupoID);
+		dono.entrarEmGrupo(grupoID, keyStoreFile,keyStorePassword);
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(groupFile, true));
 			bW.write(grupoID);
@@ -138,7 +140,7 @@ public class CatalogoGrupos {
 	 * @param groupID - id do grupo.
 	 */
 	public void addMembro(String cliente, String groupID){
-		getGrupo(groupID).addMembro(catClientes.getCliente(cliente));
+		getGrupo(groupID).addMembro(catClientes.getCliente(cliente),keyStoreFile,keyStorePassword);
 	}
 
 	/**
@@ -147,7 +149,7 @@ public class CatalogoGrupos {
 	 * @param groupID - id do grupo.
 	 */
 	public void removeMembro(String cliente, String groupID){
-		getGrupo(groupID).removeMembro(catClientes.getCliente(cliente));
+		getGrupo(groupID).removeMembro(catClientes.getCliente(cliente),keyStoreFile,keyStorePassword);
 	}
 
 	/**

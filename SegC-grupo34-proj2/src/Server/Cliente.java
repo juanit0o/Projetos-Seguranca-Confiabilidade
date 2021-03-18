@@ -1,13 +1,27 @@
 package Server;
 
 import java.util.ArrayList;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 /**
  * Classe representativa de um cliente, que e composta por nome,
@@ -27,7 +41,7 @@ public class Cliente {
 	private ArrayList<String> follows;
 	private ArrayList<String> grupos; 
 	private ArrayList<Photo> photos; 
-	
+
 	//onde criar a sua keystore (chave privada), no construtor ou aqui?
 	private File keystore = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "keystore.jks");
 
@@ -48,13 +62,13 @@ public class Cliente {
 	//	this.photos = new ArrayList<Photo>();
 	//}
 	public Cliente(String u, String pubk) { //path para a chave publica
-			this.user = u;
-			this.pubk = pubk;
-			this.followers = new ArrayList<String>();
-			this.follows = new ArrayList<String>();
-			this.grupos = new ArrayList<String>();
-			this.photos = new ArrayList<Photo>();
-		}
+		this.user = u;
+		this.pubk = pubk;
+		this.followers = new ArrayList<String>();
+		this.follows = new ArrayList<String>();
+		this.grupos = new ArrayList<String>();
+		this.photos = new ArrayList<Photo>();
+	}
 
 
 	/**
@@ -64,14 +78,19 @@ public class Cliente {
 	public void carregarConta(String keyStoreFile, String keyStorePassword) {
 		// pegar no seu ficheiro e preencher os array lists
 		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
-
-		//TODO DECIFRAR
+		
+		//decrypt fileUser
+		Autenticacao aut = new Autenticacao();
+		aut.decryptFile(fileUser, keyStoreFile, keyStorePassword);
+		
+		//guardar info
 
 		try {
 			BufferedReader rW = new BufferedReader(new FileReader(fileUser));
 			String line;
 			int counter = 0;
 			while ((line = rW.readLine()) != null) {
+				System.out.println(line + " <<--- linha desencriptada ---");
 				if (line.equals("$")) {
 					counter++;
 				} else {
@@ -95,7 +114,7 @@ public class Cliente {
 							for(int i = 0; i< likesFicheiros.length; i++) {
 								likes.add(likesFicheiros[i]);
 							}
-  							photos.add(new Photo(splittada[0],likes,this.user));
+							photos.add(new Photo(splittada[0],likes,this.user));
 						}else {
 							photos.add(new Photo(splittada[0],new ArrayList<String>(),this.user));
 						}
@@ -108,7 +127,8 @@ public class Cliente {
 			}
 
 			//TODO CIFRAR
-			
+			aut.encryptFile(fileUser, keyStoreFile, keyStorePassword);
+
 			rW.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -139,7 +159,7 @@ public class Cliente {
 	 * @param clientASeguir - cliente a seguir.
 	 * @return true se passou a seguir o cliente, false se ja seguia o cliente
 	 */
-	public boolean seguir(Cliente clientASeguir) {
+	public boolean seguir(Cliente clientASeguir,String keyStoreFile, String keyStorePassword) {
 		// verificar se o cliente ja segue essa pessoa (parte da pessoa exisitr ou nao
 		// feito no sv - existeId)
 		if (follows.contains(clientASeguir.getUser())) {
@@ -147,8 +167,8 @@ public class Cliente {
 		}
 		// adicionar ao arraylist de quem da follow
 		follows.add(clientASeguir.getUser()); 
-		userContentsToFile();
-		clientASeguir.seguidoPor(this.user);
+		userContentsToFile(keyStoreFile,keyStorePassword);
+		clientASeguir.seguidoPor(this.user,keyStoreFile,keyStorePassword);
 		return true;
 	}
 
@@ -156,17 +176,17 @@ public class Cliente {
 	 * Metodo que coloca um cliente como seguidor deste.
 	 * @param follower - seguidor.
 	 */
-	public void seguidoPor(String follower) {
+	public void seguidoPor(String follower,String keyStoreFile, String keyStorePassword) {
 		followers.add(follower);
-		userContentsToFile();
+		userContentsToFile(keyStoreFile,keyStorePassword);
 	}
-	
+
 	/**
 	 * Metodo que retorna se deixou de seguir um cliente, recebendo o mesmo.
 	 * @param pessoa - cliente a deixar de seguir.
 	 * @return true se tiver a seguir e de seguida remove o follow, false se nao o estiver a seguir.
 	 */
-	public boolean deixarDeSeguir(Cliente pessoa) {
+	public boolean deixarDeSeguir(Cliente pessoa,String keyStoreFile, String keyStorePassword) {
 		//verifica se a pessoa ja existe
 		if(!follows.contains(pessoa.getUser())) {
 			return false;
@@ -178,8 +198,8 @@ public class Cliente {
 			}
 		}
 		follows = followsAux;
-		pessoa.removerFollower(this.user);
-		userContentsToFile();
+		pessoa.removerFollower(this.user,keyStoreFile,keyStorePassword);
+		userContentsToFile(keyStoreFile,keyStorePassword);
 		return true;
 	}
 
@@ -196,7 +216,7 @@ public class Cliente {
 	 * Metodo que remove um seguidor atraves do seu userId.
 	 * @param follower - userId do cliente a deixar de ser seguidor.
 	 */
-	public void removerFollower(String follower) {
+	public void removerFollower(String follower,String keyStoreFile, String keyStorePassword) {
 		ArrayList<String> followersAux = new ArrayList<String>();
 		for(int i = 0; i < followers.size(); i++) {
 			if(followers.get(i) != follower) {
@@ -204,27 +224,27 @@ public class Cliente {
 			}
 		}
 		followers = followersAux;
-		userContentsToFile();
+		userContentsToFile(keyStoreFile,keyStorePassword);
 	}
-	
+
 	/**
 	 * Metodo que adiciona o grupo do argumento aos grupos do cliente
 	 * @param grupoID - groupId do grupo.
 	 */
-	public void entrarEmGrupo(String grupoID) {
+	public void entrarEmGrupo(String grupoID,String keyStoreFile, String keyStorePassword) {
 		grupos.add(grupoID);
-		userContentsToFile();
+		userContentsToFile(keyStoreFile,keyStorePassword);
 	}
 
 	/**
 	 * Metodo que remove o cliente atual do grupo atraves do grupoId.
 	 * @param grupoID - groupId do grupo.
 	 */
-	public void sairDeGrupo(String grupoID) {
+	public void sairDeGrupo(String grupoID,String keyStoreFile, String keyStorePassword) {
 		grupos.remove(grupoID);
-		userContentsToFile();
+		userContentsToFile(keyStoreFile,keyStorePassword);
 	}
-	
+
 	/**
 	 * Metodo que devolve a lista dos seguidores.
 	 * @return lista de seguidores.
@@ -248,17 +268,18 @@ public class Cliente {
 	 * Metodo que publica uma fotografia, colocando-a na lista de fotografias publicadas.
 	 * @param filePath - nome da fotografia.
 	 */
-	public void publishPhoto(String filePath) {
+	public void publishPhoto(String filePath,String keyStoreFile, String keyStorePassword) {
 		photos.add(new Photo(filePath, new ArrayList<String>(), this.user));
-		userContentsToFile();
+		userContentsToFile(keyStoreFile, keyStorePassword);
 	}
 
 	/**
 	 * Metodo que escreve os conteudos do cliente para o disco.
 	 */
-	public void userContentsToFile() {
+	public void userContentsToFile(String keyStoreFile, String keyStorePassword) {
 
 		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
+		
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow
@@ -289,6 +310,10 @@ public class Cliente {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		Autenticacao aut = new Autenticacao();
+		aut.encryptFile(fileUser, keyStoreFile, keyStorePassword);
+		//fileUser.delete();
+		//encrypt e eliminar txt temporario
 	}
 
 	/**
@@ -296,11 +321,11 @@ public class Cliente {
 	 * @param phId - id da fotografia.
 	 * @param userLiking - utilizador que gostou.
 	 */
-	public void putLike(String phId, String userLiking) {
+	public void putLike(String phId, String userLiking,String keyStoreFile, String keyStorePassword) {
 		for (int i = 0; i < photos.size(); i++) {
 			if (photos.get(i).getPhotoPath().equals(phId)) {
 				photos.get(i).addLike(userLiking);
-				userContentsToFile();
+				userContentsToFile(keyStoreFile,keyStorePassword);
 				return;
 			}
 		}

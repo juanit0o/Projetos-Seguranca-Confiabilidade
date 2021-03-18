@@ -20,7 +20,8 @@ import java.util.Scanner;
 public class CatalogoClientes {
 
 	private HashMap<String, Cliente> mapClientes;
-	
+	private String keyStoreFile;
+	private String keyStorePassword;
 	// Para criar a diretoria com os ficheiros do servidor
 	File fileDirectory = new File("data" + File.separator + "Server Files");
 	
@@ -36,6 +37,8 @@ public class CatalogoClientes {
 	 * sao guardados por chave userId e valor classe Cliente.
 	 */
 	public CatalogoClientes(String keyStoreFile, String keyStorePassword) {
+		this.keyStoreFile = keyStoreFile;
+		this.keyStorePassword = keyStorePassword;
 		mapClientes = new HashMap<String, Cliente>();
 		try {
 			if (!file.createNewFile()) { // true- nao existe e cria allUsers || false: load do ficheiro
@@ -79,7 +82,7 @@ public class CatalogoClientes {
 			mapClientes.put(user, cliente);
 			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
 			//bW.newLine(); //pq ja la havia pessoas, senao escreve na mm linha
-			bW.write("\n" + user + ":" + pubk);
+			bW.write(user + ":" + pubk);
 			bW.newLine();
 			bW.close();
 			//TODO allusers tem de ser cifrado pelo servidor (guardado cifrado)
@@ -93,10 +96,11 @@ public class CatalogoClientes {
 			clientFolder.mkdirs();
 			photoFolder.mkdirs();
 			
-			// para o ficheiro pesssoal por cliente
-			File fileCliente = new File("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "info.txt");
+			//TODO: para o ficheiro pesssoal por cliente
+			//File fileCliente = new File("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "info.txt");
+			File fileCliente = new File("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "info.cif");
 			fileCliente.createNewFile();
-			cliente.userContentsToFile();
+			cliente.userContentsToFile(keyStoreFile,keyStorePassword);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
