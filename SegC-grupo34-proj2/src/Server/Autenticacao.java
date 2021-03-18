@@ -1,8 +1,12 @@
 package Server;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.Random;
 
 public class Autenticacao {
@@ -15,9 +19,21 @@ public class Autenticacao {
 	
 	public Certificate getCertificate(String user) {
 		//pasta do lado do sv
-		File cert = new File("PubKeys" + File.separator + user + ".cer");
-		//como dar load do certificado do utilizador
-		return cert;
-		//return null;
+		try {
+			FileInputStream fis = new FileInputStream("PubKeys" + File.separator + user + ".cer");
+			//como dar load do certificado do utilizador
+			CertificateFactory cf = CertificateFactory.getInstance("X509");
+			Certificate cert = cf.generateCertificate(fis);
+			return cert;
+			
+		} catch (CertificateException e) {
+			
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
 	}
 }

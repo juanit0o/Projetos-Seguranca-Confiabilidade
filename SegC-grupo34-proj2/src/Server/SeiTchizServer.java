@@ -152,15 +152,15 @@ public class SeiTchizServer {
 					
 					outStream.writeObject(String.valueOf(nonce));
 					
-					//assinatura do nonce com chave privada do cliente
-					byte assinatura[] = (byte[]) inStream.readObject();
-					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
 					
 					//verificar se é preciso receber o nonce
 					String nonceReceb = (String) inStream.readObject();
 					
-					//TODO como obter o certificado dele, ja esta do lado do servidor mas cm vamos buscar
-					//File certificadoCliente = aut.getCertificate(user);
+					//assinatura do nonce com chave privada do cliente
+					byte assinatura[] = (byte[]) inStream.readObject();
+					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
+					
+					
 					Certificate certificadoCliente = aut.getCertificate(user);
 					
 					//https://stackoverflow.com/questions/9219966/how-to-do-verify-using-java-security-signature
@@ -174,8 +174,11 @@ public class SeiTchizServer {
 					signature.update(nonceReceb.getBytes());
 					if(signature.verify(assinatura)) {
 						System.out.println("Msg valida");
+						autenticou=true;
+						outStream.writeObject("true");
 					}else {
 						System.out.println("msg c assinatura invalida");
+						outStream.writeObject("false");
 					}
 					
 					
@@ -198,6 +201,8 @@ public class SeiTchizServer {
 					byte assinatura[] = (byte[]) inStream.readObject();
 					System.out.println("assinatura lado sv: " + assinatura.toString());
 					
+					
+					//TODO VER SE É ASSIM QUE SE GERA O CERTIFICADO
 					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
 					byte certificado[] = (byte[]) inStream.readObject(); //TODO certificado, confirmar slide 22 ppt 5
 					CertificateFactory cf = CertificateFactory.getInstance("X509");
@@ -223,8 +228,10 @@ public class SeiTchizServer {
 					//TODO mandar o path do certificado do user dentro do lado do servidor?
 					//criar o cliente com o path para o seu certificado do lado do sv
 					catClientes.addClient(user, "PubKeys" + File.separator + user + ".cer", outStream, inStream);
+					outStream.writeObject(autenticou);
 					
 				}
+				//outStream.writeObject(autenticou);
 				
 				System.out.println(autenticou ? "Client '" + user + "' authenticated." :
 					"Client '" + user + "' not authenticated.");

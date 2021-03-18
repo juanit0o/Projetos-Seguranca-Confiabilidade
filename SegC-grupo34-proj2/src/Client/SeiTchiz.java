@@ -430,6 +430,20 @@ public class SeiTchiz {
 				outObj.writeObject(certificado.getEncoded()); //envia o array de bytes do certificado
 				
 				System.out.println("nao existo final");
+
+				String askName = (String) inObj.readObject();
+				if(askName.equals("What is your name?")) {
+					System.out.println(askName);
+					outObj.writeObject(inSc.nextLine());
+					Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
+					System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
+					if (!autenticated) {
+						System.exit(-1);
+					}
+				}else {
+					System.out.println("error");
+					System.exit(-1);
+				}
 			}else { //qd ja existe no servidor
 				
 				System.out.println("ja existo");
@@ -442,24 +456,16 @@ public class SeiTchiz {
 				outObj.writeObject(resposta);
 				//enviar assinatura é preciso responder com o nonce?
 				outObj.writeObject(signature.sign());
+				
+				String ans = (String) inObj.readObject();
+				if(ans.equals("true")) {
+					System.out.println("You are logged in");
+				}else {
+					System.out.println("Error logging in");
+				}
 			}
 			
-			String askName = (String) inObj.readObject();
-			if(askName.equals("What is your name?")) {
-				System.out.println(askName);
-				outObj.writeObject(inSc.nextLine());
-				Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
-				System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
-				if (!autenticated) {
-					System.exit(-1);
-				}
-			}else {
-				Boolean autenticated = (resposta.equals("true"));
-				System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
-				if (!autenticated) {
-					System.exit(-1);
-				}
-			}
+			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.out.println("Failed to authenticate :(");
