@@ -1,3 +1,4 @@
+
 Projeto 2 em trabalho, vai sendo atualizado.
 
 Diogo Pinto 52763 
@@ -61,3 +62,9 @@ Observações
 As pastas wall e data (incluindo as subpastas) podem ser apagadas antes de correr o código. Caso existam ao iniciar o programa, serão carregados os
 dados existentes. Caso estas pastas tenham sido apagadas, são geradas automaticamente e a informação acerca dos clientes será "apagada".
 O codigo foi testado na imagem de linux do DI e no Windows 10. 
+
+----------------
+Gerar chave privada e publica
+
+keytool -genkeypair -alias servidor -keyalg RSA -keysize 2048 -storetype JCEKS -keystore servidor
+

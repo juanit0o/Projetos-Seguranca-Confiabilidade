@@ -252,7 +252,10 @@ public class SeiTchizServer {
 						socket.close();
 						break;
 					case "f":
-					case "follow":
+					case "follow": 
+						//TODO preciso decifrar o ficheiro primeiro e depois voltar a decifra-lo
+						
+						
 						//primeiro de tudo ver se o id dado existe, ver se aparece no ficheiro allUsers, se n existir da logo erro
 						//ver ficheiro do cliente, ver se ja tem follow, se ja la tiver diz
 						//se n tiver follow, adiciona ao arraylist, adiciona ao txt na parte dos follows.
@@ -408,13 +411,12 @@ public class SeiTchizServer {
 									String firstSplit = allPhotoPathsSplitted.get(i).split("_")[2];
 									System.out.println(firstSplit + " firstSplit nr fotos allphotoso");
 									
-									String secondSplit = String.valueOf(firstSplit.charAt(0));
-									
+
 									String donoPhoto = myPhoto.getName().split("_")[1];
 									
 									//aqui nao é na pasta do user, é na pasta de quem é a foto
 									File digestAntiga = new File("data" + File.separator + "Personal User Files" + File.separator + donoPhoto + File.separator + "Photos" + File.separator + "photo_"
-																	+ donoPhoto + "_" + Integer.parseInt(secondSplit) + ".txt"); //confirmar se é i ou currentClient.nrOfPhotos()
+																	+ donoPhoto + "_" + Integer.parseInt(firstSplit.substring(0,firstSplit.indexOf("."))) + ".txt"); //confirmar se é i ou currentClient.nrOfPhotos()
 									
 									
 									byte[] bytes = new byte[(int) digestAntiga.length()];

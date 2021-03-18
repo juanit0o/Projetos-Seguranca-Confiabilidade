@@ -234,7 +234,7 @@ public class Cliente {
 	public int nrOfPhotos() {
 		int nrPhotos = 0;
 		File photoFolder = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "Photos");
-		nrPhotos = photoFolder.list().length;
+		nrPhotos = photoFolder.list().length/2; //p causa da fotografia + o ficheiro do hash
 		return nrPhotos;
 	}
 
