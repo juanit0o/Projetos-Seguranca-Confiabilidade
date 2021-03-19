@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -48,7 +49,7 @@ public class Autenticacao {
 
 	}
 
-	public void decryptFile(File fileUser ,String keyStoreFile, String keyStorePassword) {
+	public void decryptFile(File fileUser, String keyStoreFile, String keyStorePassword) {
 		try {
 			System.out.println("------------DECRYPT----------");
 			System.out.println("File to decrypt: "+fileUser.getPath());
@@ -58,7 +59,7 @@ public class Autenticacao {
 			kstore.load(kfile,keyStorePassword.toCharArray());
 			PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
 			//iniciar cifra desencriptacao
-			Cipher cDec = Cipher.getInstance("RSA");
+			Cipher cDec = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cDec.init(Cipher.DECRYPT_MODE, myPrivateKey);
 
 			FileInputStream fis = new FileInputStream(fileUser.getPath());
@@ -95,7 +96,7 @@ public class Autenticacao {
 
 			fis.close();
 			fos.close();
-			
+
 			kfile.close();
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -104,7 +105,7 @@ public class Autenticacao {
 	}
 
 	public void encryptFile(File fileUser, String keyStoreFile, String keyStorePassword) {
-		try {
+		try { //penso que ta feito
 			System.out.println("------------ENCRYPT----------");
 			System.out.println("File to encrypt: "+fileUser.getPath());
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
@@ -121,21 +122,20 @@ public class Autenticacao {
 			String fcif = fileUser.getPath().substring(0,index) + ".cif";
 			System.out.println(fcif);
 
-			FileOutputStream fos = new FileOutputStream(fcif,false);
-			CipherOutputStream cos = new CipherOutputStream(fos, cDec);
-			
-			
-			byte[] b1 = new byte[16];
-			int j = fis.read(b1);
-			System.out.println("ENCRYPTED WRITTEN");
+			byte[] ficheirobytes = Files.readAllBytes(fileUser.toPath());
+			byte[] textEncrypted = cDec.doFinal(ficheirobytes);
+			System.out.println("textoo " + textEncrypted);
+			System.out.println("------------"); 
 
-			while (j != -1) {
-				cos.write(b1, 0, j);
-				j = fis.read(b1);
+			try (FileOutputStream fos = new FileOutputStream(fcif,false)) {
+				fos.write(textEncrypted);
+
+				byte[] b1 = new byte[16];
+				int j = fis.read(b1);
+				System.out.println("ENCRYPTED WRITTEN");
 			}
+
 			fis.close();
-			fos.close();
-			cos.close();
 			kfile.close();
 
 			//TODO: depois de verificar que funciona fileUser.delete();
