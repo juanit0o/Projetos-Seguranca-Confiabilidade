@@ -42,6 +42,7 @@ public class CatalogoClientes {
 		mapClientes = new HashMap<String, Cliente>();
 		try {
 			if (!file.createNewFile()) { // true- nao existe e cria allUsers || false: load do ficheiro
+				//TODO: decifrar file
 				System.out.println("User file loaded: " + file.getName());
 				Scanner scReader = new Scanner(file);
 				while (scReader.hasNextLine()) {
@@ -52,6 +53,7 @@ public class CatalogoClientes {
 					newClient.carregarConta(keyStoreFile, keyStorePassword);
 					mapClientes.put(aux[0], newClient);
 				}
+				//TODO: cifrar file
 				scReader.close();
 			} else {
 				System.out.println("File created: " + file.getName());

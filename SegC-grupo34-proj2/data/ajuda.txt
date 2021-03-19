@@ -1,0 +1,50 @@
+System.out.println("------------DECRYPT----------");
+			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
+			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
+			kstore.load(kfile,keyStorePassword.toCharArray());
+			PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
+
+			Cipher cDec = Cipher.getInstance("RSA");
+			cDec.init(Cipher.DECRYPT_MODE, myPrivateKey);
+
+			FileInputStream fisDec = new FileInputStream(fileUser);
+			
+			
+			//byte[] inputBytes = new byte[(int) fileUser.length()];
+			//fisDec.read(inputBytes);
+			//byte[] outputBytes = cDec.doFinal(inputBytes);
+			//System.out.println(outputBytes.toString() +  "   akljhhabvsdfjhasdfljk");
+			//TODO: verificar se escreve por cima ou temos de apagar o conteudo do ficheiro
+			CipherInputStream cis = new CipherInputStream(fisDec, cDec);
+			
+			int index = fileUser.getPath().lastIndexOf(".");
+			String fileinfo = fileUser.getPath().substring(0,index) + ".txt";
+
+			System.out.println(fileinfo);
+
+			File fcif = new File(fileinfo);
+
+			FileOutputStream fosDec = new FileOutputStream(fcif,false);
+			//FileOutputStream fosDec = new FileOutputStream(fcif,false);
+
+			//TODO erro a ler a input stream do cis
+			//byte[] buffer = new byte[16];
+			//int length;
+			//ByteArrayOutputStream os = new ByteArrayOutputStream();
+			//while ((length = cis.read(buffer)) >= 0) {
+		    //    os.write(buffer, 0, length);
+			//}
+			//System.out.println(buffer +  " adsjhngflkjdsafbngfadsf");
+			
+			byte[] b1 = new byte[16];
+			int j = cis.read(b1);
+			while (j != -1) {
+				fosDec.write(b1, 0, j);
+				j = cis.read(b1);
+			}
+			
+
+			fisDec.close();
+			fosDec.close();
+			//cis.close();
+			kfile.close();

@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 
 public class Autenticacao {
 
@@ -50,54 +51,47 @@ public class Autenticacao {
 	public void decryptFile(File fileUser ,String keyStoreFile, String keyStorePassword) {
 		try {
 			System.out.println("------------DECRYPT----------");
+			System.out.println("File to decrypt: "+fileUser.getPath());
+			//ir buscar a chave
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
 			PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
-
+			//iniciar cifra desencriptacao
 			Cipher cDec = Cipher.getInstance("RSA");
 			cDec.init(Cipher.DECRYPT_MODE, myPrivateKey);
 
-			FileInputStream fisDec = new FileInputStream(fileUser);
-			
-			
-			byte[] inputBytes = new byte[(int) fileUser.length()];
-			fisDec.read(inputBytes);
-			byte[] outputBytes = cDec.doFinal(inputBytes);
-			System.out.println(outputBytes.toString() +  "   akljhhabvsdfjhasdfljk");
-			//TODO: verificar se escreve por cima ou temos de apagar o conteudo do ficheiro
-			//CipherInputStream cis = new CipherInputStream(fisDec, cDec);
+			FileInputStream fis = new FileInputStream(fileUser.getPath());
+			CipherInputStream cis = new CipherInputStream(fis, cDec);
 
+			//tratamento do path novo para o .txt
 			int index = fileUser.getPath().lastIndexOf(".");
 			String fileinfo = fileUser.getPath().substring(0,index) + ".txt";
-
-			System.out.println(fileinfo);
-
 			File fcif = new File(fileinfo);
+			fcif.createNewFile();
+			System.out.println("File to put data decrypted: "+fileinfo);
 
-			//FileOutputStream fosDec = new FileOutputStream(fileUser,false);
-			FileOutputStream fosDec = new FileOutputStream(fcif,false);
+			//stream para escrit no .txt
+			FileOutputStream fos = new FileOutputStream(fileinfo,false);
 
-			//TODO erro a ler a input stream do cis
-			//byte[] buffer = new byte[16];
-			//int length;
-			//ByteArrayOutputStream os = new ByteArrayOutputStream();
-			//while ((length = cis.read(buffer)) >= 0) {
-		    //    os.write(buffer, 0, length);
-			//}
-			//System.out.println(buffer +  " adsjhngflkjdsafbngfadsf");
-			/*
 			byte[] b1 = new byte[16];
-			int j = cis.read(b1);
-			while (j != -1) {
-				fosDec.write(b1, 0, j);
-				j = cis.read(b1);
-			}*/
-			
+			System.out.println("cis.available(): "+cis.available());
+			try {
+				int j = cis.read(b1);
+				while (j != -1) {
+					fos.write(b1, 0, j);
+					j = cis.read(b1);
+				}
+			} catch (Exception e) {
+				System.out.println("nada para ler");
+				e.printStackTrace();
+			}
 
-			fisDec.close();
-			fosDec.close();
-			//cis.close();
+
+
+			fis.close();
+			fos.close();
+			cis.close();
 			kfile.close();
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -108,6 +102,7 @@ public class Autenticacao {
 	public void encryptFile(File fileUser, String keyStoreFile, String keyStorePassword) {
 		try {
 			System.out.println("------------ENCRYPT----------");
+			System.out.println("File to encrypt: "+fileUser.getPath());
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
@@ -116,31 +111,25 @@ public class Autenticacao {
 			Cipher cDec = Cipher.getInstance("RSA");
 			cDec.init(Cipher.ENCRYPT_MODE, myPrivateKey);
 
-			FileInputStream fisEnc = new FileInputStream(fileUser);
-			//TODO: temos de apagar o conteudo do ficheiro
-			
-			byte[] inputBytes = new byte[(int) fileUser.length()];
-			fisEnc.read(inputBytes);
-			byte[] outputBytes = cDec.doFinal(inputBytes);
-			System.out.println(outputBytes + " asdfasdfasdf");
-			//CipherInputStream cis = new CipherInputStream(fisEnc, cDec);
+			FileInputStream fis = new FileInputStream(fileUser);
 
 			int index = fileUser.getPath().lastIndexOf(".");
 			String fcif = fileUser.getPath().substring(0,index) + ".cif";
 			System.out.println(fcif);
 
-			FileOutputStream fosDec = new FileOutputStream(fcif,false);
+			FileOutputStream fos = new FileOutputStream(fcif,false);
+			CipherOutputStream cos = new CipherOutputStream(fos, cDec);
 
-			//byte[] b1 = new byte[16];
-			//int j = cis.read(b1);
+			byte[] b1 = new byte[16];
+			int j = fis.read(b1);
 
-			//while (j != -1) {
-			//	fosDec.write(b1, 0, j);
-			//	j = cis.read(b1);
-			//}
-			fisEnc.close();
-			fosDec.close();
-			//cis.close();
+			while (j != -1) {
+				cos.write(b1, 0, j);
+				j = fis.read(b1);
+			}
+			fis.close();
+			fos.close();
+			cos.close();
 			kfile.close();
 
 			//TODO: depois de verificar que funciona fileUser.delete();
