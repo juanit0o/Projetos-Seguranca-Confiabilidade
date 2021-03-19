@@ -405,7 +405,7 @@ public class SeiTchiz {
 		try {
 			//NONCE recebido do sv
 			String resposta = (String) inObj.readObject();
-			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile); //da access denied aqui
+			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile);
 			//ficheiro keystore cliente
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //TODO com jceks diz que nao tem este algoritmo e com keystore.getdefaulttype diz acesso negado
 			kstore.load(keyfile, keystorePass.toCharArray());

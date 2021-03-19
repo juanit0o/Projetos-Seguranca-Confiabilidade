@@ -67,31 +67,35 @@ public class Autenticacao {
 			//tratamento do path novo para o .txt
 			int index = fileUser.getPath().lastIndexOf(".");
 			String fileinfo = fileUser.getPath().substring(0,index) + ".txt";
-			File fcif = new File(fileinfo);
-			fcif.createNewFile();
 			System.out.println("File to put data decrypted: "+fileinfo);
 
 			//stream para escrit no .txt
 			FileOutputStream fos = new FileOutputStream(fileinfo,false);
 
 			byte[] b1 = new byte[16];
-			System.out.println("cis.available(): "+cis.available());
-			try {
-				int j = cis.read(b1);
-				while (j != -1) {
-					fos.write(b1, 0, j);
-					j = cis.read(b1);
+			int available = (int) fileUser.length(); //TODO tirar o if, so entra aqui com o ficheiro .cif com merdas
+			System.out.println("cis.available(): "+available);
+			if(available == 0) {
+				System.out.println("sala vazia?");
+			}else {
+				try {
+					int j = cis.read(b1);
+					while (j != -1) {
+						fos.write(b1, 0, j);
+						j = cis.read(b1);
+					}
+					System.out.println("sala cheia");
+					cis.close();
+				} catch (Exception e) {
+					System.out.println("nada para ler");
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				System.out.println("nada para ler");
-				e.printStackTrace();
 			}
-
-
+			System.out.println("acabado decriptacao");
 
 			fis.close();
 			fos.close();
-			cis.close();
+			
 			kfile.close();
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -119,9 +123,11 @@ public class Autenticacao {
 
 			FileOutputStream fos = new FileOutputStream(fcif,false);
 			CipherOutputStream cos = new CipherOutputStream(fos, cDec);
-
+			
+			
 			byte[] b1 = new byte[16];
 			int j = fis.read(b1);
+			System.out.println("ENCRYPTED WRITTEN");
 
 			while (j != -1) {
 				cos.write(b1, 0, j);
@@ -133,6 +139,7 @@ public class Autenticacao {
 			kfile.close();
 
 			//TODO: depois de verificar que funciona fileUser.delete();
+			//fileUser.delete();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.exit(-1);

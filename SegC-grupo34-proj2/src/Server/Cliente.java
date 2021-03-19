@@ -278,9 +278,20 @@ public class Cliente {
 	public void userContentsToFile(String keyStoreFile, String keyStorePassword) {
 		File fileUserCifrado = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.cif");
 		Autenticacao aut = new Autenticacao();
-		aut.decryptFile(fileUserCifrado, keyStoreFile, keyStorePassword);
-		
 		File fileUser = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.txt");
+
+		if(fileUserCifrado.length() > 0) {
+			aut.decryptFile(fileUserCifrado, keyStoreFile, keyStorePassword);
+			System.out.println(" file com merdas");
+		}else {
+			try {
+				fileUser.createNewFile();
+				System.out.println(" file sem merdas, foi criado novo");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileUser));
 			// seccao de quem da follow
