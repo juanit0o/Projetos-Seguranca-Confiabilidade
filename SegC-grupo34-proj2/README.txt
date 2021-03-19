@@ -69,4 +69,4 @@ O codigo foi testado na imagem de linux do DI e no Windows 10.
 Gerar chave privada e publica
 
 keytool -genkeypair -alias servidor -keyalg RSA -keysize 2048 -storetype JCEKS -keystore servidor
-
+keytool -genkeypair -alias ALIASDACHAVE r -keyalg RSA -keysize 2048 -storetype JCEKS -keystore NOMEFICHEIROKEYSTORE
