@@ -41,20 +41,9 @@ public class SeiTchizServer {
 	private CatalogoClientes catClientes;
 	private CatalogoGrupos catGrupos;
 	
-	//criar aqui a keystore do servidor ou dentro do main??
-	//private static File keystoreFile = new File("data" + File.separator + "Server Files" + File.separator + "keystore.jks");
-	
-	//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no main)
-	//KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
-	//KeyStore keystore = KeyStore.getInstance("JKS");
-	//String keystorePassord;
-	//keystore.load(keystoreFile, keystorePassword);
-	
 	//criar aqui a pasta PubKeys?
 	File PubKeys = new File("PubKeys");
 	boolean value = PubKeys.mkdirs();
-	
-	//adicionar ao pubkeys o .cert do servidor (X509 auto-assinado)
 	
 	//adicionar o .cert do servidor tambem a uma truststore usada p todos os clientes
 	
@@ -72,23 +61,10 @@ public class SeiTchizServer {
 		//System.setProperty("javax.net.ssl.keyStore",args[1]); ver com o que isto esta relacionado
 		//System.setProperty("javax.net.ssl.keyStorePassword",args[2]);
 		
-		//try {
-			//onde gerar? no inicio do main ou fazer outra class para isto? (p agora ponho no construtor)
-			//KeyGenerator AESKeyGen = KeyGenerator.getInstance("AES");
-			//AESKeyGen.init(128);
-			//KeyStore keystore = KeyStore.getInstance("JKS");
-			//String keystorePassword = args[2];
-			//keystore.load(new FileInputStream(keystoreFile), keystorePassword.toCharArray());
-		//} catch (NoSuchAlgorithmException  | CertificateException | IOException e) {
-		//	e.printStackTrace();
-		//} catch (KeyStoreException e) {
-		//	e.printStackTrace();
-		//}
 		
-		//aqui vao mudar os argumentos
-		//String keyStoresFile = args[1];      ficheiro que contem o par de chaves do sv
-		//String keyStoresPassword = args[2];  password do ficheiro
-		//System.setProperty("javax.net.ssl.keyStorePassword", keyStoresPassword);
+		//keyStoresFile = args[1];      ficheiro que contem o par de chaves do sv
+		//keyStoresPassword = args[2];  password do ficheiro
+		
 		server.startServer(Integer.parseInt(args[0]), args[1], args[2]);
 	}
 

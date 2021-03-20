@@ -87,7 +87,8 @@ public class Autenticacao {
 			cis.close();
 			
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			System.out.println("Error fetching Server keystore");
+			//e1.printStackTrace();
 			System.exit(-1);
 		} 
 	}

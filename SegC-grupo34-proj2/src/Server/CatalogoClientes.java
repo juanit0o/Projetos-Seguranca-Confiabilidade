@@ -29,7 +29,7 @@ public class CatalogoClientes {
 	boolean value = fileDirectory.mkdirs();
 	
 	// para o ficheiro allUsers dentro do Server Files com todos os users,nomes e passes
-	File file = new File("data" + File.separator + "Server Files" + File.separator + "allUsers.txt");
+	File file = new File("data" + File.separator + "Server Files" + File.separator + "allUsers.cif");
 	File photoFile = new File("data" + File.separator + "Server Files" + File.separator + "allPhotos.txt");
 
 	/**
@@ -40,11 +40,14 @@ public class CatalogoClientes {
 		this.keyStoreFile = keyStoreFile;
 		this.keyStorePassword = keyStorePassword;
 		mapClientes = new HashMap<String, Cliente>();
+		Autenticacao aut = new Autenticacao();
 		try {
 			if (!file.createNewFile()) { // true- nao existe e cria allUsers || false: load do ficheiro
-				//TODO: decifrar file
+				aut.decryptFile(file, keyStoreFile, keyStorePassword);
 				System.out.println("User file loaded: " + file.getName());
-				Scanner scReader = new Scanner(file);
+				
+				File fileServer = new File("data" + File.separator+ "Server Files" + File.separator + "allUsers.txt");
+				Scanner scReader = new Scanner(fileServer);
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
 					String[] aux = linha.split(":");
@@ -53,7 +56,7 @@ public class CatalogoClientes {
 					newClient.carregarConta(keyStoreFile, keyStorePassword);
 					mapClientes.put(aux[0], newClient);
 				}
-				//TODO: cifrar file
+				aut.encryptFile(fileServer, keyStoreFile, keyStorePassword);
 				scReader.close();
 			} else {
 				System.out.println("File created: " + file.getName());
@@ -82,13 +85,30 @@ public class CatalogoClientes {
 			String name = (String) inStream.readObject();
 			Cliente cliente = new Cliente(user, pubk);
 			mapClientes.put(user, cliente);
-			BufferedWriter bW = new BufferedWriter(new FileWriter(file, true));
+			
+			Autenticacao aut = new Autenticacao();
+			
+			File fileServer;
+
+			
+			if(file.length() > 0) {
+				aut.decryptFile(file, keyStoreFile, keyStorePassword);
+				fileServer = new File("data" + File.separator+ "Server Files" + File.separator + "allUsers.txt");
+				System.out.println("ficheiro allUsers nao esta vazio");
+			}else {
+				fileServer = new File("data" + File.separator+ "Server Files" + File.separator + "allUsers.txt");
+				fileServer.createNewFile();
+				
+			}
+			
+			//TODO o bufferedWriter tem de levar o txt e nao o cif
+			BufferedWriter bW = new BufferedWriter(new FileWriter(fileServer, true));
 			//bW.newLine(); //pq ja la havia pessoas, senao escreve na mm linha
 			bW.write(user + ":" + pubk);
 			bW.newLine();
 			bW.close();
-			//TODO allusers tem de ser cifrado pelo servidor (guardado cifrado)
 			
+			aut.encryptFile(fileServer, keyStoreFile, keyStorePassword);
 			// criar outro file por cliente (id.txt -> follow $ followers $ photos $ grupos
 			// $ mensagensPler +
 			// criar a diretoria para os personal files

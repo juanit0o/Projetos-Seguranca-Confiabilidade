@@ -1,2 +1,0 @@
-clientid::data\Personal User Files\clientid\Photos\photo_clientid_0.jpg
-clientid::data\Personal User Files\clientid\Photos\photo_clientid_1.jpg

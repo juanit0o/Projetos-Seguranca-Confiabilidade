@@ -192,31 +192,7 @@ public class SeiTchiz {
 						System.out.println(recebido);
 						
 						//o recebido pode ter tanto o caso de sucesso como o de erro
-						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma delas
-						
-						ArrayList<String> msgsDecoded = new ArrayList<>();
-						
-						/*Percorrer todas as mensagens recebidas (codificadas) e descodificar e adicionar ao array
-						for(int i = 0; i < nrMensagens; i++) {
-							SecretKeySpec keySpec2 = new SecretKeySpec(msg[i], "AES");
-						    Cipher c2 = Cipher.getInstance("AES");
-						    c2.init(Cipher.DECRYPT_MODE, keySpec2);
-						    
-						    byte[] arrayCoded;
-						    ByteArrayInputStream ba = new ByteArrayInputStream(array);
-						    CipherInputStream cis2 = new CipherInputStream(ba, c2);
-						    
-						    ByteArrayOutputStream bo = new ByteArrayOutputStream();
-						    byte[] b3 = new byte[16];
-						    int j = cis2.read(b3);
-						    while(j != -1){
-						        bo.write(b3, 0, j);
-						        j = cis2.read(b3);
-						    }
-						    msgsDecoded.add(b3.toString());
-						    bo.close();
-						    cis2.close();
-						}*/
+						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma dela
 						
 						
 						System.out.println("\nInsert a command or type help to see commands: ");
@@ -444,7 +420,7 @@ public class SeiTchiz {
 					Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
 					//System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
 					//if (!autenticated) {
-					//	System.exit(-1);
+					//		System.exit(-1);
 					//}
 				}else {
 					System.out.println("error");
@@ -473,8 +449,7 @@ public class SeiTchiz {
 			
 			
 		} catch (Exception e1) {
-			e1.printStackTrace();
-			System.out.println("Failed to authenticate :(");
+			System.out.println("Error authenticating >:(");
 			System.exit(-1);
 		} 
 	}
