@@ -216,7 +216,7 @@ public class SeiTchizServer {
 					FileOutputStream fileCert = new FileOutputStream("PubKeys" + File.separator + user + ".cer");
 					//escrever certificado para o fileCert
 					fileCert.write(certificadoCliente.getEncoded()); //TODO como escrever o certificado para o ficheiro, supostamente csg mas n sei se � o que la aparece
-					
+					fileCert.close();
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
 					signature.initVerify(pubK);
@@ -341,7 +341,7 @@ public class SeiTchizServer {
 									+ currentClient.getUser() + "_" + nrPhotosAt + ".txt");
 							//escrever a hash no ficheiro
 							fileHash.write(hash); 
-							
+							fileHash.close();
 							
 							//adicionar informacao da fotografia (nome) ao ficheiro pessoal info.txt
 							currentClient.publishPhoto(path,keyStoreFile,keyStorePassword);

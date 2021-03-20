@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -52,14 +53,14 @@ public class Autenticacao {
 	public void decryptFile(File fileUser, String keyStoreFile, String keyStorePassword) {
 		try {
 			System.out.println("------------DECRYPT----------");
-			System.out.println("File to decrypt: "+fileUser.getPath());
+			System.out.println("File to decrypt: "+ fileUser.getPath());
 			//ir buscar a chave
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
 			PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
 			//iniciar cifra desencriptacao
-			Cipher cDec = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			Cipher cDec = Cipher.getInstance("RSA");
 			cDec.init(Cipher.DECRYPT_MODE, myPrivateKey);
 
 			FileInputStream fis = new FileInputStream(fileUser.getPath());
@@ -74,30 +75,17 @@ public class Autenticacao {
 			FileOutputStream fos = new FileOutputStream(fileinfo,false);
 
 			byte[] b1 = new byte[16];
-			int available = (int) fileUser.length(); //TODO tirar o if, so entra aqui com o ficheiro .cif com merdas
-			System.out.println("cis.available(): "+available);
-			if(available == 0) {
-				System.out.println("sala vazia?");
-			}else {
-				try {
-					int j = cis.read(b1);
-					while (j != -1) {
-						fos.write(b1, 0, j);
-						j = cis.read(b1);
-					}
-					System.out.println("sala cheia");
-					cis.close();
-				} catch (Exception e) {
-					System.out.println("nada para ler");
-					e.printStackTrace();
-				}
+			int read = -1;
+			while((read = cis.read(b1))!= -1) {
+				fos.write(b1, 0, read);
 			}
 			System.out.println("acabado decriptacao");
 
 			fis.close();
 			fos.close();
-
 			kfile.close();
+			cis.close();
+			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.exit(-1);
@@ -111,30 +99,30 @@ public class Autenticacao {
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
-			Key myPrivateKey = kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
-
+			//Key myPrivateKey = kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
+			
+			Certificate cert = kstore.getCertificate(keyStoreFile);
+			PublicKey pubKey = cert.getPublicKey();
+			
 			Cipher cDec = Cipher.getInstance("RSA");
-			cDec.init(Cipher.ENCRYPT_MODE, myPrivateKey);
+			cDec.init(Cipher.ENCRYPT_MODE, pubKey);
 
 			FileInputStream fis = new FileInputStream(fileUser);
 
 			int index = fileUser.getPath().lastIndexOf(".");
 			String fcif = fileUser.getPath().substring(0,index) + ".cif";
 			System.out.println(fcif);
-
-			byte[] ficheirobytes = Files.readAllBytes(fileUser.toPath());
-			byte[] textEncrypted = cDec.doFinal(ficheirobytes);
-			System.out.println("textoo " + textEncrypted);
-			System.out.println("------------"); 
-
-			try (FileOutputStream fos = new FileOutputStream(fcif,false)) {
-				fos.write(textEncrypted);
-
-				byte[] b1 = new byte[16];
-				int j = fis.read(b1);
-				System.out.println("ENCRYPTED WRITTEN");
+		
+			FileOutputStream fos = new FileOutputStream(fcif,false);
+			CipherOutputStream cos = new CipherOutputStream(fos, cDec);
+			
+			byte[] b = new byte[16];
+			int i = fis.read(b);
+			while(i!= -1) {
+				cos.write(b,0,i);
+				i = fis.read(b);
 			}
-
+			cos.close();
 			fis.close();
 			kfile.close();
 

@@ -192,7 +192,7 @@ public class Cliente {
 		}
 		ArrayList<String> followsAux = new ArrayList<String>();
 		for(int i = 0; i < follows.size(); i++) {
-			if(follows.get(i) != pessoa.getUser()) {
+			if(!(follows.get(i).equals(pessoa.getUser()))) {
 				followsAux.add(follows.get(i));
 			}
 		}
@@ -218,7 +218,7 @@ public class Cliente {
 	public void removerFollower(String follower,String keyStoreFile, String keyStorePassword) {
 		ArrayList<String> followersAux = new ArrayList<String>();
 		for(int i = 0; i < followers.size(); i++) {
-			if(followers.get(i) != follower) {
+			if(!(followers.get(i).equals(follower))) {
 				followersAux.add(followers.get(i));
 			}
 		}
@@ -282,11 +282,11 @@ public class Cliente {
 
 		if(fileUserCifrado.length() > 0) {
 			aut.decryptFile(fileUserCifrado, keyStoreFile, keyStorePassword);
-			System.out.println(" file com merdas");
+			System.out.println(" file com info");
 		}else {
 			try {
 				fileUser.createNewFile();
-				System.out.println(" file sem merdas, foi criado novo");
+				System.out.println(" file sem info, foi criado novo");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
