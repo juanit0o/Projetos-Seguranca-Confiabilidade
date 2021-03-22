@@ -2,6 +2,7 @@ grant codeBase "file:${java.home}/lib/ext/*" {
 permission java.security.AllPermission; 
 }; 
 
+
 grant codeBase "file:bin/-"{
     permission java.util.PropertyPermission "user.dir", "read";
 
@@ -10,6 +11,10 @@ grant codeBase "file:bin/-"{
     permission java.io.FilePermission "test/-", "read";
     permission java.io.FilePermission "wall/-", "write";
     permission java.io.FilePermission "data/Keystores/-", "read";
+    permission java.util.PropertyPermission "javax.net.ssl.trustStore", "write, read";
+    permission java.util.PropertyPermission "javax.net.ssl.trustStorePassword", "read, write";
+    permission java.io.FilePermission "Trustores/Truststore Client/-", "read";
+    
 };
 
 grant codeBase "file:SeiTchiz.jar"{
@@ -20,4 +25,7 @@ grant codeBase "file:SeiTchiz.jar"{
     permission java.io.FilePermission "test/-", "read";
     permission java.io.FilePermission "wall/-", "write";
     permission java.io.FilePermission "data/Keystores/-", "read";
+    permission java.util.PropertyPermission "javax.net.ssl.trustStore", "write, read";
+    permission java.util.PropertyPermission "javax.net.ssl.trustStorePassword", "read, write";
+    permission java.io.FilePermission "Trustores/Truststore Client/-", "read";
 };

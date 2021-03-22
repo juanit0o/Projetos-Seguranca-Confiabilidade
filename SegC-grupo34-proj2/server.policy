@@ -8,10 +8,7 @@ grant codeBase "file:bin/-" {
     permission java.net.SocketPermission "*:1-", "accept, listen, resolve";
 
     permission java.io.FilePermission "./-", "read, write, delete";
-    
-    
-    
-    
+
     permission java.util.PropertyPermission "javax.net.ssl.keyStore", "write";
     permission java.util.PropertyPermission "javax.net.ssl.keyStorePassword", "write";
     permission javax.net.ssl.keyStore  "javax.net.ssl.keyStore", "write";

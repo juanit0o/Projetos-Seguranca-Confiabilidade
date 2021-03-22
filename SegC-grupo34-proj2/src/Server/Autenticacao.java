@@ -56,7 +56,7 @@ public class Autenticacao {
 			System.out.println("File to decrypt: "+ fileUser.getPath());
 			//ir buscar a chave
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
-			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
+			KeyStore kstore = KeyStore.getInstance("JKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
 			PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
 			//iniciar cifra desencriptacao
@@ -88,7 +88,7 @@ public class Autenticacao {
 			
 		} catch (Exception e1) {
 			System.out.println("Error fetching Server keystore");
-			//e1.printStackTrace();
+			e1.printStackTrace();
 			System.exit(-1);
 		} 
 	}
@@ -98,7 +98,7 @@ public class Autenticacao {
 			System.out.println("------------ENCRYPT----------");
 			System.out.println("File to encrypt: "+fileUser.getPath());
 			FileInputStream kfile = new FileInputStream("data"+File.separator+"Server Files"+File.separator+keyStoreFile);
-			KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
+			KeyStore kstore = KeyStore.getInstance("JKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
 			//Key myPrivateKey = kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
 			

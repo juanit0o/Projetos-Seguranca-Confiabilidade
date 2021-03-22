@@ -48,7 +48,9 @@ public class SeiTchizServer {
 	//adicionar o .cert do servidor tambem a uma truststore usada p todos os clientes
 	
 	public static void main(String[] args) {
-		//System.setProperty("javax.net.ssl.keyStore",Server.ficheiroKeyStore);
+		System.setProperty("javax.net.ssl.keyStore", "data" + File.separator + "Server Files" + File.separator +
+				args[1]); //keystore do servidor
+		System.setProperty("javax.net.ssl.keyStorePassword",args[2]);
 		
 		System.out.println("Server");
 		SeiTchizServer server = new SeiTchizServer();
@@ -58,26 +60,20 @@ public class SeiTchizServer {
 		}
 		System.out.println("- - - - - - - - - - -");
 		
-		//System.setProperty("javax.net.ssl.keyStore",args[1]); ver com o que isto esta relacionado
-		//System.setProperty("javax.net.ssl.keyStorePassword",args[2]);
-		
-		
-		//keyStoresFile = args[1];      ficheiro que contem o par de chaves do sv
-		//keyStoresPassword = args[2];  password do ficheiro
-		
 		server.startServer(Integer.parseInt(args[0]), args[1], args[2]);
 	}
 
 	//metodo para iniciar o servidor
 	public void startServer (int port, String keyStoresFile, String keyStoresPassword) {
-		//SSLServerSocketFactory sslfact = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-		//SSLServerSocket ssl = null;
-		ServerSocket sSoc = null;
+		SSLServerSocketFactory sslfact = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+		SSLServerSocket ssl = null;
+		//ServerSocket sSoc = null;
 		try {
-			//ssl =  (SSLServerSocket) sslfact.createServerSocket(port);
-			sSoc = new ServerSocket(port);
+			ssl =  (SSLServerSocket) sslfact.createServerSocket(port);
+			//sSoc = new ServerSocket(port);
 		} catch (IOException | SecurityException e) {
 			System.err.println("[ERROR]: Couldnt accept the socket!");
+			e.printStackTrace();
 			System.exit(-1);
 		}
 		catClientes = new CatalogoClientes(keyStoresFile, keyStoresPassword);
@@ -85,8 +81,8 @@ public class SeiTchizServer {
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
-				//Socket inSoc = ssl.accept();
-				Socket inSoc = sSoc.accept();
+				Socket inSoc = ssl.accept();
+				//Socket inSoc = sSoc.accept();
 				ServerThread newServerThread = new ServerThread(inSoc, keyStoresFile, keyStoresPassword);
 				newServerThread.start();
 			}

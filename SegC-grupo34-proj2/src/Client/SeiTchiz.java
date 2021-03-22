@@ -18,6 +18,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -32,7 +33,7 @@ import java.io.*;
  */
 public class SeiTchiz {
 	private static SSLSocket ssl;
-	private static Socket cSoc = null; //esta socket vai desaparecer e vai passar a ser usada a ssl
+	//private static Socket cSoc = null; //esta socket vai desaparecer e vai passar a ser usada a ssl
 	private static final int PORT_DEFAULT = 45678;
 	private static ObjectInputStream inObj = null;
 	private static ObjectOutputStream outObj = null;
@@ -43,8 +44,12 @@ public class SeiTchiz {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		System.setProperty("javax.net.ssl.trustStore", "Truststores" + File.separator 
+				+ "Truststore Client" + File.separator + "truststore_client"); //Truststore do cliente
+		System.setProperty("javax.net.ssl.trustStorePassword", "servidor");
 		
-		//System.setProperty("javax.net.ssl.trustStore", Client.ficheiroTrustStore);
+		System.out.println("Trustores" + File.separator 
+				+ "Truststore Client" + File.separator + args[1]);
 		
 		
 		System.out.println("cliente: main");
@@ -52,7 +57,7 @@ public class SeiTchiz {
 		int serverPort = 0;
 		String user = "";
 		String pass = "";
-		String truststore = ""; //p agora n fazer isto, esta relacionado com a parte do tls
+		String truststore = "";
 		String keystoreFile = "";
 		String keystorePassword = "";
 		
@@ -103,9 +108,11 @@ public class SeiTchiz {
 			outObj.close();
 			inObj.close();
 			inSc.close();
-			cSoc.close();
+			//cSoc.close();
+			System.exit(-1);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.exit(-1);
+			//e.printStackTrace();
 		}
 	}
 
@@ -462,27 +469,23 @@ public class SeiTchiz {
 	private static void conectToServer(String ip, int port) {
 		try {
 			///tentativa com ssl
-			//SSLSocketFactory sslfact = (SSLSocketFactory) SSLSocketFactory.getDefault();
-			//SSLSocket ssl = null;
-			//ssl = (SSLSocket) sslfact.createSocket(ip, port);
-			//if(ssl.isConnected())
-			//    System.out.println("Connected.");
+			SocketFactory sslfact = SSLSocketFactory.getDefault();
+			SSLSocket ssl = null;
+			ssl = (SSLSocket) sslfact.createSocket(ip, port);
+			if(ssl.isConnected())
+			    System.out.println("Connected."); //aparece como connected mas depois da erro
 			
-			//isto vai dar a excecao handshake certificate failed, e representa que nao temos o 
-			//certificado publico do servidor a que nos estamos a tentar conectar na Java Truststore
-			//P tratar, temos de apontar a variavel de ambiente javax.net.ssl.trustStore para o nosso
-			//ficheiro truststore
-			//https://www.baeldung.com/java-ssl
-			//outObj = new ObjectOutputStream(ssl.getOutputStream());
-			//inObj = new ObjectInputStream(ssl.getInputStream());
+			outObj = new ObjectOutputStream(ssl.getOutputStream());
+			inObj = new ObjectInputStream(ssl.getInputStream());
 			//////
 			
 			//Forma antiga
-			cSoc = new Socket(ip,port);
-			outObj = new ObjectOutputStream(cSoc.getOutputStream());
-			inObj = new ObjectInputStream(cSoc.getInputStream());
+			//cSoc = new Socket(ip,port);
+			//outObj = new ObjectOutputStream(cSoc.getOutputStream());
+			//inObj = new ObjectInputStream(cSoc.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Couldnt connect to the server! " + e);
+			e.printStackTrace();
 			System.exit(-1);
 		}		
 	}

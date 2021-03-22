@@ -36,7 +36,7 @@ java -cp bin -Djava.security.manager -Djava.security.policy==server.policy -jar 
 Executar ficheiros .class:
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 userName password123
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore keystore keystore-password clientid
-java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 xxxxx clientid clientid clientid
+java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore_client clientid clientid clientid
 
 Executar ficheiro .jar:
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy -jar SeiTchiz.jar 127.0.0.1:45678 userName password123
@@ -70,3 +70,6 @@ Gerar chave privada e publica
 
 keytool -genkeypair -alias servidor -keyalg RSA -keysize 2048 -storetype JCEKS -keystore servidor
 keytool -genkeypair -alias ALIASDACHAVE r -keyalg RSA -keysize 2048 -storetype JCEKS -keystore NOMEFICHEIROKEYSTORE
+----------------
+
+A truststore do cliente e do servidor têm as duas a mesma password: "servidor"
