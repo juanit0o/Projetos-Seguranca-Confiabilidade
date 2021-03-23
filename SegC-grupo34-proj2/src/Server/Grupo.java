@@ -4,7 +4,16 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.ArrayList;
+
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * Classe representativa de um grupo, que e composto por um id,
@@ -93,26 +102,58 @@ public class Grupo {
 			grupoChaves.createNewFile();
 			Autenticacao aut = new Autenticacao();
 			try {
-				File grupChav;
-				if(grupoChaves.length() > 0) {
-					aut.decryptFile(grupoChaves, keyStoreFile, keyStorePassword);
-					grupChav = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
-					
-				}else {
-					grupChav = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
-					grupChav.createNewFile();
-				}			
+				File grupChav = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
+				grupChav.createNewFile();
 				
 				BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav));
 
-				bW.write("0:");
-				//ir buscar chave simetrica e fazer-lhe wrap com a chave publica(cipherwrapmode, mais chave publica) do dono(inciialmente)
+				KeyGenerator kg = KeyGenerator.getInstance("AES");
+				kg.init(128);
+				Key sharedKey = kg.generateKey();
+				
+				Cipher c = Cipher.getInstance("RSA");
+				//ir buscar a public key do dono
+				PublicKey ku = dono.getPublicKey();
+				c.init(Cipher.WRAP_MODE, ku);				
+				// cifrar a chave secreta que queremos enviar
+				byte[] wrappedKey = c.wrap(sharedKey);
+				String chav = new String(wrappedKey);
+				System.out.println(chav + " chave para escrever no ficheiro");
+				bW.write("0:"  + chav);
 				bW.newLine();
+				bW.write("----");
+				bW.newLine();
+				
 				bW.close();
+				
+				//cifrar com chave simetrica
+				//fazer wrap (cifrar) com a chave publica
+						//dados cifrados com a chave simetrica
+						//chave simetrica cifrada com a chave publica (wrapmode)- resultado disto array de bytes que escrevemos num ficheiro
+				
+				//decifrar
+						//fazer unwrap com chave privada do servidor do ficheiro com chave simetrica
+						//resultado deste unwrap é a chave simetrica
+				
+				
+				//ir buscar chave simetrica e fazer-lhe wrap com a chave publica(cipherwrapmode, mais chave publica) do dono(inciialmente)
+				
 				
 				aut.encryptFile(grupChav, keyStoreFile, keyStorePassword);
 				
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidKeyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalBlockSizeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchPaddingException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

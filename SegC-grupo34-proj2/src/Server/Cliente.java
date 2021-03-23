@@ -21,6 +21,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
 /**
@@ -377,5 +378,13 @@ public class Cliente {
 			}
 		}
 		return false;
+	}
+
+
+	public PublicKey getPublicKey() {
+		Autenticacao aut = new Autenticacao();
+		Certificate filePub = aut.getCertificate(user);
+		PublicKey key = filePub.getPublicKey();
+		return key;
 	}	
 }
