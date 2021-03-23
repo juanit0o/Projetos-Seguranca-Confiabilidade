@@ -119,8 +119,8 @@ public class CatalogoGrupos {
 	 * @param grupoID - id para o grupo.
 	 * @param dono - cliente que cria e a dono do grupo.
 	 */
-	public void addGrupo(String grupoID, Cliente dono) {
-		Grupo grupo = new Grupo(grupoID, dono);
+	public void addGrupo(String grupoID, Cliente dono, String keyStoreFile, String keyStorePassword) {
+		Grupo grupo = new Grupo(grupoID, dono, keyStoreFile, keyStorePassword);
 		grupo.registaGrupo();
 		grupos.add(grupo);
 		dono.entrarEmGrupo(grupoID, keyStoreFile,keyStorePassword);

@@ -293,10 +293,7 @@ public class SeiTchizServer {
 								+ currentClient.getUser() + "_" + nrPhotosAt + ".jpg";
 						File fileName = new File(path);
 						OutputStream photoRecebida = new BufferedOutputStream(new FileOutputStream(fileName));
-						
-						
-						
-						
+
 						Long dimensao;
 						try {
 							dimensao = (Long) inStream.readObject();
@@ -478,7 +475,7 @@ public class SeiTchizServer {
 							System.out.println("Client '" + currentClient.getUser() + "' tried to create a new group with an invalid groupID");
 						}
 						if (!catGrupos.existeGrupo(splittado[1])) {
-							catGrupos.addGrupo(splittado[1], currentClient);
+							catGrupos.addGrupo(splittado[1], currentClient, keyStoreFile, keyStorePassword);
 							outStream.writeObject("You created a group with ID " + splittado[1] + " (you are the owner)");
 							System.out.println("Client '" + currentClient.getUser() + "' created a new group with groupID '" + splittado[1] + "'");
 						} else {

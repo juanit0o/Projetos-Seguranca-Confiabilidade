@@ -27,6 +27,10 @@ public class Grupo {
 	private File msgLog;
 	private File membrosGrupo;
 	private File msgHistorico;
+	private File grupoChaves;
+	
+	private String keyStoreFile;
+	private String keyStorePassword;
 
 	/**
 	 * Construtor da classe que inicia um grupo recebendo um id 
@@ -34,7 +38,7 @@ public class Grupo {
 	 * @param grupoID - id de grupo.
 	 * @param dono - cliente dono do grupo.
 	 */
-	public Grupo(String grupoID, Cliente dono) {
+	public Grupo(String grupoID, Cliente dono, String keyStoreFile, String keyStorePassword) {
 		this.grupoID = grupoID;
 		this.dono = dono;
 		this.membros = new ArrayList<Cliente>();
@@ -42,9 +46,13 @@ public class Grupo {
 		this.msgs = new ArrayList<Mensagem>();
 		this.historicoMsgs = new ArrayList<Mensagem>();
 		this.groupFolder = new File("data" + File.separator + "Group Folder" + File.separator + this.grupoID);
-		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
-		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
-		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
+		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".cif");
+		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".cif");
+		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".cif");
+		
+		this.keyStoreFile = keyStoreFile;
+		this.keyStorePassword = keyStorePassword;
+		this.grupoChaves = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".cif");
 	}
 
 	/**
@@ -64,9 +72,11 @@ public class Grupo {
 		this.msgs = msgs;
 		this.historicoMsgs = historico;
 		this.groupFolder = new File("data" + File.separator + "Group Folder" + File.separator + this.grupoID);
-		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
-		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
-		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
+		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".cif");
+		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".cif");
+		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".cif");
+		
+		this.grupoChaves = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".cif");
 
 	}
 
@@ -79,6 +89,35 @@ public class Grupo {
 			msgLog.createNewFile();
 			membrosGrupo.createNewFile();
 			msgHistorico.createNewFile();
+			
+			grupoChaves.createNewFile();
+			Autenticacao aut = new Autenticacao();
+			try {
+				File grupChav;
+				if(grupoChaves.length() > 0) {
+					aut.decryptFile(grupoChaves, keyStoreFile, keyStorePassword);
+					grupChav = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
+					
+				}else {
+					grupChav = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
+					grupChav.createNewFile();
+				}			
+				
+				BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav));
+
+				bW.write("0:");
+				//ir buscar chave simetrica e fazer-lhe wrap com a chave publica(cipherwrapmode, mais chave publica) do dono(inciialmente)
+				bW.newLine();
+				bW.close();
+				
+				aut.encryptFile(grupChav, keyStoreFile, keyStorePassword);
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			
 			groupContentsToFile();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -215,27 +254,51 @@ public class Grupo {
 	 * Metodo que escreve os dados de um grupo em disco.
 	 */
 	public void groupContentsToFile() {
-		File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
+		//File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".cif");
+		Autenticacao aut = new Autenticacao();
 		try {
-			BufferedWriter bW = new BufferedWriter(new FileWriter(membrosGrupo));
+			File membrosFich;
+			if(membrosGrupo.length() > 0) {
+				aut.decryptFile(membrosGrupo, keyStoreFile, keyStorePassword);
+				membrosFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
+				
+			}else {
+				membrosFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
+				membrosFich.createNewFile();
+			}			
+			
+			BufferedWriter bW = new BufferedWriter(new FileWriter(membrosFich));
 			// membros
 			for (int i = 0; i < membros.size(); i++) {
 				bW.write(membros.get(i).getUser());
 				bW.newLine();
 			}
 			bW.close();
+			aut.encryptFile(membrosFich, keyStoreFile, keyStorePassword);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		File caixaMsgGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
+		//File caixaMsgGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".cif");
 		try {
-			BufferedWriter bW = new BufferedWriter(new FileWriter(caixaMsgGrupo));
+			File caixaFich;
+			if(msgLog.length() > 0) {
+				aut.decryptFile(msgLog, keyStoreFile, keyStorePassword);
+				caixaFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
+			}else {
+				caixaFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
+				caixaFich.createNewFile();
+			}
+			
+			BufferedWriter bW = new BufferedWriter(new FileWriter(caixaFich));
 			//MENSAGEM COM ELEMENTOS
 			for (int i = 0; i < msgs.size(); i++) {
 				bW.write(msgs.get(i).msgContentToFile());
 				bW.newLine();
 			}
 			bW.close();
+			
+			aut.encryptFile(caixaFich, keyStoreFile, keyStorePassword);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
