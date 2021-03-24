@@ -2,6 +2,7 @@ package Server;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -37,9 +38,11 @@ public class Grupo {
 	private File membrosGrupo;
 	private File msgHistorico;
 	private File grupoChaves;
+	private File groupKeysFolder;
 	
 	private String keyStoreFile;
 	private String keyStorePassword;
+	
 
 	/**
 	 * Construtor da classe que inicia um grupo recebendo um id 
@@ -61,7 +64,8 @@ public class Grupo {
 		
 		this.keyStoreFile = keyStoreFile;
 		this.keyStorePassword = keyStorePassword;
-		this.grupoChaves = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".cif");
+		this.groupKeysFolder = new File("GroupKeys");
+		this.grupoChaves = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
 	}
 
 	/**
@@ -85,7 +89,8 @@ public class Grupo {
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".cif");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".cif");
 		
-		this.grupoChaves = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".cif");
+		this.groupKeysFolder = new File("GroupKeys");
+		this.grupoChaves = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
 
 	}
 
@@ -99,13 +104,14 @@ public class Grupo {
 			membrosGrupo.createNewFile();
 			msgHistorico.createNewFile();
 			
+			groupKeysFolder.mkdirs();
 			grupoChaves.createNewFile();
-			Autenticacao aut = new Autenticacao();
+			//Autenticacao aut = new Autenticacao();
 			try {
-				File grupChav = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
+				File grupChav = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
 				grupChav.createNewFile();
 				
-				BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav));
+				//BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav));
 
 				KeyGenerator kg = KeyGenerator.getInstance("AES");
 				kg.init(128);
@@ -119,12 +125,12 @@ public class Grupo {
 				byte[] wrappedKey = c.wrap(sharedKey);
 				String chav = new String(wrappedKey);
 				System.out.println(chav + " chave para escrever no ficheiro");
-				bW.write("0:"  + chav);
-				bW.newLine();
-				bW.write("----");
-				bW.newLine();
-				
-				bW.close();
+				FileOutputStream fos = new FileOutputStream("GroupKeys" + File.separator+ this.grupoID + "_" + "chaves" + ".txt");
+				fos.write("0:".getBytes());
+				fos.write(wrappedKey);
+				fos.write("\n-------\n".getBytes());
+				fos.close();
+			
 				
 				//cifrar com chave simetrica
 				//fazer wrap (cifrar) com a chave publica
@@ -139,7 +145,7 @@ public class Grupo {
 				//ir buscar chave simetrica e fazer-lhe wrap com a chave publica(cipherwrapmode, mais chave publica) do dono(inciialmente)
 				
 				
-				aut.encryptFile(grupChav, keyStoreFile, keyStorePassword);
+				//aut.encryptFile(grupChav, keyStoreFile, keyStorePassword);
 				
 			} catch (IOException e) {
 				e.printStackTrace();

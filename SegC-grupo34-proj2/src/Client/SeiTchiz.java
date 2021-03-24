@@ -250,19 +250,32 @@ public class SeiTchiz {
 						//reconstruir o output e mandá-lo com o texto cifrado
 						
 						//Gerar a chave
-						KeyGenerator kg = KeyGenerator.getInstance("AES");
-						kg.init(128);
-						SecretKey key = kg.generateKey();
-						Cipher c = Cipher.getInstance("AES");
-						c.init(Cipher.ENCRYPT_MODE, key);
+						//KeyGenerator kg = KeyGenerator.getInstance("AES");
+						//kg.init(128);
+						//SecretKey key = kg.generateKey();
+						//Cipher c = Cipher.getInstance("AES");
+						//c.init(Cipher.ENCRYPT_MODE, key);
+						File groupKeys = new File ("GroupKeys" + File.separator + comando[1] + "_chaves.txt");
+						BufferedReader br = new BufferedReader(new FileReader(groupKeys));
+						String thislinha = "";
+						String thislinhaAux = "";
+						while (!(thislinhaAux = br.readLine()).equals("-------")) {
+							thislinha+= "\n" + thislinhaAux;
+							System.out.println(thislinha);
+						}
+						thislinha = thislinha.substring(3, thislinha.length());
+						System.out.println(thislinha);
+						
+						//fazer unwrap da chave - obtemos a simetrica
+						//usar a simetrica para ler a msg que chegou
 						
 						String textoMensagem = comando[2];
 						ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
-						CipherOutputStream cos = new CipherOutputStream(bo,c);
+						//CipherOutputStream cos = new CipherOutputStream(bo,c);
 						
 						byte[] b = textoMensagem.getBytes();  
-					    cos.write(b);
-					    cos.close();
+					    //cos.write(b);
+					   // cos.close();
 					    //System.out.println(b.toString());
 					    
 					    //o que é o key/keyencoded/b? key=?/ keyEncoded=key em array de bytes/ b= o que supostamente mandamos?
@@ -273,7 +286,7 @@ public class SeiTchiz {
 						outObj.writeObject(outputCifrado);
 						System.out.println((String) inObj.readObject());
 						System.out.println("\nInsert a command or type help to see commands: ");
-					} catch (IOException | ClassNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+					} catch (IOException | ClassNotFoundException e) {
 						System.out.println("The server is now offline :(" + e);
 					}
 				}
