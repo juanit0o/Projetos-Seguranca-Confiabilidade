@@ -12,6 +12,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import javax.crypto.BadPaddingException;
@@ -53,11 +54,11 @@ public class SeiTchiz {
 		System.setProperty("javax.net.ssl.trustStore", "Truststores" + File.separator 
 				+ "Truststore Client" + File.separator + "truststore_client"); //Truststore do cliente
 		System.setProperty("javax.net.ssl.trustStorePassword", "servidor");
-		
+
 		System.out.println("Trustores" + File.separator 
 				+ "Truststore Client" + File.separator + args[1]);
-		
-		
+
+
 		System.out.println("cliente: main");
 		String serverIp = "";
 		int serverPort = 0;
@@ -66,7 +67,7 @@ public class SeiTchiz {
 		String truststore = "";
 		String keystoreFile = "";
 		String keystorePassword = "";
-		
+
 		//if (args.length == 2) { //caso: 127.0.0.1:45500 clientId  || 127.0.0.1 clientId 
 		//	user = args[1];
 		//	System.out.println("You haven't inserted a password. Password?");
@@ -77,7 +78,7 @@ public class SeiTchiz {
 		//} else if (args.length == 3 && args[1].length() <= 1) {
 		//	System.out.println("Invalid username (least 2 characters)!");
 		//	System.exit(-1);
-		
+
 		//fazer condicoes mais maricas para os args 
 		if( args.length == 5) { //mudar para 5 depois, falta a truststore
 			serverIp = args[0];
@@ -203,11 +204,65 @@ public class SeiTchiz {
 						outObj.writeObject(output);
 						String recebido = (String) inObj.readObject();
 						System.out.println(recebido);
-						
+						String msgFinal = "";
+						String[] msgsInd = recebido.split("\n");
+						System.out.println("-------"+ msgsInd.length);
+						for(int i = 0; i < msgsInd.length; i++) {
+							String nome = msgsInd[i].split(":")[0]; //quem mandou msg
+							String aux = msgsInd[i].split(":")[1];
+							System.out.println("|"+aux+"|");
+							String msgCript = aux.substring(0,aux.indexOf("$"));
+							System.out.println("-"+msgCript+"-");
+							String idChave = aux.substring(aux.indexOf("$")+2,aux.length());
+							System.out.println(idChave);
+
+							File groupKeys = new File("GroupKeys"+File.separator+comando[1]+ "_" + "chaves" + ".txt");
+							BufferedReader br;
+							try {
+								br = new BufferedReader(new FileReader(groupKeys));
+								String thislinha = "";
+								while ((thislinha = br.readLine())!=null) {
+									String idChaveAux = thislinha.split(":")[0];
+									if (idChave.equals(idChaveAux)) {
+										String[] pVirgulas = thislinha.split(":")[1].split(";");
+										for(int j = 0; j < pVirgulas.length; j++) {
+											//<nome,chave>
+											String nomeAux = pVirgulas[i].split(",")[0].substring(1);
+											String chave = pVirgulas[i].split(",")[1].split(">")[0];
+											if (user.equals(nomeAux)) {
+												Cipher c = Cipher.getInstance("RSA");
+												FileInputStream kfile = new FileInputStream("data"+File.separator+"Keystores"+File.separator+user);
+												KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
+												kstore.load(kfile,keystorePassword.toCharArray());
+												PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keystoreFile, keystorePassword.toCharArray());
+												c.init(Cipher.UNWRAP_MODE, myPrivateKey);
+												byte[] strToByte = DatatypeConverter.parseHexBinary(chave);
+												//chave simetrica para decifrar as mensagens
+												Key unwrappedKey = c.unwrap(strToByte, "AES", Cipher.SECRET_KEY);
+												
+												Cipher c1 = Cipher.getInstance("RSA");
+												c.init(Cipher.ENCRYPT_MODE, unwrappedKey);
+												//CipherOutputStream cos = new CipherOutputStream(bo,c1);
+												byte [] dofinal = c1.doFinal(msgCript.getBytes());
+												String encoded = DatatypeConverter.printHexBinary(dofinal);
+												msgFinal += nome + " : " + encoded;
+												break;
+											}
+										}
+										break;	
+									}
+
+								}
+								System.out.println(msgFinal);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+
 						//o recebido pode ter tanto o caso de sucesso como o de erro
 						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma dela
-						
-						
+
+
 						System.out.println("\nInsert a command or type help to see commands: ");
 					} catch (IOException | ClassNotFoundException e) {
 						System.out.println("The server is now offline :(");
@@ -228,7 +283,7 @@ public class SeiTchiz {
 					}
 				}
 				break;
-				
+
 			case "a":
 			case "addu":
 			case "r":
@@ -254,7 +309,7 @@ public class SeiTchiz {
 						//output tem "msg gr texto"
 						//tem de se cifrar o texto (com a chave do grupo mais atual?/¿
 						//reconstruir o output e mandá-lo com o texto cifrado
-						
+
 						//Gerar a chave
 						//KeyGenerator kg = KeyGenerator.getInstance("AES");
 						//kg.init(128);
@@ -270,89 +325,76 @@ public class SeiTchiz {
 						}
 						thislinha = thislinha.split(":")[1];
 						String splitPontoVirgula[] = thislinha.split(";");
-						
+
 						ArrayList<String> chaves = new ArrayList<>();
 						ArrayList<String> pessoas = new ArrayList<>();
 						for(int i=0 ; i<splitPontoVirgula.length; i++) {
-							splitPontoVirgula[i].split(",");
+							String comVirgula = splitPontoVirgula[i].substring(1,splitPontoVirgula[i].length()-1);
+							pessoas.add(comVirgula.split(",")[0]);
+							chaves.add(comVirgula.split(",")[1]);
 						}
-						
-						
-						
-						//thislinha = thislinha.substring(thislinha.indexOf(":")+1, thislinha.length());
-						System.out.println(thislinha);
-						
-						FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile);
-						//ficheiro keystore cliente
-						KeyStore kstore = KeyStore.getInstance("JCEKS");
-						kstore.load(keyfile, keystorePassword.toCharArray());
-						
-						System.out.println(keystorePassword);
-						Key myPrivateKey = kstore.getKey(user, keystorePassword.toCharArray());
-						PrivateKey pk = (PrivateKey) myPrivateKey;
 
-						Cipher c = Cipher.getInstance("RSA");
-						c.init(Cipher.UNWRAP_MODE, pk);
-						//fazer unwrap da chave - obtemos a simetrica
-						
-						byte[] stringToByte = DatatypeConverter.parseHexBinary(thislinha);	
-						System.out.println(new String(stringToByte));
-						
-						Key unwrappedKey = c.unwrap(stringToByte, "AES", Cipher.SECRET_KEY);
-						
-						
-						//usar a simetrica para ler a msg que chegou
-						String textoMensagem = comando[2];
-						
-						//cifrar a msg com a chave simetrica que se obteve do ficheiro
-						//ByteArrayOutputStream bo = new ByteArrayOutputStream(500);
-						Cipher c1 = Cipher.getInstance("AES");
-						c1.init(Cipher.ENCRYPT_MODE, unwrappedKey);
-						//CipherOutputStream cos = new CipherOutputStream(bo,c1);
-						
-						byte [] dofinal = c1.doFinal(textoMensagem.getBytes());
-						String encoded = DatatypeConverter.printHexBinary(dofinal);
-						
-						//byte[] b = textoMensagem.getBytes(); 
-						//byte[] b1 = new byte[16];
-						//byte[] b = textoMensagem.getBytes(); 
-					    //cos.write(b);
-					   // cos.close();
-					    //System.out.println(b.toString());
-					    
-					    //o que é o key/keyencoded/b? key=?/ keyEncoded=key em array de bytes/ b= o que supostamente mandamos?
-					    //byte[] keyEncoded = key.getEncoded(); manda se o array de bytes ou a string correspondente? b ou key?
-					    
-						String outputCifrado = comando[0] + " " + comando[1] + " " + encoded;
-						//envio da suposta mensagem cifrada (confirmar o que está a aparecer no b) depois de conseguir mandar msg)
-						outObj.writeObject(outputCifrado);
-						System.out.println((String) inObj.readObject());
+						if (pessoas.contains(user)) {
+							//thislinha = thislinha.substring(thislinha.indexOf(":")+1, thislinha.length());
+							System.out.println(thislinha);
+
+							FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile);
+							//ficheiro keystore cliente
+							KeyStore kstore = KeyStore.getInstance("JCEKS");
+							kstore.load(keyfile, keystorePassword.toCharArray());
+
+							System.out.println(keystorePassword);
+							Key myPrivateKey = kstore.getKey(user, keystorePassword.toCharArray());
+							PrivateKey pk = (PrivateKey) myPrivateKey;
+
+							Cipher c = Cipher.getInstance("RSA");
+							c.init(Cipher.UNWRAP_MODE, pk);
+							//fazer unwrap da chave - obtemos a simetrica
+
+							byte[] stringToByte = DatatypeConverter.parseHexBinary(chaves.get(pessoas.indexOf(user)));	
+							System.out.println(new String(stringToByte));
+
+							Key unwrappedKey = c.unwrap(stringToByte, "AES", Cipher.SECRET_KEY);
+
+
+							//usar a simetrica para ler a msg que chegou
+							String textoMensagem = comando[2];
+
+							//cifrar a msg com a chave simetrica que se obteve do ficheiro
+							//ByteArrayOutputStream bo = new ByteArrayOutputStream(500);
+							Cipher c1 = Cipher.getInstance("AES");
+							c1.init(Cipher.ENCRYPT_MODE, unwrappedKey);
+							//CipherOutputStream cos = new CipherOutputStream(bo,c1);
+
+							byte [] dofinal = c1.doFinal(textoMensagem.getBytes());
+							String encoded = DatatypeConverter.printHexBinary(dofinal);
+
+							String outputCifrado = comando[0] + " " + comando[1] + " " + encoded;
+							//envio da suposta mensagem cifrada (confirmar o que está a aparecer no b) depois de conseguir mandar msg)
+							outObj.writeObject(outputCifrado);
+							System.out.println((String) inObj.readObject());
+						} else {
+							System.out.println("You can not send a message to this group.");
+						}
+						br.close();
 						System.out.println("\nInsert a command or type help to see commands: ");
 					} catch (IOException | ClassNotFoundException e) {
 						System.out.println("The server is now offline :(" + e);
 					} catch (UnrecoverableKeyException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (KeyStoreException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (NoSuchAlgorithmException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (CertificateException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (NoSuchPaddingException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (InvalidKeyException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IllegalBlockSizeException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (BadPaddingException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -379,7 +421,7 @@ public class SeiTchiz {
 					//pegar no path, ir ao path, converter foto para bytes, enviar bytes para o server
 					try {
 						//enviar comando
-						
+
 						String photoPath = comando[1]; //path para onde se encontra a fotografia
 						for (int i = 2; i < comando.length; ++i) {
 							photoPath += " " + comando[i];
@@ -424,12 +466,12 @@ public class SeiTchiz {
 								if(dimensao > 0) {
 									byte[] recebidos = (byte[]) inObj.readObject();
 									photoRecebida.write(recebidos);
-									
+
 								}else {
 									System.out.println("erro na fotografia");
 								}
 								photoRecebida.close();
-								
+
 							} catch (Exception e1) {
 								e1.printStackTrace();
 							}
@@ -471,32 +513,32 @@ public class SeiTchiz {
 			//ficheiro keystore cliente
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //TODO com jceks diz que nao tem este algoritmo e com keystore.getdefaulttype diz acesso negado
 			kstore.load(keyfile, keystorePass.toCharArray());
-			
+
 			System.out.println(keystorePass);
 			Key myPrivateKey = kstore.getKey(user, keystorePass.toCharArray());
 			PrivateKey pk = (PrivateKey) myPrivateKey;
-			
-			
+
+
 			if(resposta.charAt(resposta.length()-1) =='D') {
 				System.out.println("nao existo");
 				//enviar a assinatura do nonce com a sua chave privada
-				
+
 				Signature signature = Signature.getInstance("MD5withRSA");
 				signature.initSign(pk);
 				byte buffer[] = resposta.getBytes();
 				signature.update(buffer);
-				
+
 				//enviar o nonce e dps assinatura
 				outObj.writeObject(resposta);
 				outObj.writeObject(signature.sign());
-				
-				
+
+
 				//enviar o certificado com a chave publica correspondente
 				Certificate certificado = kstore.getCertificate(user); //alias do keypair
-				
-				
+
+
 				outObj.writeObject(certificado.getEncoded()); //envia o array de bytes do certificado
-				
+
 				System.out.println("nao existo final");
 
 				String askName = (String) inObj.readObject();
@@ -513,18 +555,18 @@ public class SeiTchiz {
 					System.exit(-1);
 				}
 			}else { //qd ja existe no servidor
-				
+
 				System.out.println("ja existo");
 				Signature signature = Signature.getInstance("MD5withRSA");
 				signature.initSign(pk);
 				byte buffer[] = resposta.getBytes();
 				signature.update(buffer);
-				
+
 				//enviar o nonce
 				outObj.writeObject(resposta);
 				//enviar assinatura é preciso responder com o nonce?
 				outObj.writeObject(signature.sign());
-				
+
 				String ans = (String) inObj.readObject();
 				if(ans.equals("true")) {
 					System.out.println("You are logged in");
@@ -532,8 +574,8 @@ public class SeiTchiz {
 					System.out.println("Error logging in");
 				}
 			}
-			
-			
+
+
 		} catch (Exception e1) {
 			System.out.println("Error authenticating >:(");
 			System.exit(-1);
@@ -552,12 +594,12 @@ public class SeiTchiz {
 			SSLSocket ssl = null;
 			ssl = (SSLSocket) sslfact.createSocket(ip, port);
 			if(ssl.isConnected())
-			    System.out.println("Connected."); //aparece como connected mas depois da erro
-			
+				System.out.println("Connected."); //aparece como connected mas depois da erro
+
 			outObj = new ObjectOutputStream(ssl.getOutputStream());
 			inObj = new ObjectInputStream(ssl.getInputStream());
 			//////
-			
+
 			//Forma antiga
 			//cSoc = new Socket(ip,port);
 			//outObj = new ObjectOutputStream(cSoc.getOutputStream());

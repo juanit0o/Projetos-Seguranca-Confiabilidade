@@ -122,7 +122,7 @@ public class Mensagem {
 	 * Metodo representativo textual de mensagem.
 	 */
 	public String toString(){
-		return remetente.getUser() + " : " + msg;
+		return remetente.getUser() + ":" + msg + "$$" + chaveIdMsg;
 	}
 
 	/**

@@ -156,7 +156,7 @@ public class CatalogoGrupos {
 	 * @param groupID - id do grupo.
 	 */
 	public void addMembro(String cliente, String groupID){
-		getGrupo(groupID).addMembro(catClientes.getCliente(cliente),keyStoreFile,keyStorePassword);
+		getGrupo(groupID).addMembro(catClientes.getCliente(cliente));
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class CatalogoGrupos {
 	 * @param groupID - id do grupo.
 	 */
 	public void removeMembro(String cliente, String groupID){
-		getGrupo(groupID).removeMembro(catClientes.getCliente(cliente),keyStoreFile,keyStorePassword);
+		getGrupo(groupID).removeMembro(catClientes.getCliente(cliente));
 	}
 
 	/**

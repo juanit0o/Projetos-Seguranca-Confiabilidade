@@ -1,2 +1,0 @@
-clientid:PubKeys\clientid.cer
-manelteste:PubKeys\manelteste.cer

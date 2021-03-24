@@ -211,12 +211,17 @@ public class Grupo {
 	 * Metodo que adiciona um cliente ao grupo atual.
 	 * @param cliente - cliente
 	 */
-	public void addMembro(Cliente cliente, String keyStoreFile, String keyStorePassword){
+	public void addMembro(Cliente cliente){
 		membros.add(cliente);
 		//gerar uma nova chave com o novo cliente
 		//fazer cenas magicas com a chave
 		//adicionar ao ficheiro das chaves com 1: nova chave
+		atualizarGrupoChaves();
+		groupContentsToFile();
+		cliente.entrarEmGrupo(grupoID, this.keyStoreFile, this.keyStorePassword);
+	}
 
+	private void atualizarGrupoChaves() {
 		KeyGenerator kg;
 		try {
 			File grupChav = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
@@ -271,19 +276,18 @@ public class Grupo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		groupContentsToFile();
-		cliente.entrarEmGrupo(grupoID, keyStoreFile, keyStorePassword);
+		
 	}
 
 	/**
 	 * Metodo que remove um cliente do grupo atual.
 	 * @param cliente - cliente
 	 */
-	public void removeMembro(Cliente cliente, String keyStoreFile, String keyStorePassword){
+	public void removeMembro(Cliente cliente){
 		membros.remove(cliente);
+		atualizarGrupoChaves();
 		groupContentsToFile();
-		cliente.sairDeGrupo(grupoID, keyStoreFile, keyStorePassword);
+		cliente.sairDeGrupo(grupoID, this.keyStoreFile, this.keyStorePassword);
 	}
 
 	/**
@@ -314,10 +318,8 @@ public class Grupo {
 			return lastIndex-1;	
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
