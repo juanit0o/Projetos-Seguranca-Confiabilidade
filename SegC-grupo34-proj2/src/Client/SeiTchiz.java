@@ -203,18 +203,13 @@ public class SeiTchiz {
 					try {
 						outObj.writeObject(output);
 						String recebido = (String) inObj.readObject();
-						System.out.println(recebido);
 						String msgFinal = "";
 						String[] msgsInd = recebido.split("\n");
-						System.out.println("-------"+ msgsInd.length);
 						for(int i = 0; i < msgsInd.length; i++) {
 							String nome = msgsInd[i].split(":")[0]; //quem mandou msg
 							String aux = msgsInd[i].split(":")[1];
-							System.out.println("|"+aux+"|");
 							String msgCript = aux.substring(0,aux.indexOf("$"));
-							System.out.println("-"+msgCript+"-");
 							String idChave = aux.substring(aux.indexOf("$")+2,aux.length());
-							System.out.println(idChave);
 
 							File groupKeys = new File("GroupKeys"+File.separator+comando[1]+ "_" + "chaves" + ".txt");
 							BufferedReader br;
@@ -227,8 +222,8 @@ public class SeiTchiz {
 										String[] pVirgulas = thislinha.split(":")[1].split(";");
 										for(int j = 0; j < pVirgulas.length; j++) {
 											//<nome,chave>
-											String nomeAux = pVirgulas[i].split(",")[0].substring(1);
-											String chave = pVirgulas[i].split(",")[1].split(">")[0];
+											String nomeAux = pVirgulas[j].split(",")[0].substring(1);
+											String chave = pVirgulas[j].split(",")[1].split(">")[0];
 											if (user.equals(nomeAux)) {
 												Cipher c = Cipher.getInstance("RSA");
 												FileInputStream kfile = new FileInputStream("data"+File.separator+"Keystores"+File.separator+user);
@@ -240,23 +235,25 @@ public class SeiTchiz {
 												//chave simetrica para decifrar as mensagens
 												Key unwrappedKey = c.unwrap(strToByte, "AES", Cipher.SECRET_KEY);
 												
-												Cipher c1 = Cipher.getInstance("RSA");
-												c.init(Cipher.ENCRYPT_MODE, unwrappedKey);
+												Cipher c1 = Cipher.getInstance("AES");
+												c1.init(Cipher.DECRYPT_MODE, unwrappedKey);
 												//CipherOutputStream cos = new CipherOutputStream(bo,c1);
-												byte [] dofinal = c1.doFinal(msgCript.getBytes());
-												String encoded = DatatypeConverter.printHexBinary(dofinal);
-												msgFinal += nome + " : " + encoded;
+												byte [] dofinal = c1.doFinal(DatatypeConverter.parseHexBinary(msgCript));
+												//String encoded = DatatypeConverter.printHexBinary(dofinal);
+												String encoded = new String(dofinal);
+												msgFinal += nome + " : " +encoded + "\n";
 												break;
 											}
 										}
-										break;	
+										break;
 									}
 
 								}
-								System.out.println(msgFinal);
+								br.close();
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
+							System.out.println(msgFinal);
 						}
 
 						//o recebido pode ter tanto o caso de sucesso como o de erro
@@ -336,14 +333,13 @@ public class SeiTchiz {
 
 						if (pessoas.contains(user)) {
 							//thislinha = thislinha.substring(thislinha.indexOf(":")+1, thislinha.length());
-							System.out.println(thislinha);
 
 							FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile);
 							//ficheiro keystore cliente
 							KeyStore kstore = KeyStore.getInstance("JCEKS");
 							kstore.load(keyfile, keystorePassword.toCharArray());
 
-							System.out.println(keystorePassword);
+
 							Key myPrivateKey = kstore.getKey(user, keystorePassword.toCharArray());
 							PrivateKey pk = (PrivateKey) myPrivateKey;
 
@@ -352,7 +348,7 @@ public class SeiTchiz {
 							//fazer unwrap da chave - obtemos a simetrica
 
 							byte[] stringToByte = DatatypeConverter.parseHexBinary(chaves.get(pessoas.indexOf(user)));	
-							System.out.println(new String(stringToByte));
+	
 
 							Key unwrappedKey = c.unwrap(stringToByte, "AES", Cipher.SECRET_KEY);
 
