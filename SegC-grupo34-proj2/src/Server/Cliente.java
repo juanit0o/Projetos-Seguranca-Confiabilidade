@@ -381,10 +381,10 @@ public class Cliente {
 	}
 
 
-	public PublicKey getPublicKey() {
+	public Key getPublicKey() {
 		Autenticacao aut = new Autenticacao();
 		Certificate filePub = aut.getCertificate(user);
-		PublicKey key = filePub.getPublicKey();
+		Key key = filePub.getPublicKey();
 		return key;
 	}	
 }

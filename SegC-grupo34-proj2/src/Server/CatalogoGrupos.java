@@ -33,7 +33,10 @@ public class CatalogoGrupos {
 	 * sao carregados todos os dados do disco para estruturas de dados para acesso mais rapido.
 	 * @param catClientes - catalogo de clientes.
 	 */
-	public CatalogoGrupos(CatalogoClientes catClientes) {
+	public CatalogoGrupos(CatalogoClientes catClientes, String keyStoreFile, String keyStorePassword) {
+		this.keyStoreFile = keyStoreFile;
+		this.keyStorePassword = keyStorePassword;
+		
 		grupos = new ArrayList<Grupo>();
 		this.catClientes = catClientes;
 		groupFolder.mkdirs();
@@ -83,13 +86,25 @@ public class CatalogoGrupos {
 							}
 						}
 						//grupoID, remetente, msg, listagrupo, data
-						msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0]));
+						msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0], Integer.parseInt(mensagem[4])));
 					}
 					rW2.close();
 					System.out.println();
 					//LOAD DA HISTORICO (SO ESTAO AS MENSAGENS LIDAS POR TODOS, SEM POR LER)
-					File fileHist= new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha + "_historico.txt");
-					BufferedReader rW3 = new BufferedReader(new FileReader(fileHist));
+					File fileHist= new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha + "_historico.cif");
+					Autenticacao aut = new Autenticacao();
+					
+					File fileAux;
+					if(fileHist.length() > 0) {
+						aut.decryptFile(fileHist, keyStoreFile, keyStorePassword);
+						fileAux = new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha + "_historico.txt");
+					}else {
+						fileAux = new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha + "_historico.txt");
+						fileAux.createNewFile();
+					}							
+					
+					
+					BufferedReader rW3 = new BufferedReader(new FileReader(fileAux));
 					ArrayList<Mensagem> historico = new ArrayList<Mensagem>();
 					//Enquanto houver historico para ler
 					while ((line = rW3.readLine()) != null) {
@@ -101,11 +116,12 @@ public class CatalogoGrupos {
 								listaLeu.add(catClientes.getCliente(listaLeuClientes[i]));
 							}
 						}
-						historico.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, new ArrayList<Cliente>(), mensagem[0]));
+						historico.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, new ArrayList<Cliente>(), mensagem[0], Integer.parseInt(mensagem[4])));
 					}
 					rW3.close();
-					grupos.add(new Grupo(linha, dono, clientes, msgs, historico));
-				}
+					grupos.add(new Grupo(linha, dono, clientes, msgs, historico, keyStoreFile, keyStorePassword));
+					aut.encryptFile(fileAux, keyStoreFile, keyStorePassword);
+				}	
 				scReader.close();
 			}
 		} catch (IOException e) {

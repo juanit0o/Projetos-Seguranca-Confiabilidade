@@ -25,6 +25,7 @@ public class Mensagem {
 	private String msg;
 	private ArrayList <Cliente> porLerMsg;
 	private ArrayList <Cliente> leuMsg;
+	private int chaveIdMsg;
 
 	/**
 	 * Construtor da classe que inicia uma mensagem recebendo um id de grupo, 
@@ -36,11 +37,12 @@ public class Mensagem {
 	 * @param msg - mensagem a enviar
 	 * @param listaGrupo - lista de Clientes membros do grupo com grupoID
 	 */
-	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaGrupo) {
+	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaGrupo, int chaveIdMsg) {
 		this.grupoID = grupoID;
 		this.remetente = remetente;
 		this.msg = msg;
 		this.porLerMsg = listaGrupo;
+		this.chaveIdMsg = chaveIdMsg;
 		this.leuMsg = new ArrayList<Cliente>();
 		LocalDateTime myDateObj = LocalDateTime.now();
 		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -57,13 +59,14 @@ public class Mensagem {
 	 * @param msg - mensagem a enviar
 	 * @param listaGrupo - lista de Clientes membros do grupo com grupoID
 	 */
-	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaLeuGrupo, ArrayList<Cliente> listaPorLerGrupo, String data) {
+	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaLeuGrupo, ArrayList<Cliente> listaPorLerGrupo, String data, int chaveIdMsg) {
 		this.grupoID = grupoID;
 		this.remetente = remetente;
 		this.msg = msg;
 		this.leuMsg = listaLeuGrupo;
 		this.porLerMsg = listaPorLerGrupo;
 		this.data = data;
+		this.chaveIdMsg = chaveIdMsg;
 	}
 
 	/**
@@ -144,6 +147,7 @@ public class Mensagem {
 					output += "%";
 				}
 			}
+			output+= "%%" + chaveIdMsg;
 			bW.write(output);
 			bW.newLine();
 			bW.close();
@@ -182,6 +186,8 @@ public class Mensagem {
 				output += "%";
 			}
 		}
+		output += "%%";
+		output += chaveIdMsg;
 		return output;
 	}
 }

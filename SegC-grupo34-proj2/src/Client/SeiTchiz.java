@@ -4,16 +4,21 @@ import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -21,6 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.xml.bind.DatatypeConverter;
 
 import java.io.*;
 
@@ -102,7 +108,7 @@ public class SeiTchiz {
 
 		//autenticacao vai ser mudada para incluir as chaves
 		autenticacao(user, keystoreFile, keystorePassword);
-		sendReceiveComando(user);
+		sendReceiveComando(user, keystoreFile, keystorePassword);
 		// fechar tudo
 		try {
 			outObj.close();
@@ -124,7 +130,7 @@ public class SeiTchiz {
 	 * basta sair, executando o comando quit ou exit. 
 	 * @param user - id do cliente que executa os comandos.
 	 */
-	private static void sendReceiveComando(String user) {
+	private static void sendReceiveComando(String user, String keystoreFile, String keystorePassword) {
 		System.out.println("Available commands:\n"+"follow/f <userID>\n"+
 				"unfollow/u <userID>\n"+"viewfollowers/v\n"+"post/p <photo>\n"+
 				"wall/w <nPhotos>\n"+"like/l <photoId>\n"+"newGroup/n <groupID>\n"+
@@ -259,21 +265,57 @@ public class SeiTchiz {
 						BufferedReader br = new BufferedReader(new FileReader(groupKeys));
 						String thislinha = "";
 						String thislinhaAux = "";
-						while (!(thislinhaAux = br.readLine()).equals("-------")) {
-							thislinha+= "\n" + thislinhaAux;
-							System.out.println(thislinha);
+						while ((thislinhaAux = br.readLine())!=null) {
+							thislinha= thislinhaAux;
 						}
-						thislinha = thislinha.substring(3, thislinha.length());
+						thislinha = thislinha.split(":")[1];
+						String splitPontoVirgula[] = thislinha.split(";");
+						
+						ArrayList<String> chaves = new ArrayList<>();
+						ArrayList<String> pessoas = new ArrayList<>();
+						for(int i=0 ; i<splitPontoVirgula.length; i++) {
+							splitPontoVirgula[i].split(",");
+						}
+						
+						
+						
+						//thislinha = thislinha.substring(thislinha.indexOf(":")+1, thislinha.length());
 						System.out.println(thislinha);
 						
+						FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile);
+						//ficheiro keystore cliente
+						KeyStore kstore = KeyStore.getInstance("JCEKS");
+						kstore.load(keyfile, keystorePassword.toCharArray());
+						
+						System.out.println(keystorePassword);
+						Key myPrivateKey = kstore.getKey(user, keystorePassword.toCharArray());
+						PrivateKey pk = (PrivateKey) myPrivateKey;
+
+						Cipher c = Cipher.getInstance("RSA");
+						c.init(Cipher.UNWRAP_MODE, pk);
 						//fazer unwrap da chave - obtemos a simetrica
+						
+						byte[] stringToByte = DatatypeConverter.parseHexBinary(thislinha);	
+						System.out.println(new String(stringToByte));
+						
+						Key unwrappedKey = c.unwrap(stringToByte, "AES", Cipher.SECRET_KEY);
+						
+						
 						//usar a simetrica para ler a msg que chegou
-						
 						String textoMensagem = comando[2];
-						ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
-						//CipherOutputStream cos = new CipherOutputStream(bo,c);
 						
-						byte[] b = textoMensagem.getBytes();  
+						//cifrar a msg com a chave simetrica que se obteve do ficheiro
+						//ByteArrayOutputStream bo = new ByteArrayOutputStream(500);
+						Cipher c1 = Cipher.getInstance("AES");
+						c1.init(Cipher.ENCRYPT_MODE, unwrappedKey);
+						//CipherOutputStream cos = new CipherOutputStream(bo,c1);
+						
+						byte [] dofinal = c1.doFinal(textoMensagem.getBytes());
+						String encoded = DatatypeConverter.printHexBinary(dofinal);
+						
+						//byte[] b = textoMensagem.getBytes(); 
+						//byte[] b1 = new byte[16];
+						//byte[] b = textoMensagem.getBytes(); 
 					    //cos.write(b);
 					   // cos.close();
 					    //System.out.println(b.toString());
@@ -281,13 +323,37 @@ public class SeiTchiz {
 					    //o que é o key/keyencoded/b? key=?/ keyEncoded=key em array de bytes/ b= o que supostamente mandamos?
 					    //byte[] keyEncoded = key.getEncoded(); manda se o array de bytes ou a string correspondente? b ou key?
 					    
-						String outputCifrado = comando[0] + " " + comando[1] + " " + b;
+						String outputCifrado = comando[0] + " " + comando[1] + " " + encoded;
 						//envio da suposta mensagem cifrada (confirmar o que está a aparecer no b) depois de conseguir mandar msg)
 						outObj.writeObject(outputCifrado);
 						System.out.println((String) inObj.readObject());
 						System.out.println("\nInsert a command or type help to see commands: ");
 					} catch (IOException | ClassNotFoundException e) {
 						System.out.println("The server is now offline :(" + e);
+					} catch (UnrecoverableKeyException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (KeyStoreException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchAlgorithmException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (CertificateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchPaddingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvalidKeyException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalBlockSizeException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (BadPaddingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 				break;
@@ -408,7 +474,7 @@ public class SeiTchiz {
 			
 			System.out.println(keystorePass);
 			Key myPrivateKey = kstore.getKey(user, keystorePass.toCharArray());
-			PrivateKey pk = (PrivateKey) myPrivateKey; //ver cm obter slides
+			PrivateKey pk = (PrivateKey) myPrivateKey;
 			
 			
 			if(resposta.charAt(resposta.length()-1) =='D') {

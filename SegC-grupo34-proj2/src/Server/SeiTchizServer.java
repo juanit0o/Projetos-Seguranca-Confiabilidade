@@ -77,7 +77,7 @@ public class SeiTchizServer {
 			System.exit(-1);
 		}
 		catClientes = new CatalogoClientes(keyStoresFile, keyStoresPassword);
-		catGrupos = new CatalogoGrupos(catClientes); //TODO: , keyStoresFile, keyStoresPassword
+		catGrupos = new CatalogoGrupos(catClientes, keyStoresFile, keyStoresPassword); //TODO: , keyStoresFile, keyStoresPassword
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
