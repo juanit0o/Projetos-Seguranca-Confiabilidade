@@ -38,6 +38,7 @@ java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Clien
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore keystore keystore-password clientid
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore_client clientid clientid clientid
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore_client manelteste manelteste manelteste
+java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore_client mantorras mantorras mantorras
 
 
 
@@ -72,6 +73,9 @@ O codigo foi testado na imagem de linux do DI e no Windows 10.
 Gerar chave privada e publica
 
 keytool -genkeypair -alias servidor -keyalg RSA -keysize 2048 -storetype JCEKS -keystore servidor
+
+keytool -genkeypair -alias mantorras -keyalg RSA -keysize 2048 -storetype JCEKS -keystore mantorras
+
 keytool -genkeypair -alias ALIASDACHAVE r -keyalg RSA -keysize 2048 -storetype JCEKS -keystore NOMEFICHEIROKEYSTORE
 ----------------
 

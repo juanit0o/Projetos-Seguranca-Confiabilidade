@@ -203,9 +203,15 @@ public class SeiTchiz {
 					try {
 						outObj.writeObject(output);
 						String recebido = (String) inObj.readObject();
+						if(!recebido.contains(":")) {
+							System.out.println(recebido);
+							System.out.println("\nInsert a command or type help to see commands: ");
+							break;
+						}
 						String msgFinal = "";
 						String[] msgsInd = recebido.split("\n");
 						for(int i = 0; i < msgsInd.length; i++) {
+			
 							String nome = msgsInd[i].split(":")[0]; //quem mandou msg
 							String aux = msgsInd[i].split(":")[1];
 							String msgCript = aux.substring(0,aux.indexOf("$"));
@@ -253,9 +259,8 @@ public class SeiTchiz {
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
-							System.out.println(msgFinal);
 						}
-
+						System.out.println(msgFinal);
 						//o recebido pode ter tanto o caso de sucesso como o de erro
 						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma dela
 
@@ -272,6 +277,13 @@ public class SeiTchiz {
 					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
 				} else {
 					try {
+						
+						//FALTA HISTORIA DA CAROCHINHA
+						//TODO
+						
+						
+						
+						
 						outObj.writeObject(output);
 						System.out.println((String) inObj.readObject());
 						System.out.println("\nInsert a command or type help to see commands: ");
@@ -354,7 +366,14 @@ public class SeiTchiz {
 
 
 							//usar a simetrica para ler a msg que chegou
-							String textoMensagem = comando[2];
+							///
+							String textoMensagem = "";
+							for(int i= 2; i<comando.length; i++) {
+								textoMensagem += comando[i];
+								if(i+1 < comando.length) {
+									textoMensagem += " ";
+								}
+							}
 
 							//cifrar a msg com a chave simetrica que se obteve do ficheiro
 							//ByteArrayOutputStream bo = new ByteArrayOutputStream(500);
