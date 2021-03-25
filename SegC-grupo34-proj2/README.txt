@@ -61,6 +61,7 @@ Limitacoes:
 As fotografias usadas para o comando Post devem estar dentro da pasta "test" na raiz do projeto (devido a permissoes dos policies).
 A mensagem enviada para os grupos nao deve conter "%%" (é uma palavra reservada para tratamento de ficheiros).
 A pasta bin não pode ser apagada, apenas devem ser apagados os seus conteúdos.
+O nome do utilizador ou do grupo nao devem conter ":" (é um caracter reservado para tratamento de ficheiros).
 
 -----------------
 
