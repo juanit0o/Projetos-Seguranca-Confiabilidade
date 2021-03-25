@@ -22,11 +22,12 @@ import javax.crypto.SecretKey;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * Classe representativa de um grupo, que e composto por um id,
- * lista de clientes membros, lista de mensagens, lista de mensagens
- *  em historico, cliente dono do grupo, ficheiro de grupo, log de 
- *  mensagens, ficheiro de membros e ficheiro de historico mensagens.
- * @author Diogo Pinto 52763 
+ * Classe representativa de um grupo, que e composto por um id, lista de
+ * clientes membros, lista de mensagens, lista de mensagens em historico,
+ * cliente dono do grupo, ficheiro de grupo, log de mensagens, ficheiro de
+ * membros e ficheiro de historico mensagens.
+ * 
+ * @author Diogo Pinto 52763
  * @author Francisco Ramalho 53472
  * @author Joao Funenga 53504
  *
@@ -44,16 +45,16 @@ public class Grupo {
 	private File msgHistorico;
 	private File grupoChaves;
 	private File groupKeysFolder;
-	
+
 	private String keyStoreFile;
 	private String keyStorePassword;
-	
 
 	/**
-	 * Construtor da classe que inicia um grupo recebendo um id 
-	 * de grupo e cliente dono. 
+	 * Construtor da classe que inicia um grupo recebendo um id de grupo e cliente
+	 * dono.
+	 * 
 	 * @param grupoID - id de grupo.
-	 * @param dono - cliente dono do grupo.
+	 * @param dono    - cliente dono do grupo.
 	 */
 	public Grupo(String grupoID, Cliente dono, String keyStoreFile, String keyStorePassword) {
 		this.grupoID = grupoID;
@@ -66,25 +67,26 @@ public class Grupo {
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".cif");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".cif");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".cif");
-		
+
 		this.keyStoreFile = keyStoreFile;
 		this.keyStorePassword = keyStorePassword;
-		
+
 		this.groupKeysFolder = new File("GroupKeys");
 		this.grupoChaves = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
 	}
 
 	/**
-	 * Construtor da classe que inicia um grupo recebendo um id 
-	 * de grupo e cliente dono. Recebendo tambem listas de membros, 
-	 * mensagens e historico.
-	 * @param grupoID - id de grupo.
-	 * @param dono - cliente dono do grupo.
+	 * Construtor da classe que inicia um grupo recebendo um id de grupo e cliente
+	 * dono. Recebendo tambem listas de membros, mensagens e historico.
+	 * 
+	 * @param grupoID   - id de grupo.
+	 * @param dono      - cliente dono do grupo.
 	 * @param membros
 	 * @param msgs
 	 * @param historico
 	 */
-	public Grupo(String grupoID, Cliente dono, ArrayList<Cliente> membros, ArrayList<Mensagem> msgs, ArrayList<Mensagem> historico, String keyStoreFile, String keyStorePassword) {
+	public Grupo(String grupoID, Cliente dono, ArrayList<Cliente> membros, ArrayList<Mensagem> msgs,
+			ArrayList<Mensagem> historico, String keyStoreFile, String keyStorePassword) {
 		this.grupoID = grupoID;
 		this.dono = dono;
 		this.membros = membros;
@@ -94,10 +96,10 @@ public class Grupo {
 		this.msgLog = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".cif");
 		this.membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".cif");
 		this.msgHistorico = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".cif");
-		
+
 		this.keyStoreFile = keyStoreFile;
 		this.keyStorePassword = keyStorePassword;
-		
+
 		this.groupKeysFolder = new File("GroupKeys");
 		this.grupoChaves = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
 
@@ -112,10 +114,10 @@ public class Grupo {
 			msgLog.createNewFile();
 			membrosGrupo.createNewFile();
 			msgHistorico.createNewFile();
-			
+
 			groupKeysFolder.mkdirs();
 			grupoChaves.createNewFile();
-			//Autenticacao aut = new Autenticacao();
+			// Autenticacao aut = new Autenticacao();
 			try {
 				File grupChav = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
 				grupChav.createNewFile();
@@ -123,43 +125,44 @@ public class Grupo {
 				KeyGenerator kg = KeyGenerator.getInstance("AES");
 				kg.init(128);
 				SecretKey sharedKey = kg.generateKey();
-				
+
 				Cipher c = Cipher.getInstance("RSA");
-				//ir buscar a public key do dono
+				// ir buscar a public key do dono
 				Key ku = dono.getPublicKey();
-				c.init(Cipher.WRAP_MODE, ku);				
+				c.init(Cipher.WRAP_MODE, ku);
 				// cifrar a chave secreta que queremos enviar
 				byte[] wrappedKey = c.wrap(sharedKey);
 				String chav = new String(wrappedKey);
 				System.out.println(chav + " chave para escrever no ficheiro");
-				//FileOutputStream fos = new FileOutputStream("GroupKeys" + File.separator+ this.grupoID + "_" + "chaves" + ".txt");
-				//fos.write("0:".getBytes());
-				//fos.write(wrappedKey);
-				//fos.write("\n-------\n".getBytes());
-				//fos.close();
+				// FileOutputStream fos = new FileOutputStream("GroupKeys" + File.separator+
+				// this.grupoID + "_" + "chaves" + ".txt");
+				// fos.write("0:".getBytes());
+				// fos.write(wrappedKey);
+				// fos.write("\n-------\n".getBytes());
+				// fos.close();
 				BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav));
-				bW.write("0:<" + dono.getUser() + "," +  DatatypeConverter.printHexBinary(wrappedKey) + ">");
+				bW.write("0:<" + dono.getUser() + "," + DatatypeConverter.printHexBinary(wrappedKey) + ">");
 				bW.newLine();
-			
+
 				bW.close();
-				
+
 				System.out.println(chav);
-				
-				//cifrar com chave simetrica
-				//fazer wrap (cifrar) com a chave publica
-						//dados cifrados com a chave simetrica
-						//chave simetrica cifrada com a chave publica (wrapmode)- resultado disto array de bytes que escrevemos num ficheiro
-				
-				//decifrar
-						//fazer unwrap com chave privada do servidor do ficheiro com chave simetrica
-						//resultado deste unwrap é a chave simetrica
-				
-				
-				//ir buscar chave simetrica e fazer-lhe wrap com a chave publica(cipherwrapmode, mais chave publica) do dono(inciialmente)
-				
-				
-				//aut.encryptFile(grupChav, keyStoreFile, keyStorePassword);
-				
+
+				// cifrar com chave simetrica
+				// fazer wrap (cifrar) com a chave publica
+				// dados cifrados com a chave simetrica
+				// chave simetrica cifrada com a chave publica (wrapmode)- resultado disto array
+				// de bytes que escrevemos num ficheiro
+
+				// decifrar
+				// fazer unwrap com chave privada do servidor do ficheiro com chave simetrica
+				// resultado deste unwrap é a chave simetrica
+
+				// ir buscar chave simetrica e fazer-lhe wrap com a chave
+				// publica(cipherwrapmode, mais chave publica) do dono(inciialmente)
+
+				// aut.encryptFile(grupChav, keyStoreFile, keyStorePassword);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
@@ -175,9 +178,7 @@ public class Grupo {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
-			
+
 			groupContentsToFile();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -186,21 +187,23 @@ public class Grupo {
 
 	/**
 	 * Metodo que recebe um cliente e verifica se este e dono do grupo.
+	 * 
 	 * @param cliente - cliente
 	 * @return true se cliente e dono do grupo, senao false.
 	 */
-	public boolean isDono(Cliente cliente){
+	public boolean isDono(Cliente cliente) {
 		return cliente.getUser().equals(dono.getUser());
 	}
 
 	/**
 	 * Metodo que identifica se um cliente recebido pertence ao grupo.
+	 * 
 	 * @param cliente - cliente
 	 * @return true se cliente pertence ao grupo, senao false.
 	 */
-	public boolean pertenceGrupo(String cliente){
-		for(int i = 0; i < membros.size(); ++i){
-			if(membros.get(i).getUser().equals(cliente)){
+	public boolean pertenceGrupo(String cliente) {
+		for (int i = 0; i < membros.size(); ++i) {
+			if (membros.get(i).getUser().equals(cliente)) {
 				return true;
 			}
 		}
@@ -209,13 +212,14 @@ public class Grupo {
 
 	/**
 	 * Metodo que adiciona um cliente ao grupo atual.
+	 * 
 	 * @param cliente - cliente
 	 */
-	public void addMembro(Cliente cliente){
+	public void addMembro(Cliente cliente) {
 		membros.add(cliente);
-		//gerar uma nova chave com o novo cliente
-		//fazer cenas magicas com a chave
-		//adicionar ao ficheiro das chaves com 1: nova chave
+		// gerar uma nova chave com o novo cliente
+		// fazer cenas magicas com a chave
+		// adicionar ao ficheiro das chaves com 1: nova chave
 		atualizarGrupoChaves();
 		groupContentsToFile();
 		cliente.entrarEmGrupo(grupoID, this.keyStoreFile, this.keyStorePassword);
@@ -225,41 +229,40 @@ public class Grupo {
 		KeyGenerator kg;
 		try {
 			File grupChav = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
-			//grupChav.createNewFile();
-			
+			// grupChav.createNewFile();
+
 			kg = KeyGenerator.getInstance("AES");
 			kg.init(128);
 			SecretKey sharedKey = kg.generateKey();
-			
-			
-			//cifrar essa chave de grupo com a chave pública de cada um dos membros do grupo (incluindo o novo membro) 
+
+			// cifrar essa chave de grupo com a chave pública de cada um dos membros do
+			// grupo (incluindo o novo membro)
 			BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav, true));
-			bW.write(getLastKeyIndex()+1 + ":");
-			
-			for(int i = 0; i < membros.size(); i++) {
+			bW.write(getLastKeyIndex() + 1 + ":");
+
+			for (int i = 0; i < membros.size(); i++) {
 				Cipher c = Cipher.getInstance("RSA");
-				
+
 				Key ku = membros.get(i).getPublicKey();
-				//ir buscar a public key do dono
+				// ir buscar a public key do dono
 				c.init(Cipher.WRAP_MODE, ku);
-				
+
 				// cifrar a chave secreta que queremos enviar
 				byte[] wrappedKey = c.wrap(sharedKey);
-	
-				
-				bW.write("<" + membros.get(i).getUser() + "," +  DatatypeConverter.printHexBinary(wrappedKey) + ">");
-				if(i+1 < membros.size()) {
+
+				bW.write("<" + membros.get(i).getUser() + "," + DatatypeConverter.printHexBinary(wrappedKey) + ">");
+				if (i + 1 < membros.size()) {
 					bW.write(";");
 				}
-				
+
 			}
 			bW.newLine();
 			bW.close();
-			
-			//enviar para o servidor uma lista com a nova chave de grupo cifrada com as chaves públicas dos membros do grupo.
-			//Cada elemento da lista é um par <userID, userID-NewGroupKey>
-	
-			
+
+			// enviar para o servidor uma lista com a nova chave de grupo cifrada com as
+			// chaves públicas dos membros do grupo.
+			// Cada elemento da lista é um par <userID, userID-NewGroupKey>
+
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -276,14 +279,15 @@ public class Grupo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
 	 * Metodo que remove um cliente do grupo atual.
+	 * 
 	 * @param cliente - cliente
 	 */
-	public void removeMembro(Cliente cliente){
+	public void removeMembro(Cliente cliente) {
 		membros.remove(cliente);
 		atualizarGrupoChaves();
 		groupContentsToFile();
@@ -291,14 +295,14 @@ public class Grupo {
 	}
 
 	/**
-	 * Metodo que guarda mensagem enviada de um cliente em listas 
-	 * e em disco.
-	 * @param msg - mensagem enviada
+	 * Metodo que guarda mensagem enviada de um cliente em listas e em disco.
+	 * 
+	 * @param msg     - mensagem enviada
 	 * @param cliente - cliente
 	 */
-	public void guardarMensagem(String msg, Cliente cliente){
+	public void guardarMensagem(String msg, Cliente cliente) {
 		ArrayList<Cliente> membAux = new ArrayList<Cliente>();
-		for(int i = 0; i < membros.size(); ++i){
+		for (int i = 0; i < membros.size(); ++i) {
 			membAux.add(membros.get(i));
 		}
 		msgs.add(new Mensagem(this.grupoID, cliente, msg, membAux, getLastKeyIndex()));
@@ -306,60 +310,63 @@ public class Grupo {
 	}
 
 	private int getLastKeyIndex() {
-		File groupKeys = new File ("GroupKeys" + File.separator + this.grupoID + "_chaves.txt");
+		File groupKeys = new File("GroupKeys" + File.separator + this.grupoID + "_chaves.txt");
 		BufferedReader br;
 		int lastIndex = 0;
 		try {
 			br = new BufferedReader(new FileReader(groupKeys));
 			String thislinha = "";
-			while ((thislinha = br.readLine())!=null) {
+			while ((thislinha = br.readLine()) != null) {
 				lastIndex++;
 			}
-			return lastIndex-1;	
-			
+			return lastIndex - 1;
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return lastIndex;
 	}
 
 	/**
 	 * Metodo que devolve o Id do grupo atual.
+	 * 
 	 * @return groupID
 	 */
-	public String getGrupoID(){
+	public String getGrupoID() {
 		return this.grupoID;
 	}
 
 	/**
 	 * Metodo devolve lista de id's dos membros do grupo.
+	 * 
 	 * @return lista de id's de membros.
 	 */
-	public ArrayList<String> getMembros(){
+	public ArrayList<String> getMembros() {
 		ArrayList<String> output = new ArrayList<String>();
-		for(int i = 0; i < membros.size(); ++i){
+		for (int i = 0; i < membros.size(); ++i) {
 			output.add(membros.get(i).getUser());
 		}
 		return output;
 	}
 
 	/**
-	 * Metodo devolve as mensagens por ler de um determinado cliente dentro 
-	 * do grupo.
+	 * Metodo devolve as mensagens por ler de um determinado cliente dentro do
+	 * grupo.
+	 * 
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens por ler
 	 */
-	public ArrayList<String> getMensagensPorLer(String cliente){
+	public ArrayList<String> getMensagensPorLer(String cliente) {
 		ArrayList<String> output = new ArrayList<String>();
-		for(int i = 0; i < msgs.size(); ++i){
-			if(msgs.get(i).porLerMensagem(cliente)){
+		for (int i = 0; i < msgs.size(); ++i) {
+			if (msgs.get(i).porLerMensagem(cliente)) {
 				output.add(msgs.get(i).toString());
 
-				//Verificar se todos ja leram, caso sim remover do msgs
-				if(msgs.get(i).jaLeramTodos()){
+				// Verificar se todos ja leram, caso sim remover do msgs
+				if (msgs.get(i).jaLeramTodos()) {
 					historicoMsgs.add(msgs.get(i));
 					msgs.remove(msgs.get(i));
 					--i;
@@ -372,22 +379,22 @@ public class Grupo {
 	}
 
 	/**
-	 * Metodo devolve as mensagens lidas de um determinado cliente dentro 
-	 * do grupo.
+	 * Metodo devolve as mensagens lidas de um determinado cliente dentro do grupo.
+	 * 
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens lidas
 	 */
-	public ArrayList<String> getMensagensJaLidas(String cliente){
+	public ArrayList<String> getMensagensJaLidas(String cliente) {
 		ArrayList<String> output = new ArrayList<String>();
-		//FICHEIRO HISTORICO
-		for(int i = 0; i < historicoMsgs.size(); ++i){
-			if(historicoMsgs.get(i).jaLeuMensagem(cliente)){
+		// FICHEIRO HISTORICO
+		for (int i = 0; i < historicoMsgs.size(); ++i) {
+			if (historicoMsgs.get(i).jaLeuMensagem(cliente)) {
 				output.add(historicoMsgs.get(i).toString());
 			}
 		}
-		//FICHEIRO CAIXA
-		for(int i = 0; i < msgs.size(); ++i){
-			if(msgs.get(i).jaLeuMensagem(cliente)){
+		// FICHEIRO CAIXA
+		for (int i = 0; i < msgs.size(); ++i) {
+			if (msgs.get(i).jaLeuMensagem(cliente)) {
 				output.add(msgs.get(i).toString());
 			}
 		}
@@ -398,19 +405,20 @@ public class Grupo {
 	 * Metodo que escreve os dados de um grupo em disco.
 	 */
 	public void groupContentsToFile() {
-		//File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".cif");
+		// File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID +
+		// "_" + "membros" + ".cif");
 		Autenticacao aut = new Autenticacao();
 		try {
 			File membrosFich;
-			if(membrosGrupo.length() > 0) {
+			if (membrosGrupo.length() > 0) {
 				aut.decryptFile(membrosGrupo, this.keyStoreFile, this.keyStorePassword);
 				membrosFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
-				
-			}else {
+
+			} else {
 				membrosFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "membros" + ".txt");
 				membrosFich.createNewFile();
-			}			
-			
+			}
+
 			BufferedWriter bW = new BufferedWriter(new FileWriter(membrosFich));
 			// membros
 			for (int i = 0; i < membros.size(); i++) {
@@ -419,29 +427,30 @@ public class Grupo {
 			}
 			bW.close();
 			aut.encryptFile(membrosFich, this.keyStoreFile, this.keyStorePassword);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//File caixaMsgGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".cif");
+		// File caixaMsgGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID +
+		// "_" + "caixa" + ".cif");
 		try {
 			File caixaFich;
-			if(msgLog.length() > 0) {
+			if (msgLog.length() > 0) {
 				aut.decryptFile(msgLog, keyStoreFile, keyStorePassword);
 				caixaFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
-			}else {
+			} else {
 				caixaFich = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "caixa" + ".txt");
 				caixaFich.createNewFile();
 			}
-			
+
 			BufferedWriter bW = new BufferedWriter(new FileWriter(caixaFich));
-			//MENSAGEM COM ELEMENTOS
+			// MENSAGEM COM ELEMENTOS
 			for (int i = 0; i < msgs.size(); i++) {
 				bW.write(msgs.get(i).msgContentToFile());
 				bW.newLine();
 			}
 			bW.close();
-			
+
 			aut.encryptFile(caixaFich, keyStoreFile, keyStorePassword);
 		} catch (IOException e) {
 			e.printStackTrace();
