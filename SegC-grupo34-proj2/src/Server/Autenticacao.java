@@ -1,11 +1,15 @@
 package Server;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyStore;
@@ -21,6 +25,9 @@ import java.util.regex.Pattern;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
 
 public class Autenticacao {
 
@@ -59,10 +66,24 @@ public class Autenticacao {
 			KeyStore kstore = KeyStore.getInstance("JKS"); //try
 			kstore.load(kfile,keyStorePassword.toCharArray());
 			PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keyStoreFile, keyStorePassword.toCharArray());
-			//iniciar cifra desencriptacao
-			Cipher cDec = Cipher.getInstance("RSA");
-			cDec.init(Cipher.DECRYPT_MODE, myPrivateKey);
-
+			
+			//fazer unwrap com chave privada 
+			Cipher c = Cipher.getInstance("RSA");
+			c.init(Cipher.UNWRAP_MODE, myPrivateKey);
+			
+			File grupChav = new File(fileUser.getPath().substring(0,fileUser.getPath().length() - 3) + "_chave" + ".txt");
+			BufferedReader br = new BufferedReader(new FileReader(grupChav));
+			
+			String linha = br.readLine();
+			byte[] stringToByte = DatatypeConverter.parseHexBinary(linha);	
+			
+			Key unwrappedKey = c.unwrap(stringToByte, "AES", Cipher.SECRET_KEY);
+			
+			//com a chave simetrica usar para decifrar o fileUser
+			
+			Cipher cDec = Cipher.getInstance("AES"); //deve ser aES
+			cDec.init(Cipher.DECRYPT_MODE, unwrappedKey);
+			
 			FileInputStream fis = new FileInputStream(fileUser.getPath());
 			CipherInputStream cis = new CipherInputStream(fis, cDec);
 
@@ -86,6 +107,11 @@ public class Autenticacao {
 			kfile.close();
 			cis.close();
 			
+			File fileToDelete = new File(fileinfo);
+			fileToDelete.delete();
+			grupChav.delete();
+			
+			
 		} catch (Exception e1) {
 			System.out.println("Error fetching Server keystore");
 			e1.printStackTrace();
@@ -105,9 +131,17 @@ public class Autenticacao {
 			Certificate cert = kstore.getCertificate(keyStoreFile);
 			PublicKey pubKey = cert.getPublicKey();
 			
-			Cipher cDec = Cipher.getInstance("RSA");
-			cDec.init(Cipher.ENCRYPT_MODE, pubKey);
+			File grupChav = new File(fileUser.getPath().substring(0,fileUser.getPath().length() - 3) + "_chave" + ".txt");
+			grupChav.createNewFile();
 
+			KeyGenerator kg = KeyGenerator.getInstance("AES");
+			kg.init(128);
+			SecretKey sharedKey = kg.generateKey();
+			
+			
+			//cifrar ficheiro com simetrica
+			Cipher cEnc = Cipher.getInstance("AES");
+			cEnc.init(Cipher.ENCRYPT_MODE, sharedKey);
 			FileInputStream fis = new FileInputStream(fileUser);
 
 			int index = fileUser.getPath().lastIndexOf(".");
@@ -115,7 +149,7 @@ public class Autenticacao {
 			System.out.println(fcif);
 		
 			FileOutputStream fos = new FileOutputStream(fcif,false);
-			CipherOutputStream cos = new CipherOutputStream(fos, cDec);
+			CipherOutputStream cos = new CipherOutputStream(fos, cEnc);
 			
 			byte[] b = new byte[16];
 			int i = fis.read(b);
@@ -126,6 +160,42 @@ public class Autenticacao {
 			cos.close();
 			fis.close();
 			kfile.close();
+			
+			
+			
+			//fazer wrap a chave simetrica e guardar num ficheiro
+			Cipher c = Cipher.getInstance("RSA");
+			c.init(Cipher.WRAP_MODE, pubKey);
+			byte[] wrappedKey = c.wrap(sharedKey);
+			BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav));
+			bW.write(DatatypeConverter.printHexBinary(wrappedKey));
+			bW.newLine();
+			bW.close();
+			
+			
+			
+			
+			//Cipher cDec = Cipher.getInstance("RSA");
+			//cDec.init(Cipher.ENCRYPT_MODE, pubKey);
+
+			//FileInputStream fis = new FileInputStream(fileUser);
+
+			//int index = fileUser.getPath().lastIndexOf(".");
+			//String fcif = fileUser.getPath().substring(0,index) + ".cif";
+			//System.out.println(fcif);
+		
+			//FileOutputStream fos = new FileOutputStream(fcif,false);
+			//CipherOutputStream cos = new CipherOutputStream(fos, cDec);
+			
+			//byte[] b = new byte[16];
+			//int i = fis.read(b);
+			//while(i!= -1) {
+			//	cos.write(b,0,i);
+			//	i = fis.read(b);
+			//}
+			//cos.close();
+			//fis.close();
+			//kfile.close();
 
 			//TODO: depois de verificar que funciona fileUser.delete();
 			//fileUser.delete();
