@@ -48,17 +48,14 @@ public class SeiTchizServer {
 	//adicionar o .cert do servidor tambem a uma truststore usada p todos os clientes
 	
 	public static void main(String[] args) {
-		System.setProperty("javax.net.ssl.keyStore", "data" + File.separator + "Server Files" + File.separator +
-				args[1]); //keystore do servidor
+		System.setProperty("javax.net.ssl.keyStore", "data" + File.separator + args[1]); //keystore do servidor
 		System.setProperty("javax.net.ssl.keyStorePassword",args[2]);
 		
-		System.out.println("Server");
 		SeiTchizServer server = new SeiTchizServer();
 		if (args.length != 3) {
 			System.out.println("Server is started by typing 'Server.SeiTchizServer (PORT) (KEYSTORE) (KEYSTORE-PASSWORD)'!");
 			System.exit(-1);
 		}
-		System.out.println("- - - - - - - - - - -");
 		
 		server.startServer(Integer.parseInt(args[0]), args[1], args[2]);
 	}
@@ -70,7 +67,6 @@ public class SeiTchizServer {
 		//ServerSocket sSoc = null;
 		try {
 			ssl =  (SSLServerSocket) sslfact.createServerSocket(port);
-			//sSoc = new ServerSocket(port);
 		} catch (IOException | SecurityException e) {
 			System.err.println("[ERROR]: Couldnt accept the socket!");
 			e.printStackTrace();
@@ -82,7 +78,6 @@ public class SeiTchizServer {
 		while(true) {
 			try {
 				Socket inSoc = ssl.accept();
-				//Socket inSoc = sSoc.accept();
 				ServerThread newServerThread = new ServerThread(inSoc, keyStoresFile, keyStoresPassword);
 				newServerThread.start();
 			}
@@ -102,7 +97,7 @@ public class SeiTchizServer {
 			socket = inSoc;
 			this.keyStoreFile = keyStoreFile;
 			this.keyStorePassword = keyStorePassword;
-			System.out.println("Connected w client constructor test");
+			System.out.println("Connected with a new client!");
 		}
 		public void run(){
 			String user = null;
@@ -147,11 +142,11 @@ public class SeiTchizServer {
 					//usar a chave publica (certif) associada ao cliente para verificar a assinatura do nonce
 					signature.update(nonceReceb.getBytes());
 					if(signature.verify(assinatura)) {
-						System.out.println("Msg valida");
+						System.out.println("Valid signature");
 						autenticou=true;
 						outStream.writeObject("true");
 					}else {
-						System.out.println("msg c assinatura invalida");
+						System.out.println("Invalid signature");
 						outStream.writeObject("false");
 					}
 					
@@ -167,13 +162,12 @@ public class SeiTchizServer {
 					//nonce recebido do cliente
 					String nonceRecebido = (String) inStream.readObject();
 					if(!clienteDesconhecido.equals(nonceRecebido)) {
-						System.out.println("Nonce diferente");
+						System.out.println("Different nonce");
 						System.exit(-1);
 					}
 					
 					//assinatura do nonce com chave privada do cliente
 					byte assinatura[] = (byte[]) inStream.readObject();
-					System.out.println("assinatura lado sv: " + assinatura.toString());
 					
 					
 					//TODO VER SE � ASSIM QUE SE GERA O CERTIFICADO
@@ -194,9 +188,9 @@ public class SeiTchizServer {
 					signature.initVerify(pubK);
 					signature.update(nonceRecebido.getBytes());
 					if(signature.verify(assinatura)) {
-						System.out.println("Msg valida");
+						System.out.println("Valid signature");
 					}else {
-						System.out.println("msg c assinatura invalida");
+						System.out.println("Invalid signature");
 					}
 
 					//TODO mandar o path do certificado do user dentro do lado do servidor?
@@ -384,7 +378,6 @@ public class SeiTchizServer {
 									
 									
 									String firstSplit = allPhotoPathsSplitted.get(i).split("_")[2];
-									System.out.println(firstSplit + " firstSplit nr fotos allphotoso");
 									
 
 									String donoPhoto = myPhoto.getName().split("_")[1];
@@ -613,7 +606,7 @@ public class SeiTchizServer {
 							}
 							//GUARDAR MENSAGEM NO FICHEIRO XXX_caixa.txt
 							catGrupos.guardarMensagem(splittado[1], msg, currentClient);
-							outStream.writeObject("You sent a message to the group with ID '" + splittado[1] + "' with the text: " + msg);
+							outStream.writeObject("You sent a message to the group with ID '" + splittado[1] + "'");
 							System.out.println("Client '" + currentClient.getUser() + "' sent a message to the group " + splittado[1]);
 						}
 						break;

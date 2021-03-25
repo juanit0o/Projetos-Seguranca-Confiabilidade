@@ -132,36 +132,13 @@ public class Grupo {
 				c.init(Cipher.WRAP_MODE, ku);
 				// cifrar a chave secreta que queremos enviar
 				byte[] wrappedKey = c.wrap(sharedKey);
-				String chav = new String(wrappedKey);
-				System.out.println(chav + " chave para escrever no ficheiro");
-				// FileOutputStream fos = new FileOutputStream("GroupKeys" + File.separator+
-				// this.grupoID + "_" + "chaves" + ".txt");
-				// fos.write("0:".getBytes());
-				// fos.write(wrappedKey);
-				// fos.write("\n-------\n".getBytes());
-				// fos.close();
+
 				BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav));
 				bW.write("0:<" + dono.getUser() + "," + DatatypeConverter.printHexBinary(wrappedKey) + ">");
 				bW.newLine();
 
 				bW.close();
 
-				System.out.println(chav);
-
-				// cifrar com chave simetrica
-				// fazer wrap (cifrar) com a chave publica
-				// dados cifrados com a chave simetrica
-				// chave simetrica cifrada com a chave publica (wrapmode)- resultado disto array
-				// de bytes que escrevemos num ficheiro
-
-				// decifrar
-				// fazer unwrap com chave privada do servidor do ficheiro com chave simetrica
-				// resultado deste unwrap é a chave simetrica
-
-				// ir buscar chave simetrica e fazer-lhe wrap com a chave
-				// publica(cipherwrapmode, mais chave publica) do dono(inciialmente)
-
-				// aut.encryptFile(grupChav, keyStoreFile, keyStorePassword);
 
 			} catch (IOException e) {
 				e.printStackTrace();

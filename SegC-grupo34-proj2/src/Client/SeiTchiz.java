@@ -55,11 +55,6 @@ public class SeiTchiz {
 				+ "Truststore Client" + File.separator + "truststore_client"); //Truststore do cliente
 		System.setProperty("javax.net.ssl.trustStorePassword", "servidor");
 
-		System.out.println("Trustores" + File.separator 
-				+ "Truststore Client" + File.separator + args[1]);
-
-
-		System.out.println("cliente: main");
 		String serverIp = "";
 		int serverPort = 0;
 		String user = "";
@@ -68,26 +63,14 @@ public class SeiTchiz {
 		String keystoreFile = "";
 		String keystorePassword = "";
 
-		//if (args.length == 2) { //caso: 127.0.0.1:45500 clientId  || 127.0.0.1 clientId 
-		//	user = args[1];
-		//	System.out.println("You haven't inserted a password. Password?");
-		//	pass = inSc.nextLine();
-		//} else if(args.length == 3 && args[1].length() > 1) { //caso: 127.0.0.1:45500 clientId pwd || 127.0.0.1 clientId pwd
-		//	user = args[1];
-		//	pass = args[2];
-		//} else if (args.length == 3 && args[1].length() <= 1) {
-		//	System.out.println("Invalid username (least 2 characters)!");
-		//	System.exit(-1);
-
-		//fazer condicoes mais maricas para os args 
-		if( args.length == 5) { //mudar para 5 depois, falta a truststore
+		if( args.length == 5) { 
 			serverIp = args[0];
-			truststore = args[1];  		//n percebo cm usamos
-			keystoreFile = args[2]; 	//n percebo cm usamos
-			keystorePassword = args[3]; //n percebo cm usamos
+			truststore = args[1];  	
+			keystoreFile = args[2]; 	
+			keystorePassword = args[3]; 
 			user = args[4];
 		} else {
-			System.out.println("Invalid commands");
+			System.out.println("Invalid commands!");
 			System.exit(-1);
 		}
 		//verifica se tem porto ou nao, caso nao PORT_DEFAULT
@@ -115,11 +98,9 @@ public class SeiTchiz {
 			outObj.close();
 			inObj.close();
 			inSc.close();
-			//cSoc.close();
 			System.exit(-1);
 		} catch (IOException e) {
 			System.exit(-1);
-			//e.printStackTrace();
 		}
 	}
 
@@ -141,7 +122,7 @@ public class SeiTchiz {
 		System.out.println("Insert a command or type help to see commands: ");
 		while(true) {
 			String output = inSc.nextLine();
-			String[] comando = output.split(" "); //p pegar o comando (cena da foto leva o path)
+			String[] comando = output.split(" "); //p pegar o comando
 			switch (comando[0]) {
 			case "help":
 				System.out.println("Available commands:\n"+"follow/f <userID>\n"+
@@ -232,7 +213,7 @@ public class SeiTchiz {
 											String chave = pVirgulas[j].split(",")[1].split(">")[0];
 											if (user.equals(nomeAux)) {
 												Cipher c = Cipher.getInstance("RSA");
-												FileInputStream kfile = new FileInputStream("data"+File.separator+"Keystores"+File.separator+user);
+												FileInputStream kfile = new FileInputStream("Keystores"+File.separator+user);
 												KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
 												kstore.load(kfile,keystorePassword.toCharArray());
 												PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keystoreFile, keystorePassword.toCharArray());
@@ -253,7 +234,6 @@ public class SeiTchiz {
 										}
 										break;
 									}
-
 								}
 								br.close();
 							} catch (Exception e) {
@@ -261,9 +241,6 @@ public class SeiTchiz {
 							}
 						}
 						System.out.println(msgFinal);
-						//o recebido pode ter tanto o caso de sucesso como o de erro
-						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma dela
-
 
 						System.out.println("\nInsert a command or type help to see commands: ");
 					} catch (IOException | ClassNotFoundException e) {
@@ -308,7 +285,7 @@ public class SeiTchiz {
 											String chave = pVirgulas[j].split(",")[1].split(">")[0];
 											if (user.equals(nomeAux)) {
 												Cipher c = Cipher.getInstance("RSA");
-												FileInputStream kfile = new FileInputStream("data"+File.separator+"Keystores"+File.separator+user);
+												FileInputStream kfile = new FileInputStream("Keystores"+File.separator+user);
 												KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
 												kstore.load(kfile,keystorePassword.toCharArray());
 												PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keystoreFile, keystorePassword.toCharArray());
@@ -319,9 +296,7 @@ public class SeiTchiz {
 												
 												Cipher c1 = Cipher.getInstance("AES");
 												c1.init(Cipher.DECRYPT_MODE, unwrappedKey);
-												//CipherOutputStream cos = new CipherOutputStream(bo,c1);
 												byte [] dofinal = c1.doFinal(DatatypeConverter.parseHexBinary(msgCript));
-												//String encoded = DatatypeConverter.printHexBinary(dofinal);
 												String encoded = new String(dofinal);
 												msgFinal += nome + " : " +encoded + "\n";
 												break;
@@ -337,9 +312,6 @@ public class SeiTchiz {
 							}
 						}
 						System.out.println(msgFinal);
-						//o recebido pode ter tanto o caso de sucesso como o de erro
-						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma dela
-
 
 						System.out.println("\nInsert a command or type help to see commands: ");
 					} catch (IOException | ClassNotFoundException e) {
@@ -370,16 +342,7 @@ public class SeiTchiz {
 					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
 				} else {
 					try {
-						//output tem "msg gr texto"
-						//tem de se cifrar o texto (com a chave do grupo mais atual?/¿
-						//reconstruir o output e mandá-lo com o texto cifrado
 
-						//Gerar a chave
-						//KeyGenerator kg = KeyGenerator.getInstance("AES");
-						//kg.init(128);
-						//SecretKey key = kg.generateKey();
-						//Cipher c = Cipher.getInstance("AES");
-						//c.init(Cipher.ENCRYPT_MODE, key);
 						File groupKeys = new File ("GroupKeys" + File.separator + comando[1] + "_chaves.txt");
 						BufferedReader br = new BufferedReader(new FileReader(groupKeys));
 						String thislinha = "";
@@ -399,13 +362,10 @@ public class SeiTchiz {
 						}
 
 						if (pessoas.contains(user)) {
-							//thislinha = thislinha.substring(thislinha.indexOf(":")+1, thislinha.length());
-
-							FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile);
+							FileInputStream keyfile = new FileInputStream("Keystores" + File.separator + keystoreFile);
 							//ficheiro keystore cliente
 							KeyStore kstore = KeyStore.getInstance("JCEKS");
 							kstore.load(keyfile, keystorePassword.toCharArray());
-
 
 							Key myPrivateKey = kstore.getKey(user, keystorePassword.toCharArray());
 							PrivateKey pk = (PrivateKey) myPrivateKey;
@@ -416,12 +376,9 @@ public class SeiTchiz {
 
 							byte[] stringToByte = DatatypeConverter.parseHexBinary(chaves.get(pessoas.indexOf(user)));	
 	
-
 							Key unwrappedKey = c.unwrap(stringToByte, "AES", Cipher.SECRET_KEY);
 
-
 							//usar a simetrica para ler a msg que chegou
-							///
 							String textoMensagem = "";
 							for(int i= 2; i<comando.length; i++) {
 								textoMensagem += comando[i];
@@ -431,10 +388,9 @@ public class SeiTchiz {
 							}
 
 							//cifrar a msg com a chave simetrica que se obteve do ficheiro
-							//ByteArrayOutputStream bo = new ByteArrayOutputStream(500);
+							
 							Cipher c1 = Cipher.getInstance("AES");
 							c1.init(Cipher.ENCRYPT_MODE, unwrappedKey);
-							//CipherOutputStream cos = new CipherOutputStream(bo,c1);
 
 							byte [] dofinal = c1.doFinal(textoMensagem.getBytes());
 							String encoded = DatatypeConverter.printHexBinary(dofinal);
@@ -448,25 +404,9 @@ public class SeiTchiz {
 						}
 						br.close();
 						System.out.println("\nInsert a command or type help to see commands: ");
-					} catch (IOException | ClassNotFoundException e) {
+					} catch (Exception e) {
 						System.out.println("The server is now offline :(" + e);
-					} catch (UnrecoverableKeyException e) {
-						e.printStackTrace();
-					} catch (KeyStoreException e) {
-						e.printStackTrace();
-					} catch (NoSuchAlgorithmException e) {
-						e.printStackTrace();
-					} catch (CertificateException e) {
-						e.printStackTrace();
-					} catch (NoSuchPaddingException e) {
-						e.printStackTrace();
-					} catch (InvalidKeyException e) {
-						e.printStackTrace();
-					} catch (IllegalBlockSizeException e) {
-						e.printStackTrace();
-					} catch (BadPaddingException e) {
-						e.printStackTrace();
-					}
+					} 
 				}
 				break;
 			case "g":
@@ -579,18 +519,16 @@ public class SeiTchiz {
 		try {
 			//NONCE recebido do sv
 			String resposta = (String) inObj.readObject();
-			FileInputStream keyfile = new FileInputStream("data" + File.separator + "Keystores" + File.separator + keystoreFile);
+			FileInputStream keyfile = new FileInputStream("Keystores" + File.separator + keystoreFile);
 			//ficheiro keystore cliente
 			KeyStore kstore = KeyStore.getInstance("JCEKS"); //TODO com jceks diz que nao tem este algoritmo e com keystore.getdefaulttype diz acesso negado
 			kstore.load(keyfile, keystorePass.toCharArray());
 
-			System.out.println(keystorePass);
 			Key myPrivateKey = kstore.getKey(user, keystorePass.toCharArray());
 			PrivateKey pk = (PrivateKey) myPrivateKey;
 
 
 			if(resposta.charAt(resposta.length()-1) =='D') {
-				System.out.println("nao existo");
 				//enviar a assinatura do nonce com a sua chave privada
 
 				Signature signature = Signature.getInstance("MD5withRSA");
@@ -609,24 +547,18 @@ public class SeiTchiz {
 
 				outObj.writeObject(certificado.getEncoded()); //envia o array de bytes do certificado
 
-				System.out.println("nao existo final");
-
 				String askName = (String) inObj.readObject();
 				if(askName.equals("What is your name?")) {
 					System.out.println(askName);
 					outObj.writeObject(inSc.nextLine());
 					Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
-					//System.out.println(autenticated ? "Client authenticated" : "Client not authenticated");
-					//if (!autenticated) {
-					//		System.exit(-1);
-					//}
+
 				}else {
-					System.out.println("error");
+					System.out.println("[ERROR]");
 					System.exit(-1);
 				}
 			}else { //qd ja existe no servidor
 
-				System.out.println("ja existo");
 				Signature signature = Signature.getInstance("MD5withRSA");
 				signature.initSign(pk);
 				byte buffer[] = resposta.getBytes();
@@ -664,16 +596,11 @@ public class SeiTchiz {
 			SSLSocket ssl = null;
 			ssl = (SSLSocket) sslfact.createSocket(ip, port);
 			if(ssl.isConnected())
-				System.out.println("Connected."); //aparece como connected mas depois da erro
+				System.out.println("Connected with the server");
 
 			outObj = new ObjectOutputStream(ssl.getOutputStream());
 			inObj = new ObjectInputStream(ssl.getInputStream());
-			//////
 
-			//Forma antiga
-			//cSoc = new Socket(ip,port);
-			//outObj = new ObjectOutputStream(cSoc.getOutputStream());
-			//inObj = new ObjectInputStream(cSoc.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Couldnt connect to the server! " + e);
 			e.printStackTrace();

@@ -90,7 +90,6 @@ public class Cliente {
 			String line;
 			int counter = 0;
 			while ((line = rW.readLine()) != null) {
-				System.out.println(line + " <<--- linha desencriptada ---");
 				if (line.equals("$")) {
 					counter++;
 				} else {
@@ -126,7 +125,6 @@ public class Cliente {
 				}
 			}
 
-			//TODO CIFRAR
 			aut.encryptFile(fileUser, keyStoreFile, keyStorePassword);
 
 			rW.close();
@@ -324,7 +322,6 @@ public class Cliente {
 			e.printStackTrace();
 		}
 		aut.encryptFile(fileUser, keyStoreFile, keyStorePassword);
-		//encrypt e eliminar txt temporario
 	}
 
 	/**

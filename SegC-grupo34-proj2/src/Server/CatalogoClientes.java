@@ -51,13 +51,13 @@ public class CatalogoClientes {
 				while (scReader.hasNextLine()) {
 					String linha = scReader.nextLine();
 					String[] aux = linha.split(":");
-					//Cliente newClient = new Cliente(aux[0], aux[2], aux[1]); // userID, nome real, pass
-					Cliente newClient = new Cliente(aux[0], aux[1]); //clientID, pathChavePublica?Certificado?
+					Cliente newClient = new Cliente(aux[0], aux[1]);
 					newClient.carregarConta(keyStoreFile, keyStorePassword);
 					mapClientes.put(aux[0], newClient);
 				}
-				aut.encryptFile(fileServer, keyStoreFile, keyStorePassword);
+				
 				scReader.close();
+				aut.encryptFile(fileServer, keyStoreFile, keyStorePassword);
 			} else {
 				System.out.println("File created: " + file.getName());
 			}
@@ -94,7 +94,7 @@ public class CatalogoClientes {
 			if(file.length() > 0) {
 				aut.decryptFile(file, keyStoreFile, keyStorePassword);
 				fileServer = new File("data" + File.separator+ "Server Files" + File.separator + "allUsers.txt");
-				System.out.println("ficheiro allUsers nao esta vazio");
+				System.out.println("File allUsers isnt empty");
 			}else {
 				fileServer = new File("data" + File.separator+ "Server Files" + File.separator + "allUsers.txt");
 				fileServer.createNewFile();

@@ -23,7 +23,7 @@ public class CatalogoGrupos {
 	private CatalogoClientes catClientes;
 	private ArrayList<Grupo> grupos;
 	private File groupFolder = new File("data" + File.separator + "Group Folder");
-	private File groupFile = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.txt");
+	private File groupFile = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.cif");
 	private String keyStoreFile;
 	private String keyStorePassword;
 	
@@ -40,18 +40,30 @@ public class CatalogoGrupos {
 		grupos = new ArrayList<Grupo>();
 		this.catClientes = catClientes;
 		groupFolder.mkdirs();
+		Autenticacao aut = new Autenticacao();
 		//carregar conteudo do ficheiro de grupos
 		try {
 			if(!groupFile.createNewFile()) {
+				aut.decryptFile(groupFile, keyStoreFile, keyStorePassword);
 				System.out.println("Group file loaded: " + groupFile.getName());
-				Scanner scReader = new Scanner(groupFile);
+				
+				File groupFileTxt = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.txt");
+				Scanner scReader = new Scanner(groupFileTxt);
+				
 				while (scReader.hasNextLine()) {
+					
 					//ver o nome de um grupo, ir a pasta desse grupo, ler o ficheiro de membros e 
 					//mensagens para chamar o construtor do grupo
 					//group id = cada linha tem o nome de um grupo
 					String linha = scReader.nextLine();
-					File fileGrupo = new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator +linha +"_membros.txt");
-					BufferedReader rW = new BufferedReader(new FileReader(fileGrupo));
+					File fileGrupo = new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator +linha +"_membros.cif");
+					
+					
+					aut.decryptFile(fileGrupo, keyStoreFile, keyStorePassword);
+					File fileGrupoTXT = new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator +linha +"_membros.txt");
+					
+					
+					BufferedReader rW = new BufferedReader(new FileReader(fileGrupoTXT));
 					String line = rW.readLine();
 					//Apanhar o dono
 					Cliente dono = catClientes.getCliente(line);
@@ -62,9 +74,20 @@ public class CatalogoGrupos {
 						clientes.add(catClientes.getCliente(line));
 					}
 					rW.close();
-
-					File fileMsg= new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha +"_caixa.txt");
-					BufferedReader rW2 = new BufferedReader(new FileReader(fileMsg));
+					aut.encryptFile(fileGrupoTXT, keyStoreFile, keyStorePassword);
+					
+					
+					File fileMsg= new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha +"_caixa.cif");
+					File fileAuxMsg;
+					if(fileMsg.length() > 0) {
+						aut.decryptFile(fileMsg, keyStoreFile, keyStorePassword);
+						fileAuxMsg = new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha +"_caixa.txt");
+					}else {
+						fileAuxMsg = new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha +"_caixa.txt");
+						fileAuxMsg.createNewFile();
+					}
+					
+					BufferedReader rW2 = new BufferedReader(new FileReader(fileAuxMsg));
 					ArrayList<Mensagem> msgs = new ArrayList<Mensagem>();
 					while ((line = rW2.readLine()) != null) {
 						String[] mensagem = line.split("%%");
@@ -89,10 +112,11 @@ public class CatalogoGrupos {
 						msgs.add(new Mensagem(linha, catClientes.getCliente(mensagem[1]), mensagem[2], listaLeu, listaPorLer, mensagem[0], Integer.parseInt(mensagem[4])));
 					}
 					rW2.close();
+					aut.encryptFile(fileAuxMsg, keyStoreFile, keyStorePassword);
 					System.out.println();
+					
 					//LOAD DA HISTORICO (SO ESTAO AS MENSAGENS LIDAS POR TODOS, SEM POR LER)
 					File fileHist= new File("data" + File.separator + "Group Folder" + File.separator + linha + File.separator + linha + "_historico.cif");
-					Autenticacao aut = new Autenticacao();
 					
 					File fileAux;
 					if(fileHist.length() > 0) {
@@ -123,6 +147,11 @@ public class CatalogoGrupos {
 					aut.encryptFile(fileAux, keyStoreFile, keyStorePassword);
 				}	
 				scReader.close();
+				aut.encryptFile(groupFileTxt, keyStoreFile, keyStorePassword);
+			}else {
+				File fileAux = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.txt");
+				fileAux.createNewFile();
+				aut.encryptFile(fileAux, keyStoreFile, keyStorePassword);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -141,10 +170,18 @@ public class CatalogoGrupos {
 		grupos.add(grupo);
 		dono.entrarEmGrupo(grupoID, keyStoreFile,keyStorePassword);
 		try {
-			BufferedWriter bW = new BufferedWriter(new FileWriter(groupFile, true));
+			Autenticacao aut = new Autenticacao();
+			aut.decryptFile(groupFile, keyStoreFile, keyStorePassword);
+			File groupFileTxt = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.txt");
+			
+			
+			BufferedWriter bW = new BufferedWriter(new FileWriter(groupFileTxt, true));
 			bW.write(grupoID);
 			bW.newLine();
 			bW.close();
+			aut.encryptFile(groupFileTxt, keyStoreFile, keyStorePassword);
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
