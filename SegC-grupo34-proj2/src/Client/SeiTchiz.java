@@ -277,15 +277,70 @@ public class SeiTchiz {
 					System.out.println("Invalid command, please type help to check the available ones\nInsert a command or type help to see commands: ");
 				} else {
 					try {
-						
-						//FALTA HISTORIA DA CAROCHINHA
-						//TODO
-						
-						
-						
-						
 						outObj.writeObject(output);
-						System.out.println((String) inObj.readObject());
+						String recebido = (String) inObj.readObject();
+						if(!recebido.contains(":")) {
+							System.out.println(recebido);
+							System.out.println("\nInsert a command or type help to see commands: ");
+							break;
+						}
+						String msgFinal = "";
+						String[] msgsInd = recebido.split("\n");
+						for(int i = 0; i < msgsInd.length; i++) {
+			
+							String nome = msgsInd[i].split(":")[0]; //quem mandou msg
+							String aux = msgsInd[i].split(":")[1];
+							String msgCript = aux.substring(0,aux.indexOf("$"));
+							String idChave = aux.substring(aux.indexOf("$")+2,aux.length());
+
+							File groupKeys = new File("GroupKeys"+File.separator+comando[1]+ "_" + "chaves" + ".txt");
+							BufferedReader br;
+							try {
+								br = new BufferedReader(new FileReader(groupKeys));
+								String thislinha = "";
+								while ((thislinha = br.readLine())!=null) {
+									String idChaveAux = thislinha.split(":")[0];
+									if (idChave.equals(idChaveAux)) {
+										String[] pVirgulas = thislinha.split(":")[1].split(";");
+										for(int j = 0; j < pVirgulas.length; j++) {
+											//<nome,chave>
+											String nomeAux = pVirgulas[j].split(",")[0].substring(1);
+											String chave = pVirgulas[j].split(",")[1].split(">")[0];
+											if (user.equals(nomeAux)) {
+												Cipher c = Cipher.getInstance("RSA");
+												FileInputStream kfile = new FileInputStream("data"+File.separator+"Keystores"+File.separator+user);
+												KeyStore kstore = KeyStore.getInstance("JCEKS"); //try
+												kstore.load(kfile,keystorePassword.toCharArray());
+												PrivateKey myPrivateKey = (PrivateKey) kstore.getKey(keystoreFile, keystorePassword.toCharArray());
+												c.init(Cipher.UNWRAP_MODE, myPrivateKey);
+												byte[] strToByte = DatatypeConverter.parseHexBinary(chave);
+												//chave simetrica para decifrar as mensagens
+												Key unwrappedKey = c.unwrap(strToByte, "AES", Cipher.SECRET_KEY);
+												
+												Cipher c1 = Cipher.getInstance("AES");
+												c1.init(Cipher.DECRYPT_MODE, unwrappedKey);
+												//CipherOutputStream cos = new CipherOutputStream(bo,c1);
+												byte [] dofinal = c1.doFinal(DatatypeConverter.parseHexBinary(msgCript));
+												//String encoded = DatatypeConverter.printHexBinary(dofinal);
+												String encoded = new String(dofinal);
+												msgFinal += nome + " : " +encoded + "\n";
+												break;
+											}
+										}
+										break;
+									}
+
+								}
+								br.close();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						System.out.println(msgFinal);
+						//o recebido pode ter tanto o caso de sucesso como o de erro
+						//fazer o split do recebido para conseguir pegar em cada mensagem em si e decifrar cada uma dela
+
+
 						System.out.println("\nInsert a command or type help to see commands: ");
 					} catch (IOException | ClassNotFoundException e) {
 						System.out.println("The server is now offline :(");
