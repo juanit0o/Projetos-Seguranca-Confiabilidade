@@ -29,21 +29,20 @@ java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Serve
 java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678 servidor servidor
 
 Executar ficheiro .jar:
-java -cp bin -Djava.security.manager -Djava.security.policy==server.policy -jar SeiTchizServer.jar 45678
+java -cp bin -Djava.security.manager -Djava.security.policy==server.policy -jar SeiTchizServer.jar 45678 servidor servidor
 
 
 - Exemplo de comando para execucao do cliente:
 Executar ficheiros .class:
-java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 userName password123
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore keystore keystore-password clientid
+
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore_client clientid clientid clientid
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore_client manelteste manelteste manelteste
 java -cp bin -Djava.security.manager -Djava.security.policy==client.policy Client.SeiTchiz 127.0.0.1:45678 truststore_client mantorras mantorras mantorras
 
 
-
 Executar ficheiro .jar:
-java -cp bin -Djava.security.manager -Djava.security.policy==client.policy -jar SeiTchiz.jar 127.0.0.1:45678 userName password123
+java -cp bin -Djava.security.manager -Djava.security.policy==client.policy -jar SeiTchiz.jar 127.0.0.1:45678 truststore_client clientid clientid clientid
 
 ----------------
 
