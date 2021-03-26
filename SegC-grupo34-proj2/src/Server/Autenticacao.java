@@ -2,25 +2,20 @@ package Server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -31,35 +26,45 @@ import javax.xml.bind.DatatypeConverter;
 
 public class Autenticacao {
 
+	/**
+	 * Gera um Nonce
+	 * @return Nonce Long
+	 */
 	public long generateNonce() {
-		Random rnd = new Random();
 		long nonce = (long) (Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000);
 		return nonce;
 	}
 
+	/**
+	 * Devolve o certificado de um user
+	 * @param user - cliente
+	 * @return certificado
+	 */
 	public Certificate getCertificate(String user) {
-		//pasta do lado do sv
+
 		try {
 			FileInputStream fis = new FileInputStream("PubKeys" + File.separator + user + ".cer");
-			//como dar load do certificado do utilizador
 			CertificateFactory cf = CertificateFactory.getInstance("X509");
 			Certificate cert = cf.generateCertificate(fis);
 			return cert;
 
 		} catch (CertificateException e) {
-
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 
 	}
 
+	/**
+	 * Desencripta um ficheiro .cif (para um ficheiro .txt)
+	 * @param fileUser - Ficheiro a desencriptar
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
+	 */
 	public void decryptFile(File fileUser, String keyStoreFile, String keyStorePassword) {
 		try {
-			//System.out.println("------------DECRYPT----------");
 			System.out.println("File to decrypt: "+ fileUser.getName());
 			//ir buscar a chave
 			FileInputStream kfile = new FileInputStream("data" + File.separator + keyStoreFile);
@@ -80,8 +85,7 @@ public class Autenticacao {
 			Key unwrappedKey = c.unwrap(stringToByte, "AES", Cipher.SECRET_KEY);
 			
 			//com a chave simetrica usar para decifrar o fileUser
-			
-			Cipher cDec = Cipher.getInstance("AES"); //deve ser aES
+			Cipher cDec = Cipher.getInstance("AES");
 			cDec.init(Cipher.DECRYPT_MODE, unwrappedKey);
 			
 			FileInputStream fis = new FileInputStream(fileUser.getPath());
@@ -104,11 +108,9 @@ public class Autenticacao {
 			fos.close();
 			kfile.close();
 			cis.close();
-			
-			
+
 			grupChav.delete();
-			
-			
+
 		} catch (Exception e1) {
 			System.out.println("Error fetching Server keystore");
 			e1.printStackTrace();
@@ -116,6 +118,12 @@ public class Autenticacao {
 		} 
 	}
 
+	/**
+	 * Encripta um ficheiro .txt (para um ficheiro .cif)
+	 * @param fileUser Ficheiro a encriptar
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
+	 */
 	public void encryptFile(File fileUser, String keyStoreFile, String keyStorePassword) {
 		try { 
 			System.out.println("File to encrypt: "+fileUser.getName());
@@ -132,8 +140,7 @@ public class Autenticacao {
 			KeyGenerator kg = KeyGenerator.getInstance("AES");
 			kg.init(128);
 			SecretKey sharedKey = kg.generateKey();
-			
-			
+
 			//cifrar ficheiro com simetrica
 			Cipher cEnc = Cipher.getInstance("AES");
 			cEnc.init(Cipher.ENCRYPT_MODE, sharedKey);
@@ -154,9 +161,7 @@ public class Autenticacao {
 			cos.close();
 			fis.close();
 			kfile.close();
-			
-			
-			
+
 			//fazer wrap a chave simetrica e guardar num ficheiro
 			Cipher c = Cipher.getInstance("RSA");
 			c.init(Cipher.WRAP_MODE, pubKey);
@@ -166,9 +171,6 @@ public class Autenticacao {
 			bW.newLine();
 			bW.close();
 			
-		
-
-			//TODO: depois de verificar que funciona fileUser.delete();
 			fileUser.delete();
 		} catch (Exception e1) {
 			e1.printStackTrace();

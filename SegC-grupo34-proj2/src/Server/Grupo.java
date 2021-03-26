@@ -4,14 +4,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.util.ArrayList;
 
 import javax.crypto.Cipher;
@@ -54,7 +52,9 @@ public class Grupo {
 	 * dono.
 	 * 
 	 * @param grupoID - id de grupo.
-	 * @param dono    - cliente dono do grupo.
+	 * @param dono - cliente dono do grupo.
+	 * @param keyStoreFile - Path para o ficheiro keystore
+	 * @param keyStorePassword - Password para o ficheiro keystore
 	 */
 	public Grupo(String grupoID, Cliente dono, String keyStoreFile, String keyStorePassword) {
 		this.grupoID = grupoID;
@@ -79,11 +79,13 @@ public class Grupo {
 	 * Construtor da classe que inicia um grupo recebendo um id de grupo e cliente
 	 * dono. Recebendo tambem listas de membros, mensagens e historico.
 	 * 
-	 * @param grupoID   - id de grupo.
-	 * @param dono      - cliente dono do grupo.
-	 * @param membros
-	 * @param msgs
-	 * @param historico
+	 * @param grupoID - id de grupo.
+	 * @param dono - cliente dono do grupo.
+	 * @param membros - membros do grupo
+	 * @param msgs - mensagens do grupo
+	 * @param historico - historico de mensagens do grupo
+	 * @param keyStoreFile - Path para o ficheiro keystore
+	 * @param keyStorePassword - Password para o ficheiro keystore
 	 */
 	public Grupo(String grupoID, Cliente dono, ArrayList<Cliente> membros, ArrayList<Mensagem> msgs,
 			ArrayList<Mensagem> historico, String keyStoreFile, String keyStorePassword) {
@@ -117,7 +119,6 @@ public class Grupo {
 
 			groupKeysFolder.mkdirs();
 			grupoChaves.createNewFile();
-			// Autenticacao aut = new Autenticacao();
 			try {
 				File grupChav = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
 				grupChav.createNewFile();
@@ -143,16 +144,12 @@ public class Grupo {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidKeyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalBlockSizeException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchPaddingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -164,7 +161,6 @@ public class Grupo {
 
 	/**
 	 * Metodo que recebe um cliente e verifica se este e dono do grupo.
-	 * 
 	 * @param cliente - cliente
 	 * @return true se cliente e dono do grupo, senao false.
 	 */
@@ -174,7 +170,6 @@ public class Grupo {
 
 	/**
 	 * Metodo que identifica se um cliente recebido pertence ao grupo.
-	 * 
 	 * @param cliente - cliente
 	 * @return true se cliente pertence ao grupo, senao false.
 	 */
@@ -189,7 +184,6 @@ public class Grupo {
 
 	/**
 	 * Metodo que adiciona um cliente ao grupo atual.
-	 * 
 	 * @param cliente - cliente
 	 */
 	public void addMembro(Cliente cliente) {
@@ -206,13 +200,12 @@ public class Grupo {
 		KeyGenerator kg;
 		try {
 			File grupChav = new File(groupKeysFolder.getAbsolutePath(), this.grupoID + "_" + "chaves" + ".txt");
-			// grupChav.createNewFile();
 
 			kg = KeyGenerator.getInstance("AES");
 			kg.init(128);
 			SecretKey sharedKey = kg.generateKey();
 
-			// cifrar essa chave de grupo com a chave pública de cada um dos membros do
+			// cifrar essa chave de grupo com a chave pï¿½blica de cada um dos membros do
 			// grupo (incluindo o novo membro)
 			BufferedWriter bW = new BufferedWriter(new FileWriter(grupChav, true));
 			bW.write(getLastKeyIndex() + 1 + ":");
@@ -237,23 +230,18 @@ public class Grupo {
 			bW.close();
 
 			// enviar para o servidor uma lista com a nova chave de grupo cifrada com as
-			// chaves públicas dos membros do grupo.
-			// Cada elemento da lista é um par <userID, userID-NewGroupKey>
+			// chaves publicas dos membros do grupo.
+			// Cada elemento da lista e um par <userID, userID-NewGroupKey>
 
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -261,7 +249,6 @@ public class Grupo {
 
 	/**
 	 * Metodo que remove um cliente do grupo atual.
-	 * 
 	 * @param cliente - cliente
 	 */
 	public void removeMembro(Cliente cliente) {
@@ -273,7 +260,6 @@ public class Grupo {
 
 	/**
 	 * Metodo que guarda mensagem enviada de um cliente em listas e em disco.
-	 * 
 	 * @param msg     - mensagem enviada
 	 * @param cliente - cliente
 	 */
@@ -309,7 +295,6 @@ public class Grupo {
 
 	/**
 	 * Metodo que devolve o Id do grupo atual.
-	 * 
 	 * @return groupID
 	 */
 	public String getGrupoID() {
@@ -318,7 +303,6 @@ public class Grupo {
 
 	/**
 	 * Metodo devolve lista de id's dos membros do grupo.
-	 * 
 	 * @return lista de id's de membros.
 	 */
 	public ArrayList<String> getMembros() {
@@ -332,7 +316,6 @@ public class Grupo {
 	/**
 	 * Metodo devolve as mensagens por ler de um determinado cliente dentro do
 	 * grupo.
-	 * 
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens por ler
 	 */
@@ -357,7 +340,6 @@ public class Grupo {
 
 	/**
 	 * Metodo devolve as mensagens lidas de um determinado cliente dentro do grupo.
-	 * 
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens lidas
 	 */
@@ -382,8 +364,7 @@ public class Grupo {
 	 * Metodo que escreve os dados de um grupo em disco.
 	 */
 	public void groupContentsToFile() {
-		// File membrosGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID +
-		// "_" + "membros" + ".cif");
+
 		Autenticacao aut = new Autenticacao();
 		try {
 			File membrosFich;
@@ -408,8 +389,7 @@ public class Grupo {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// File caixaMsgGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID +
-		// "_" + "caixa" + ".cif");
+
 		try {
 			File caixaFich;
 			if (msgLog.length() > 0) {

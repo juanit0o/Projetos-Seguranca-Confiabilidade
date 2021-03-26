@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -75,7 +74,7 @@ public class CatalogoClientes {
 	/**
 	 * Metodo para adicionar um cliente ao catalogo de clientes.
 	 * @param user - userId do cliente.
-	 * @param pass - password do cliente.
+	 * @param pubk - password do cliente.
 	 * @param outStream - stream de escrita.
 	 * @param inStream - stream de leitura.
 	 */
@@ -90,7 +89,6 @@ public class CatalogoClientes {
 			
 			File fileServer;
 
-			
 			if(file.length() > 0) {
 				aut.decryptFile(file, keyStoreFile, keyStorePassword);
 				fileServer = new File("data" + File.separator+ "Server Files" + File.separator + "allUsers.txt");
@@ -100,10 +98,8 @@ public class CatalogoClientes {
 				fileServer.createNewFile();
 				
 			}
-			
-			//TODO o bufferedWriter tem de levar o txt e nao o cif
+
 			BufferedWriter bW = new BufferedWriter(new FileWriter(fileServer, true));
-			//bW.newLine(); //pq ja la havia pessoas, senao escreve na mm linha
 			bW.write(user + ":" + pubk);
 			bW.newLine();
 			bW.close();
@@ -117,9 +113,7 @@ public class CatalogoClientes {
 			// tenta criar essa diretoria
 			clientFolder.mkdirs();
 			photoFolder.mkdirs();
-			
-			//TODO: para o ficheiro pesssoal por cliente
-			//File fileCliente = new File("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "info.txt");
+
 			File fileCliente = new File("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "info.cif");
 			fileCliente.createNewFile();
 			cliente.userContentsToFile(keyStoreFile,keyStorePassword);
@@ -146,13 +140,4 @@ public class CatalogoClientes {
 		return mapClientes.get(user) != null;
 	}
 
-	/**
-	 * Metodo que retorna se a password do cliente esta correta.
-	 * @param user - userId do cliente.
-	 * @param password - password do cliente.
-	 * @return True se a password e a correta, senao false.
-	 */
-	public boolean passCorreta(String user, String password) {
-		return mapClientes.get(user).isPass(password);
-	}
 }

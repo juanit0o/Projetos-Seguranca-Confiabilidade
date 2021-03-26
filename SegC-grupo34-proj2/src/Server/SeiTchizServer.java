@@ -1,29 +1,18 @@
 package Server;
 
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
 import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -40,12 +29,9 @@ public class SeiTchizServer {
 
 	private CatalogoClientes catClientes;
 	private CatalogoGrupos catGrupos;
-	
-	//criar aqui a pasta PubKeys?
+
 	File PubKeys = new File("PubKeys");
 	boolean value = PubKeys.mkdirs();
-	
-	//adicionar o .cert do servidor tambem a uma truststore usada p todos os clientes
 	
 	public static void main(String[] args) {
 		System.setProperty("javax.net.ssl.keyStore", "data" + File.separator + args[1]); //keystore do servidor
@@ -60,11 +46,15 @@ public class SeiTchizServer {
 		server.startServer(Integer.parseInt(args[0]), args[1], args[2]);
 	}
 
-	//metodo para iniciar o servidor
+	/**
+	 * Inicia o servidor
+	 * @param port Port do servidor
+	 * @param keyStoresFile Path para o ficheiro keystore
+	 * @param keyStoresPassword Password para o ficheiro keystore
+	 */
 	public void startServer (int port, String keyStoresFile, String keyStoresPassword) {
 		SSLServerSocketFactory sslfact = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 		SSLServerSocket ssl = null;
-		//ServerSocket sSoc = null;
 		try {
 			ssl =  (SSLServerSocket) sslfact.createServerSocket(port);
 		} catch (IOException | SecurityException e) {
@@ -73,7 +63,7 @@ public class SeiTchizServer {
 			System.exit(-1);
 		}
 		catClientes = new CatalogoClientes(keyStoresFile, keyStoresPassword);
-		catGrupos = new CatalogoGrupos(catClientes, keyStoresFile, keyStoresPassword); //TODO: , keyStoresFile, keyStoresPassword
+		catGrupos = new CatalogoGrupos(catClientes, keyStoresFile, keyStoresPassword);
 		//servidor vai estar em loop a receber comandos dos clientes sem se desligar
 		while(true) {
 			try {
@@ -104,41 +94,34 @@ public class SeiTchizServer {
 			try {
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-			
-				//String password = null;
+
 				boolean autenticou = false;
 				try {
 					user = (String) inStream.readObject();
-					//password = (String) inStream.readObject();
 				}catch (ClassNotFoundException e1) {
 					System.out.println("[ERROR]: Couldnt read user or pass from client!");
 				}
 				//gerar nonce para devolver
 				Autenticacao aut = new Autenticacao();
 				long nonce = aut.generateNonce();
-				
-				
-				//D=desconhecido
+
 				//comparar se ja existe user
 				if (catClientes.existeUser(user)) {
 					
 					outStream.writeObject(String.valueOf(nonce));
 					
-					//verificar se � preciso receber o nonce
+					//verificar se e preciso receber o nonce
 					String nonceReceb = (String) inStream.readObject();
 					
 					//assinatura do nonce com chave privada do cliente
 					byte assinatura[] = (byte[]) inStream.readObject();
-					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
-					
 					
 					Certificate certificadoCliente = aut.getCertificate(user);
-					
-					//https://stackoverflow.com/questions/9219966/how-to-do-verify-using-java-security-signature
 					
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
 					signature.initVerify(pubK);
+
 					//usar a chave publica (certif) associada ao cliente para verificar a assinatura do nonce
 					signature.update(nonceReceb.getBytes());
 					if(signature.verify(assinatura)) {
@@ -149,16 +132,14 @@ public class SeiTchizServer {
 						System.out.println("Invalid signature");
 						outStream.writeObject("false");
 					}
-					
-					
-					//autenticou = catClientes.passCorreta(user, password);
-				} else {//adicionar a lista
+
+				} else {
+					//adicionar a lista
 					autenticou = true;
 					String clienteDesconhecido = String.valueOf(nonce);
 					clienteDesconhecido += "D"; //flag de desconhecido (tem de se registar)
 					outStream.writeObject(clienteDesconhecido);
-					
-					
+
 					//nonce recebido do cliente
 					String nonceRecebido = (String) inStream.readObject();
 					if(!clienteDesconhecido.equals(nonceRecebido)) {
@@ -168,20 +149,14 @@ public class SeiTchizServer {
 					
 					//assinatura do nonce com chave privada do cliente
 					byte assinatura[] = (byte[]) inStream.readObject();
-					
-					
-					//TODO VER SE � ASSIM QUE SE GERA O CERTIFICADO
-					//certificado com chave publica do cliente, ver se recebe o nome do file(acho q sim)
-					byte certificado[] = (byte[]) inStream.readObject(); //TODO certificado, confirmar slide 22 ppt 5
+					byte certificado[] = (byte[]) inStream.readObject();
 					CertificateFactory cf = CertificateFactory.getInstance("X509");
-					//TODO gerado o certificado do cliente a partir do array de bytes do certificado do cliente?
 					Certificate certificadoCliente = cf.generateCertificate(new ByteArrayInputStream(certificado)); 
-					
-					//TODO fazer aqui fileoutputstream para por o certificado num ficheiro do lado do servidor?
+
 					//depois ja podiamos aceder a ele
 					FileOutputStream fileCert = new FileOutputStream("PubKeys" + File.separator + user + ".cer");
 					//escrever certificado para o fileCert
-					fileCert.write(certificadoCliente.getEncoded()); //TODO como escrever o certificado para o ficheiro, supostamente csg mas n sei se � o que la aparece
+					fileCert.write(certificadoCliente.getEncoded());
 					fileCert.close();
 					PublicKey pubK = certificadoCliente.getPublicKey();
 					Signature signature = Signature.getInstance("MD5withRSA");
@@ -193,7 +168,6 @@ public class SeiTchizServer {
 						System.out.println("Invalid signature");
 					}
 
-					//TODO mandar o path do certificado do user dentro do lado do servidor?
 					//criar o cliente com o path para o seu certificado do lado do sv
 					catClientes.addClient(user, "PubKeys" + File.separator + user + ".cer", outStream, inStream);
 					outStream.writeObject(autenticou);
@@ -223,10 +197,7 @@ public class SeiTchizServer {
 						socket.close();
 						break;
 					case "f":
-					case "follow": 
-						//TODO preciso decifrar o ficheiro primeiro e depois voltar a decifra-lo
-						
-						
+					case "follow":
 						//primeiro de tudo ver se o id dado existe, ver se aparece no ficheiro allUsers, se n existir da logo erro
 						//ver ficheiro do cliente, ver se ja tem follow, se ja la tiver diz
 						//se n tiver follow, adiciona ao arraylist, adiciona ao txt na parte dos follows.
@@ -298,9 +269,9 @@ public class SeiTchizServer {
 							MessageDigest md = MessageDigest.getInstance("SHA");
 							byte hash[] = md.digest(buffer); //hash dos bytes de uma fotografia
 							//escrever a hash (sintese) da fotografia para um ficheiro que vai ficar na mmm pasta que a prt
-							
-							
-							FileOutputStream fileHash = new FileOutputStream("data" + File.separator + "Personal User Files" + File.separator + user + File.separator + "Photos" + File.separator + "photo_"
+
+							FileOutputStream fileHash = new FileOutputStream("data" + File.separator + "Personal User Files"
+									+ File.separator + user + File.separator + "Photos" + File.separator + "photo_"
 									+ currentClient.getUser() + "_" + nrPhotosAt + ".txt");
 							//escrever a hash no ficheiro
 							fileHash.write(hash); 
@@ -322,11 +293,9 @@ public class SeiTchizServer {
 						break;
 					case "w":
 					case "wall":
-						
 						//antes de se mandar as fotografias de volta para o cliente verificar se a hash nao foi modificada
 						MessageDigest md = MessageDigest.getInstance("SHA");
-						
-						
+
 						//criar pasta para o cliente
 						File wallFolder = new File("wall" + File.separator + splittado[2]);
 						if(!wallFolder.mkdirs()) { //se a pasta ja tiver criada
@@ -375,18 +344,15 @@ public class SeiTchizServer {
 							try {
 								File myPhoto = new File(allPhotoPathsSplitted.get(i));
 								if (myPhoto.exists()) {
-									
-									
+
 									String firstSplit = allPhotoPathsSplitted.get(i).split("_")[2];
-									
 
 									String donoPhoto = myPhoto.getName().split("_")[1];
-									
-									//aqui nao � na pasta do user, � na pasta de quem � a foto
-									File digestAntiga = new File("data" + File.separator + "Personal User Files" + File.separator + donoPhoto + File.separator + "Photos" + File.separator + "photo_"
-																	+ donoPhoto + "_" + Integer.parseInt(firstSplit.substring(0,firstSplit.indexOf("."))) + ".txt"); //confirmar se � i ou currentClient.nrOfPhotos()
-									
-									
+
+									File digestAntiga = new File("data" + File.separator + "Personal User Files" + File.separator
+											+ donoPhoto + File.separator + "Photos" + File.separator + "photo_"
+											+ donoPhoto + "_" + Integer.parseInt(firstSplit.substring(0,firstSplit.indexOf("."))) + ".txt");
+
 									byte[] bytes = new byte[(int) digestAntiga.length()];
 									
 									FileInputStream fis = new FileInputStream(digestAntiga);
@@ -398,8 +364,7 @@ public class SeiTchizServer {
 									byte[] buffer = new byte[tamanho.intValue()];
 									InputStream part = new BufferedInputStream(new FileInputStream(myPhoto));
 									part.read(buffer);
-									
-									//TODO fotografia so deve ser enviada qd esta valida
+
 									if(MessageDigest.isEqual(md.digest(buffer), bytes)) {
 										System.out.print("Fotografia " + i + " valida \n");
 										
@@ -434,7 +399,7 @@ public class SeiTchizServer {
 						//ver o ficheiro allPhotos a procura do user que publicou a foto que vai levar o like
 						String line;
 						String pathFoto = null;
-						//Cliente publisher = new Cliente(null, null, null);
+
 						Cliente publisher = new Cliente(null, null);
 						while ((line = bR1.readLine()) != null) {
 							//user::path
@@ -678,19 +643,14 @@ public class SeiTchizServer {
 			} catch (IOException e) {
 				System.out.println("Client '"+user+"' disconnected.");
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidKeyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SignatureException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (CertificateException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

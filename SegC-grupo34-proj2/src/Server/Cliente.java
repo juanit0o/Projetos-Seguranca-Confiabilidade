@@ -2,27 +2,14 @@ package Server;
 
 import java.util.ArrayList;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 
 /**
  * Classe representativa de um cliente, que e composta por nome,
@@ -37,30 +24,18 @@ public class Cliente {
 
 	private String nome;
 	private String user;
-	private String pubk; //TODO path para a chave publica/cert p causa da linha 48 Cat Clientes?
+	private String pubk;
 	private ArrayList<String> followers;
 	private ArrayList<String> follows;
 	private ArrayList<String> grupos; 
 	private ArrayList<Photo> photos; 
 
-
-
 	/**
 	 * Construtor da classe que inicia um cliente recebendo
 	 * um username, password e nome.
 	 * @param u - userId do cliente.
-	 * @param p - password do cliente.
-	 * @param nome - nome do cliente.
+	 * @param pubk - chave publica do cliente.
 	 */
-	//public Cliente(String u, PublicKey pubk, String nome) {
-	//	this.nome = nome;
-	//	this.user = u;
-	//	this.pubk = pubk;
-	//	this.followers = new ArrayList<String>();
-	//	this.follows = new ArrayList<String>();
-	//	this.grupos = new ArrayList<String>();
-	//	this.photos = new ArrayList<Photo>();
-	//}
 	public Cliente(String u, String pubk) { //path para a chave publica
 		this.user = u;
 		this.pubk = pubk;
@@ -70,10 +45,11 @@ public class Cliente {
 		this.photos = new ArrayList<Photo>();
 	}
 
-
 	/**
 	 * Metodo que carrega a informacao previa armazenada em disco para as listas
 	 * de quem segue, de seguidores, grupos e fotografias.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void carregarConta(String keyStoreFile, String keyStorePassword) {
 		// pegar no seu ficheiro e preencher os array lists
@@ -135,16 +111,6 @@ public class Cliente {
 	}
 
 	/**
-	 * Metodo que retorna se a password dada e a password do cliente.
-	 * @param password - password do cliente.
-	 * @return true se a password e do cliente, senao false.
-	 */
-	public boolean isPass(String password) {
-		//return this.pass.equals(password);
-		return false;
-	}
-
-	/**
 	 * Metodo que retorna o userId do cliente.
 	 * @return userId do cliente.
 	 */
@@ -155,6 +121,8 @@ public class Cliente {
 	/**
 	 * Metodo que retorna se segue um cliente, recebendo o mesmo.
 	 * @param clientASeguir - cliente a seguir.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 * @return true se passou a seguir o cliente, false se ja seguia o cliente
 	 */
 	public boolean seguir(Cliente clientASeguir,String keyStoreFile, String keyStorePassword) {
@@ -173,6 +141,8 @@ public class Cliente {
 	/**
 	 * Metodo que coloca um cliente como seguidor deste.
 	 * @param follower - seguidor.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void seguidoPor(String follower,String keyStoreFile, String keyStorePassword) {
 		followers.add(follower);
@@ -182,6 +152,8 @@ public class Cliente {
 	/**
 	 * Metodo que retorna se deixou de seguir um cliente, recebendo o mesmo.
 	 * @param pessoa - cliente a deixar de seguir.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 * @return true se tiver a seguir e de seguida remove o follow, false se nao o estiver a seguir.
 	 */
 	public boolean deixarDeSeguir(Cliente pessoa,String keyStoreFile, String keyStorePassword) {
@@ -213,6 +185,8 @@ public class Cliente {
 	/**
 	 * Metodo que remove um seguidor atraves do seu userId.
 	 * @param follower - userId do cliente a deixar de ser seguidor.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void removerFollower(String follower,String keyStoreFile, String keyStorePassword) {
 		ArrayList<String> followersAux = new ArrayList<String>();
@@ -228,6 +202,8 @@ public class Cliente {
 	/**
 	 * Metodo que adiciona o grupo do argumento aos grupos do cliente
 	 * @param grupoID - groupId do grupo.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void entrarEmGrupo(String grupoID,String keyStoreFile, String keyStorePassword) {
 		grupos.add(grupoID);
@@ -237,6 +213,8 @@ public class Cliente {
 	/**
 	 * Metodo que remove o cliente atual do grupo atraves do grupoId.
 	 * @param grupoID - groupId do grupo.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void sairDeGrupo(String grupoID,String keyStoreFile, String keyStorePassword) {
 		grupos.remove(grupoID);
@@ -265,6 +243,8 @@ public class Cliente {
 	/**
 	 * Metodo que publica uma fotografia, colocando-a na lista de fotografias publicadas.
 	 * @param filePath - nome da fotografia.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void publishPhoto(String filePath,String keyStoreFile, String keyStorePassword) {
 		photos.add(new Photo(filePath, new ArrayList<String>(), this.user));
@@ -273,6 +253,8 @@ public class Cliente {
 
 	/**
 	 * Metodo que escreve os conteudos do cliente para o disco.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void userContentsToFile(String keyStoreFile, String keyStorePassword) {
 		File fileUserCifrado = new File("data" + File.separator + "Personal User Files" + File.separator + this.user + File.separator + "info.cif");
@@ -328,6 +310,8 @@ public class Cliente {
 	 * Metodo que coloca like de um utilizador numa fotografia do cliente atual.
 	 * @param phId - id da fotografia.
 	 * @param userLiking - utilizador que gostou.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void putLike(String phId, String userLiking,String keyStoreFile, String keyStorePassword) {
 		for (int i = 0; i < photos.size(); i++) {
@@ -377,11 +361,15 @@ public class Cliente {
 		return false;
 	}
 
-
+	/**
+	 * Retorna a chave publica do cliente
+	 * @return chave publica do cliente
+	 */
 	public Key getPublicKey() {
 		Autenticacao aut = new Autenticacao();
 		Certificate filePub = aut.getCertificate(user);
 		Key key = filePub.getPublicKey();
 		return key;
-	}	
+	}
+
 }

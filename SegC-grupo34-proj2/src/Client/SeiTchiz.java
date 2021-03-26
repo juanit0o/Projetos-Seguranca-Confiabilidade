@@ -1,29 +1,14 @@
 package Client;
 
-import java.net.Socket;
-import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -40,7 +25,6 @@ import java.io.*;
  */
 public class SeiTchiz {
 	private static SSLSocket ssl;
-	//private static Socket cSoc = null; //esta socket vai desaparecer e vai passar a ser usada a ssl
 	private static final int PORT_DEFAULT = 45678;
 	private static ObjectInputStream inObj = null;
 	private static ObjectOutputStream outObj = null;
@@ -63,9 +47,9 @@ public class SeiTchiz {
 		String keystoreFile = "";
 		String keystorePassword = "";
 
-		if( args.length == 5) { 
+		if( args.length == 5) {
 			serverIp = args[0];
-			truststore = args[1];  	
+			truststore = args[1];
 			keystoreFile = args[2]; 	
 			keystorePassword = args[3]; 
 			user = args[4];
@@ -75,8 +59,8 @@ public class SeiTchiz {
 		}
 		//verifica se tem porto ou nao, caso nao PORT_DEFAULT
 		if (args[0].contains(":")) {
-			serverIp = getIp(args[0]);
-			serverPort = getPort(args[0]);
+			serverIp = getIp(serverIp);
+			serverPort = getPort(serverIp);
 		} else {
 			serverIp = getIp(args[0]);
 			serverPort = PORT_DEFAULT;
@@ -111,6 +95,8 @@ public class SeiTchiz {
 	 * O metodo mantem-se ativo enquanto o cliente quiser fazer pedidos, caso contrario
 	 * basta sair, executando o comando quit ou exit. 
 	 * @param user - id do cliente que executa os comandos.
+	 * @param keystoreFile - Path do ficheiro keystore
+	 * @param keystorePassword - Password da keystore
 	 */
 	private static void sendReceiveComando(String user, String keystoreFile, String keystorePassword) {
 		System.out.println("Available commands:\n"+"follow/f <userID>\n"+
@@ -196,7 +182,7 @@ public class SeiTchiz {
 							String nome = msgsInd[i].split(":")[0]; //quem mandou msg
 							String aux = msgsInd[i].split(":")[1];
 							String msgCript = aux.substring(0,aux.indexOf("$"));
-							String idChave = aux.substring(aux.indexOf("$")+2,aux.length());
+							String idChave = aux.substring(aux.indexOf("$")+2, aux.length());
 
 							File groupKeys = new File("GroupKeys"+File.separator+comando[1]+ "_" + "chaves" + ".txt");
 							BufferedReader br;
@@ -224,9 +210,7 @@ public class SeiTchiz {
 												
 												Cipher c1 = Cipher.getInstance("AES");
 												c1.init(Cipher.DECRYPT_MODE, unwrappedKey);
-												//CipherOutputStream cos = new CipherOutputStream(bo,c1);
 												byte [] dofinal = c1.doFinal(DatatypeConverter.parseHexBinary(msgCript));
-												//String encoded = DatatypeConverter.printHexBinary(dofinal);
 												String encoded = new String(dofinal);
 												msgFinal += nome + " : " +encoded + "\n";
 												break;
@@ -396,7 +380,7 @@ public class SeiTchiz {
 							String encoded = DatatypeConverter.printHexBinary(dofinal);
 
 							String outputCifrado = comando[0] + " " + comando[1] + " " + encoded;
-							//envio da suposta mensagem cifrada (confirmar o que está a aparecer no b) depois de conseguir mandar msg)
+							//envio da suposta mensagem cifrada
 							outObj.writeObject(outputCifrado);
 							System.out.println((String) inObj.readObject());
 						} else {
@@ -504,24 +488,24 @@ public class SeiTchiz {
 	 * Metodo efetua a autentiacao de um cliente atraves do seu username 
 	 * e da sua password.
 	 * Sao mostradas mensagens informativas ao cliente.
-	 * @param user - username do cliente a autenticar.
-	 * @param pass - password do cliente a autenticar.
+	 * @param user - id do cliente que executa os comandos.
+	 * @param keystoreFile - Path do ficheiro keystore
+	 * @param keystorePass - Password da keystore
 	 */
 	private static void autenticacao(String user, String keystoreFile, String keystorePass) {
 		try {
 			outObj.writeObject(user);
-			//outObj.writeObject(pass);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		// verificar autenticacao vai ser mudada para usar os ficheiros keystores
+
 		try {
 			//NONCE recebido do sv
 			String resposta = (String) inObj.readObject();
 			FileInputStream keyfile = new FileInputStream("Keystores" + File.separator + keystoreFile);
 			//ficheiro keystore cliente
-			KeyStore kstore = KeyStore.getInstance("JCEKS"); //TODO com jceks diz que nao tem este algoritmo e com keystore.getdefaulttype diz acesso negado
+			KeyStore kstore = KeyStore.getInstance("JCEKS");
 			kstore.load(keyfile, keystorePass.toCharArray());
 
 			Key myPrivateKey = kstore.getKey(user, keystorePass.toCharArray());
@@ -551,7 +535,6 @@ public class SeiTchiz {
 				if(askName.equals("What is your name?")) {
 					System.out.println(askName);
 					outObj.writeObject(inSc.nextLine());
-					Boolean autenticated = inObj.readObject().equals("true"); //converter string p boolean
 
 				}else {
 					System.out.println("[ERROR]");
@@ -566,7 +549,7 @@ public class SeiTchiz {
 
 				//enviar o nonce
 				outObj.writeObject(resposta);
-				//enviar assinatura é preciso responder com o nonce?
+				//enviar assinatura e preciso responder com o nonce?
 				outObj.writeObject(signature.sign());
 
 				String ans = (String) inObj.readObject();
@@ -576,7 +559,6 @@ public class SeiTchiz {
 					System.out.println("Error logging in");
 				}
 			}
-
 
 		} catch (Exception e1) {
 			System.out.println("Error authenticating >:(");
@@ -591,7 +573,6 @@ public class SeiTchiz {
 	 */
 	private static void conectToServer(String ip, int port) {
 		try {
-			///tentativa com ssl
 			SocketFactory sslfact = SSLSocketFactory.getDefault();
 			SSLSocket ssl = null;
 			ssl = (SSLSocket) sslfact.createSocket(ip, port);
@@ -628,4 +609,5 @@ public class SeiTchiz {
 		String[] tudo = serverAdress.split(":");
 		return tudo[0];
 	}
+
 }

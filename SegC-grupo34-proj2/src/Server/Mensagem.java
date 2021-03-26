@@ -36,6 +36,7 @@ public class Mensagem {
 	 * @param remetente - quem envia a mensagem
 	 * @param msg - mensagem a enviar
 	 * @param listaGrupo - lista de Clientes membros do grupo com grupoID
+	 * @param chaveIdMsg - indicador da chave utilizada para encriptar a mensagem
 	 */
 	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaGrupo, int chaveIdMsg) {
 		this.grupoID = grupoID;
@@ -57,7 +58,10 @@ public class Mensagem {
 	 * @param grupoID - id do grupo
 	 * @param remetente - quem envia a mensagem
 	 * @param msg - mensagem a enviar
-	 * @param listaGrupo - lista de Clientes membros do grupo com grupoID
+	 * @param listaLeuGrupo - lista de Clientes membros do grupo com grupoID que ja leram a mensagem
+	 * @param listaPorLerGrupo - lista de Clientes membros do grupo com grupoID que ainda nao leram a mensagem
+	 * @param data - data da mensagem
+	 * @param chaveIdMsg - indicador da chave utilizada para encriptar a mensagem
 	 */
 	public Mensagem(String grupoID, Cliente remetente, String msg, ArrayList<Cliente> listaLeuGrupo, ArrayList<Cliente> listaPorLerGrupo, String data, int chaveIdMsg) {
 		this.grupoID = grupoID;

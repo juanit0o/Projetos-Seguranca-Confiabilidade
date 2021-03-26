@@ -32,6 +32,8 @@ public class CatalogoGrupos {
 	 * sao guardados em grupos do tipo Server.Grupo, e no inicio do programa
 	 * sao carregados todos os dados do disco para estruturas de dados para acesso mais rapido.
 	 * @param catClientes - catalogo de clientes.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public CatalogoGrupos(CatalogoClientes catClientes, String keyStoreFile, String keyStorePassword) {
 		this.keyStoreFile = keyStoreFile;
@@ -163,6 +165,8 @@ public class CatalogoGrupos {
 	 * um id de grupo e quem cria o grupo, que sera o dono.
 	 * @param grupoID - id para o grupo.
 	 * @param dono - cliente que cria e a dono do grupo.
+	 * @param keyStoreFile Path para o ficheiro keystore
+	 * @param keyStorePassword Password para o ficheiro keystore
 	 */
 	public void addGrupo(String grupoID, Cliente dono, String keyStoreFile, String keyStorePassword) {
 		Grupo grupo = new Grupo(grupoID, dono, keyStoreFile, keyStorePassword);
@@ -173,15 +177,12 @@ public class CatalogoGrupos {
 			Autenticacao aut = new Autenticacao();
 			aut.decryptFile(groupFile, keyStoreFile, keyStorePassword);
 			File groupFileTxt = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.txt");
-			
-			
+
 			BufferedWriter bW = new BufferedWriter(new FileWriter(groupFileTxt, true));
 			bW.write(grupoID);
 			bW.newLine();
 			bW.close();
 			aut.encryptFile(groupFileTxt, keyStoreFile, keyStorePassword);
-			
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
