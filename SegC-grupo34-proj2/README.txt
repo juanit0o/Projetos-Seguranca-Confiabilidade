@@ -23,8 +23,7 @@ javac -d bin src/Client/SeiTchiz.java
 Ter em atencao, que para ser possivel o uso da aplicacao, e necessario iniciar o servidor primeiro que os clientes.
 
 - Exemplo de comando para execucao do servidor:
-Executar ficheiros .class:
-java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678 kfalsa 
+Executar ficheiros .class: 
 java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678 keystore keystore-password
 java -cp bin -Djava.security.manager -Djava.security.policy==server.policy Server.SeiTchizServer 45678 servidor servidor
 
@@ -48,11 +47,15 @@ java -cp bin -Djava.security.manager -Djava.security.policy==client.policy -jar 
 
 Argumentos usados para servidor:
 45678 - porto exemplo
+keystore - Par de chaves do servidor
+keystore-password - Password da keystore
 
 Argumentos usados para cliente:
 127.0.0.1:45678 - serverAddress
-userName - userID
-password123 - password
+truststore - Certificado de chave pública do servidor
+keystore - Par de chaves do clientID
+keystore-password - Password da keystore
+clientId - Utilizador local
 
 ----------------
 
