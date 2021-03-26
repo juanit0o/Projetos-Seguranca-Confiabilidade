@@ -590,7 +590,7 @@ public class SeiTchizServer {
 						else {
 							//LER AS MENSAGEM DE GRUPOID - splittado[1]
 							//QUE NAO TENHA LIDO AINDA (AINDA APARECE O NOME POR LER NO FICHEIRO)
-							ArrayList<String> mensagens = catGrupos.getMensagensPorLer(splittado[1], currentClient);
+							ArrayList<String> mensagens = catGrupos.getMensagensPorLer(splittado[1], currentClient, keyStoreFile, keyStorePassword);
 							if (mensagens.size() <= 0) {
 								outStream.writeObject("You dont have any new messages on the group with ID " + splittado[1]);
 								System.out.println("Client '" + currentClient.getUser() + "' doesnt have any messages to collect from the group '" + splittado[1] + "'");

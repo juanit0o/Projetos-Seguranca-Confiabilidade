@@ -154,6 +154,7 @@ public class CatalogoGrupos {
 				File fileAux = new File("data" + File.separator + "Server Files" + File.separator + "allGroups.txt");
 				fileAux.createNewFile();
 				aut.encryptFile(fileAux, keyStoreFile, keyStorePassword);
+				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -278,10 +279,12 @@ public class CatalogoGrupos {
 	 * num grupo.
 	 * @param grupoID - groupId do grupo.
 	 * @param cliente - Server.Cliente a ver mensagens.
+	 * @param keystoreFile Path para o ficheiro keystore
+	 * @param keystorePassword Password para o ficheiro keystore
 	 * @return lista de mensagens por ler no grupo.
 	 */
-	public ArrayList<String> getMensagensPorLer(String grupoID, Cliente cliente){
-		return getGrupo(grupoID).getMensagensPorLer(cliente.getUser());
+	public ArrayList<String> getMensagensPorLer(String grupoID, Cliente cliente, String keystoreFile, String keystorePassword){
+		return getGrupo(grupoID).getMensagensPorLer(cliente.getUser(), keystoreFile, keystorePassword);
 	}
 
 	/**

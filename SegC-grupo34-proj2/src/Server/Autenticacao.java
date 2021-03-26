@@ -15,7 +15,6 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -108,6 +107,7 @@ public class Autenticacao {
 			fos.close();
 			kfile.close();
 			cis.close();
+			br.close();
 
 			grupChav.delete();
 

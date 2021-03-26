@@ -59,8 +59,8 @@ public class SeiTchiz {
 		}
 		//verifica se tem porto ou nao, caso nao PORT_DEFAULT
 		if (args[0].contains(":")) {
-			serverIp = getIp(serverIp);
-			serverPort = getPort(serverIp);
+			serverIp = getIp(args[0]);
+			serverPort = getPort(args[0]);
 		} else {
 			serverIp = getIp(args[0]);
 			serverPort = PORT_DEFAULT;
@@ -535,7 +535,7 @@ public class SeiTchiz {
 				if(askName.equals("What is your name?")) {
 					System.out.println(askName);
 					outObj.writeObject(inSc.nextLine());
-
+					Boolean aut = inObj.readObject().equals("true");
 				}else {
 					System.out.println("[ERROR]");
 					System.exit(-1);

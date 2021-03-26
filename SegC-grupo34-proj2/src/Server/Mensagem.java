@@ -75,9 +75,11 @@ public class Mensagem {
 
 	/**
 	 * Metodo le a mensagem atual pelo userId recebido.
-	 * @param userId - id do cliente que le a mensagem. 
+	 * @param userId - id do cliente que le a mensagem.
+	 * @param keystoreFile Path para o ficheiro keystore
+	 * @param keystorePassword Password para o ficheiro keystore 
 	 */
-	private void lerMensagem(int userId){
+	private void lerMensagem(int userId, String keystoreFile, String keystorePassword){
 		leuMsg.add(porLerMsg.get(userId));
 		ArrayList <Cliente> porLerMsgAux = new ArrayList<Cliente>();
 		for(int i = 0; i < porLerMsg.size(); ++i){
@@ -87,20 +89,22 @@ public class Mensagem {
 		porLerMsg = porLerMsgAux;
 		//se foi lida por todos, colocar no historico
 		if(porLerMsg.isEmpty()){
-			moverMensagemParaHistorico();
+			moverMensagemParaHistorico(keystoreFile, keystorePassword);
 		}
 	}
 
 	/**
 	 * Metodo retorna se a mensagem atual esta por ser lida pelo userId recebido.
 	 * @param cliente - id do cliente.
+	 * @param keystoreFile Path para o ficheiro keystore
+	 * @param keystorePassword Password para o ficheiro keystore
 	 * @return true se a mensagem ainda nao foi lida pelo cliente, senao false.
 	 */
-	public boolean porLerMensagem(String cliente){
+	public boolean porLerMensagem(String cliente, String keystoreFile, String keystorePassword){
 		int i;
 		for(i = 0; i < porLerMsg.size(); ++i){
 			if(porLerMsg.get(i).getUser().equals(cliente)){
-				lerMensagem(i);
+				lerMensagem(i, keystoreFile, keystorePassword);
 				return true;
 			}
 		}
@@ -138,10 +142,30 @@ public class Mensagem {
 
 	/**
 	 * Metodo coloca e guarda os dados da mensagem atual em disco.
+	 * @param keystoreFile Path para o ficheiro keystore
+	 * @param keystorePassword Password para o ficheiro keystore
 	 */
-	private void moverMensagemParaHistorico(){
-		File groupFolder = new File("data" + File.separator + "Group Folder" + File.separator + this.grupoID);
-		File logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
+	private void moverMensagemParaHistorico(String keystoreFile, String keystorePassword){
+		
+		File groupFolder = new File("data" + File.separator + "Group Folder" + File.separator + this.grupoID);		
+		Autenticacao aut = new Autenticacao();
+		File histCif = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".cif");
+		
+		File logGrupo;
+		if(histCif.length() > 0) {
+			aut.decryptFile(histCif, keystoreFile, keystorePassword);
+			logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
+		}else {
+			logGrupo = new File(groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
+			try {
+				logGrupo.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}		
+		//aut.decryptFile(histCif, keystoreFile, keystorePassword);
+		
+		
 		try {
 			BufferedWriter bW = new BufferedWriter(new FileWriter(logGrupo, true));
 			String output = data + "%%" + remetente.getUser() + "%%" + msg + "%%";
@@ -158,6 +182,7 @@ public class Mensagem {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		aut.encryptFile(logGrupo, keystoreFile, keystorePassword);
 	}
 
 	/**

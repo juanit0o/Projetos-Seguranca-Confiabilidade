@@ -114,9 +114,18 @@ public class Grupo {
 		try {
 			groupFolder.mkdirs();
 			msgLog.createNewFile();
+			
+			
+			
 			membrosGrupo.createNewFile();
-			msgHistorico.createNewFile();
-
+			//msgHistorico.createNewFile();
+			
+			File msgHistTxt = new File (groupFolder.getAbsolutePath(), this.grupoID + "_" + "historico" + ".txt");
+			msgHistTxt.createNewFile();
+			Autenticacao aut = new Autenticacao();
+			aut.encryptFile(msgHistTxt, keyStoreFile, keyStorePassword);
+			
+			
 			groupKeysFolder.mkdirs();
 			grupoChaves.createNewFile();
 			try {
@@ -282,6 +291,7 @@ public class Grupo {
 			while ((thislinha = br.readLine()) != null) {
 				lastIndex++;
 			}
+			br.close();
 			return lastIndex - 1;
 
 		} catch (FileNotFoundException e) {
@@ -289,7 +299,7 @@ public class Grupo {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		return lastIndex;
 	}
 
@@ -319,10 +329,10 @@ public class Grupo {
 	 * @param cliente - cliente a verificar
 	 * @return lista de mensagens por ler
 	 */
-	public ArrayList<String> getMensagensPorLer(String cliente) {
+	public ArrayList<String> getMensagensPorLer(String cliente, String keystoreFile, String keystorePassword) {
 		ArrayList<String> output = new ArrayList<String>();
 		for (int i = 0; i < msgs.size(); ++i) {
-			if (msgs.get(i).porLerMensagem(cliente)) {
+			if (msgs.get(i).porLerMensagem(cliente, keystoreFile, keystorePassword)) {
 				output.add(msgs.get(i).toString());
 
 				// Verificar se todos ja leram, caso sim remover do msgs
