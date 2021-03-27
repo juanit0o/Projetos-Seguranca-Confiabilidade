@@ -1,5 +1,5 @@
 
-Projeto 2 em trabalho, vai sendo atualizado.
+Projeto 2
 
 Diogo Pinto 52763 
 Francisco Ramalho 53472
